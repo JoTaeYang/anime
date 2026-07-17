@@ -95,8 +95,10 @@ for view in ("front", "side", "threequarter", "back"):
 rig.data.pose_position = 'POSE'
 
 reset_pose()
-rotate_world("LeftUpperArm", 'Y', -80)
-rotate_world("RightUpperArm", 'Y', 80)
+# Task 9의 L/R 리네임 스왑(FBX X-미러 보상) 이후 "LeftUpperArm"은 Blender −X쪽 본이다
+# → 팔을 위로 들려면 부호가 원안과 반대
+rotate_world("LeftUpperArm", 'Y', 80)
+rotate_world("RightUpperArm", 'Y', -80)
 set_view("front")
 render_tile("pose_armsup.png")
 order.append("pose_armsup.png")
