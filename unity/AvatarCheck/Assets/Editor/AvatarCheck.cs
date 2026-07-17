@@ -12,6 +12,10 @@ public static class AvatarCheck
     static readonly List<string> ImportErrors = new List<string>();
 
     // Blender 쪽 scripts/lib/bone_map.py의 REQUIRED_HUMAN_BONES와 일치해야 한다
+    // NOTE: this assertion verifies name-mapping completeness/consistency ONLY.
+    // Anatomical left/right correctness is guarded by the faces_plus_z assertion
+    // (hand x-order + toe z-direction) — the L/R compensation baked into the FBX
+    // bone names makes name comparison blind to lateral swaps.
     static readonly Dictionary<HumanBodyBones, string> Required = new Dictionary<HumanBodyBones, string>
     {
         { HumanBodyBones.Hips, "Hips" }, { HumanBodyBones.Spine, "Spine" }, { HumanBodyBones.Head, "Head" },

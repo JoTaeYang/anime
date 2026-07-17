@@ -5,7 +5,11 @@ def _sides(template_l: dict) -> dict:
     반사(mirror)된다 — 이는 축 프리셋으로 되돌릴 수 없다(정방향을 뒤집지 않는 한).
     Unity 휴머노이드 매퍼는 본 이름을 우선 사용하므로, Blender의 .L 본(월드 +X)을
     Unity 이름 'Right*'로, .R 본을 'Left*'로 부여해 미러를 상쇄한다. 더미는 좌우
-    대칭이라 지오메트리상 문제 없음. (Task 9: faces_plus_z 교정)"""
+    대칭이라 지오메트리상 문제 없음. (Task 9: faces_plus_z 교정)
+
+    PHASE 1 BLOCKER: 이 L/R 스왑은 04_export.py의 사전 회전(pre-rotate) 트릭과 결합된
+    보상일 가능성이 크다. 비대칭 캐릭터 반입 전, 비대칭 테스트 더미로 스왑 없이
+    익스포트 설정만으로 미러 없는 정상 좌우가 나오는지 재검증할 것. (04_export.py 참조)"""
     out = {}
     for src, dst in template_l.items():
         out[src] = dst.replace("Left", "Right")            # DEF-x.L → Right* (FBX 미러 상쇄)

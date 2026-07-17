@@ -18,6 +18,7 @@ paths.ensure_dirs()
 #   2) +90°X 회전을 적용하지 않은 오브젝트 회전으로 남김
 #   3) bake_space_transform=False로 내보내면 축변환(-90°X)이 (2)의 +90°X를 상쇄해
 #      Unity에서 루트/아마추어 모두 identity가 된다.
+# PHASE 1 BLOCKER: 이 사전 회전 트릭은 bone_map.py의 L/R 스왑과 결합되어 있을 수 있다 — bone_map.py 상단 주석 참조
 import math
 _objs = [bpy.data.objects["DummyRig"], bpy.data.objects["Dummy"]]
 bpy.ops.object.mode_set(mode='OBJECT')

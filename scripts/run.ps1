@@ -17,13 +17,13 @@ function Invoke-UnityCheck {
     Write-Host ">>> unity: AvatarCheck.Run"
     # Unity relaunches as a separate process, so $LASTEXITCODE after `& $Unity` is
     # unreliable (Task 8). Use Start-Process -Wait -PassThru and read .ExitCode.
-    $args = @(
+    $unityArgs = @(
         "-batchmode", "-nographics", "-quit",
         "-projectPath", (Join-Path $Root "unity\AvatarCheck"),
         "-executeMethod", "AvatarCheck.Run",
         "-logFile", (Join-Path $Root "unity\AvatarCheck\Logs\check.log")
     )
-    $proc = Start-Process -FilePath $Unity -ArgumentList $args -Wait -PassThru -NoNewWindow
+    $proc = Start-Process -FilePath $Unity -ArgumentList $unityArgs -Wait -PassThru -NoNewWindow
     $code = $proc.ExitCode
     $report = Join-Path $Root "unity\AvatarCheck\report.json"
     if (Test-Path $report) { Get-Content $report }
