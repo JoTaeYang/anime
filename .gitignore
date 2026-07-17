@@ -1,0 +1,11 @@
+build/
+previews/
+exports/
+__pycache__/
+*.blend1
+unity/AvatarCheck/Library/
+unity/AvatarCheck/Temp/
+unity/AvatarCheck/Logs/
+unity/AvatarCheck/UserSettings/
+unity/AvatarCheck/obj/
+unity/AvatarCheck/Assets/Dummy/
