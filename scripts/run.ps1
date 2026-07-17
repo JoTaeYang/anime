@@ -15,11 +15,16 @@ function Invoke-Blender([string]$RelScript) {
 
 function Invoke-UnityCheck {
     Write-Host ">>> unity: AvatarCheck.Run"
-    & $Unity -batchmode -nographics -quit `
-        -projectPath (Join-Path $Root "unity\AvatarCheck") `
-        -executeMethod AvatarCheck.Run `
-        -logFile (Join-Path $Root "unity\AvatarCheck\Logs\check.log")
-    $code = $LASTEXITCODE
+    # Unity relaunches as a separate process, so $LASTEXITCODE after `& $Unity` is
+    # unreliable (Task 8). Use Start-Process -Wait -PassThru and read .ExitCode.
+    $args = @(
+        "-batchmode", "-nographics", "-quit",
+        "-projectPath", (Join-Path $Root "unity\AvatarCheck"),
+        "-executeMethod", "AvatarCheck.Run",
+        "-logFile", (Join-Path $Root "unity\AvatarCheck\Logs\check.log")
+    )
+    $proc = Start-Process -FilePath $Unity -ArgumentList $args -Wait -PassThru -NoNewWindow
+    $code = $proc.ExitCode
     $report = Join-Path $Root "unity\AvatarCheck\report.json"
     if (Test-Path $report) { Get-Content $report }
     if ($code -ne 0) {
