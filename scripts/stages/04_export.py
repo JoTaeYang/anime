@@ -10,6 +10,26 @@ from lib.blender_utils import open_blend, op_kwargs
 open_blend(paths.blend_path("03_baked"))
 paths.ensure_dirs()
 
+# --- Armature root-rotation 교정 (Task 9) ---
+# bake_space_transform=True는 메시는 잘 굽지만 아마추어 노드에는 축변환 회전(-90°X)을
+# 잔여로 남긴다(Blender FBX의 알려진 아마추어 한계; "Apply Transform"은 실험적).
+# 대안: 데이터를 미리 Y-up으로 구운 뒤 축변환이 노드 회전을 상쇄하게 한다.
+#   1) 아마추어+메시를 -90°X 회전 후 적용 → 정점/본 rest가 Y-up으로 baked
+#   2) +90°X 회전을 적용하지 않은 오브젝트 회전으로 남김
+#   3) bake_space_transform=False로 내보내면 축변환(-90°X)이 (2)의 +90°X를 상쇄해
+#      Unity에서 루트/아마추어 모두 identity가 된다.
+import math
+_objs = [bpy.data.objects["DummyRig"], bpy.data.objects["Dummy"]]
+bpy.ops.object.mode_set(mode='OBJECT')
+bpy.ops.object.select_all(action='DESELECT')
+for _o in _objs:
+    _o.select_set(True)
+    _o.rotation_euler = (math.radians(-90), 0.0, 0.0)
+bpy.context.view_layer.objects.active = _objs[0]
+bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
+for _o in _objs:
+    _o.rotation_euler = (math.radians(90), 0.0, 0.0)
+
 kwargs = dict(
     filepath=str(paths.EXPORTS_DIR / "dummy.fbx"),
     use_selection=False,
@@ -20,7 +40,7 @@ kwargs = dict(
     axis_forward='-Z',
     axis_up='Y',
     use_space_transform=True,
-    bake_space_transform=True,             # 아마추어 루트 -89.98° 회전 방지
+    bake_space_transform=False,            # 위 pre-rotate 트릭이 대신 처리 (아마추어 노드 회전 상쇄)
     add_leaf_bones=False,                  # `_end` 본 생성 방지
     primary_bone_axis='Y',
     secondary_bone_axis='X',

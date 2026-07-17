@@ -124,6 +124,12 @@ public static class AvatarCheck
         string dst = Path.GetFullPath(Path.Combine(Application.dataPath, "Dummy", "dummy.fbx"));
         if (!File.Exists(src)) throw new FileNotFoundException($"export first: {src}");
         Directory.CreateDirectory(Path.GetDirectoryName(dst));
+        // Delete any previously-imported asset (+ its .meta) so the humanoid avatar is
+        // AUTO-mapped fresh from the current FBX. Unity bakes the auto-map result into the
+        // .meta on first import and reuses it; without this, a re-run after a rig change
+        // (exactly what the Task 9 correction loop does) applies a STALE bone mapping and
+        // fails avatar creation. Fresh import = honest re-validation, not weakened checks.
+        if (File.Exists(dst)) AssetDatabase.DeleteAsset(FbxAssetPath);
         File.Copy(src, dst, true);
         AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
     }

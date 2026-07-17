@@ -91,6 +91,42 @@ for old, new in BONE_RENAME.items():
     if vg is not None:
         vg.name = new
 
+# 5b) Unity Humanoid 클린 애니메이션 (Task 9: import_clean 경고 제거)
+#     비주얼 키잉 베이크는 모든 본에 location/rotation/scale + bbone 채널을 남긴다.
+#     Unity Humanoid는 회전(+Hips 위치)만 쓰므로 다음을 제거한다:
+#       - 모든 scale, bbone 채널
+#       - Hips 이외 본의 location (Humanoid는 Hips만 위치를 씀)
+#       - 트위스트 본의 rotation: Unity가 "'*Twist' is inbetween humanoid transforms and
+#         has rotation animation that will be discarded" 경고를 내므로(리타게팅 시 버려짐),
+#         애초에 키를 넣지 않는다. 트위스트 본은 rest 유지 — 더미 idle에서 무해.
+#     (Hips는 루트 모션/높이 위해 location 유지)
+import re as _re
+
+
+def _all_fcurves(action):
+    for layer in action.layers:
+        for strip in layer.strips:
+            for cb in strip.channelbags:
+                yield cb, list(cb.fcurves)
+
+
+_idle = rig.animation_data.action if rig.animation_data else None
+if _idle is not None:
+    for _cb, _fcs in _all_fcurves(_idle):
+        for _fc in _fcs:
+            _m = _re.search(r'pose\.bones\["([^"]+)"\]\.(\w+)', _fc.data_path)
+            if not _m:
+                continue
+            _bone, _prop = _m.group(1), _m.group(2)
+            _drop = (
+                _prop == "scale"
+                or (_prop == "location" and _bone != "Hips")
+                or _prop.startswith("bbone_")
+                or (_prop.startswith("rotation") and _bone.endswith("Twist"))
+            )
+            if _drop:
+                _cb.fcurves.remove(_fc)
+
 # 6) 잔여물 정리: 위젯, 메타리그, 원본 액션, 드라이버
 for ob in list(bpy.data.objects):
     if ob.name.startswith("WGT-") or ob.name == "metarig":

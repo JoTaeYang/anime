@@ -1,9 +1,15 @@
 def _sides(template_l: dict) -> dict:
-    """{'DEF-x.L': 'LeftY'} 템플릿을 좌우 양쪽으로 확장한다."""
+    """{'DEF-x.L': 'LeftY'} 템플릿을 좌우 양쪽으로 확장한다.
+
+    좌우 스왑: Blender(오른손 좌표계)를 Unity(왼손 좌표계)로 FBX 내보내면 X축이
+    반사(mirror)된다 — 이는 축 프리셋으로 되돌릴 수 없다(정방향을 뒤집지 않는 한).
+    Unity 휴머노이드 매퍼는 본 이름을 우선 사용하므로, Blender의 .L 본(월드 +X)을
+    Unity 이름 'Right*'로, .R 본을 'Left*'로 부여해 미러를 상쇄한다. 더미는 좌우
+    대칭이라 지오메트리상 문제 없음. (Task 9: faces_plus_z 교정)"""
     out = {}
     for src, dst in template_l.items():
-        out[src] = dst
-        out[src.replace(".L", ".R")] = dst.replace("Left", "Right")
+        out[src] = dst.replace("Left", "Right")            # DEF-x.L → Right* (FBX 미러 상쇄)
+        out[src.replace(".L", ".R")] = dst                 # DEF-x.R → Left*
     return out
 
 
@@ -13,8 +19,8 @@ _SPINE = {
     "DEF-spine.002": "Chest",
     "DEF-spine.003": "UpperChest",
     "DEF-spine.004": "Neck",
-    "DEF-spine.005": "NeckUpper",   # 여분 (Unity 미매핑, Neck-Head 사이 중간 본)
-    "DEF-spine.006": "Head",
+    "DEF-spine.005": "Head",        # Neck 다음 본을 Head로 (Unity 매퍼가 Neck 다음을 Head로 집음)
+    "DEF-spine.006": "HeadTop",     # 여분 leaf (Unity 미매핑; 이전엔 이 본이 Head라 off-by-one 발생)
 }
 
 _LIMBS_L = {
