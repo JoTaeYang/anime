@@ -14,4 +14,9 @@ for name in list(REQUIRED_HUMAN_BONES) + list(OPTIONAL_HUMAN_BONES):
     assert name in vals, f"human bone {name} not produced by BONE_RENAME"
 assert abs(HIPS_HEIGHT - 0.8673) < 1e-6
 assert abs(P["spine.006"]["tail"][2] - 1.70) < 1e-6, "head top must be exactly 1.70"
+
+# proportions의 모든 메타리그 본은 대응하는 DEF 본이 매핑 테이블에 있어야 한다
+for k in P:
+    assert f"DEF-{k}" in BONE_RENAME, f"proportions key {k} has no DEF-{k} in BONE_RENAME"
+
 print("CHECK_LIB OK")

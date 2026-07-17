@@ -63,9 +63,16 @@ REQUIRED_HUMAN_BONES = {
     ]
 }
 
+_FINGER_UNITY_NAMES = [
+    f"{side}{finger}{seg}"
+    for side in ("Left", "Right")
+    for finger in ("Thumb", "Index", "Middle", "Ring", "Little")
+    for seg in ("Proximal", "Intermediate", "Distal")
+]
+
 OPTIONAL_HUMAN_BONES = {
     n: n for n in [
         "Chest", "UpperChest", "Neck",
         "LeftShoulder", "RightShoulder", "LeftToes", "RightToes",
-    ]
+    ] + _FINGER_UNITY_NAMES
 }
