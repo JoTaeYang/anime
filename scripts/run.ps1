@@ -1,6 +1,6 @@
 param(
     [Parameter(Position = 0)][string]$Stage = "all",
-    [string]$Profile = "dummy"
+    [string]$Profile = "character"
 )
 $env:ANIME_PROFILE = $Profile
 
@@ -62,7 +62,7 @@ switch ($Stage) {
     }
     default {
         if (-not $Pipeline.Contains($Stage)) {
-            Write-Host "usage: run.ps1 [smoke|mesh|rig|anim|bake|export|unity|sheet|overlay|all]"
+            Write-Host "usage: run.ps1 [smoke|mesh|rig|anim|bake|export|unity|sheet|overlay|userpreview|all]"
             exit 2
         }
         foreach ($s in $Pipeline[$Stage]) { Invoke-Blender $s }
