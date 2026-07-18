@@ -55,6 +55,9 @@ for side in ("Left", "Right"):
 for anc, child in CHAINS:
     assert is_ancestor(anc, child), f"{child} not descended from {anc}"
 
+for uni in PROFILE.appendage_bone_rename().values():
+    assert uni in names, f"appendage bone {uni} missing after bake"
+
 acts = list(bpy.data.actions)
 assert len(acts) == 1 and acts[0].name == "Idle", [a.name for a in acts]
 

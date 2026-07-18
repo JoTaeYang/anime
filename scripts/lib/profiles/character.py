@@ -65,7 +65,12 @@ APPENDAGES = [
      "rename": {"DEF-hood_ear_r": "HoodEarR"}},
 ]
 
-EXTRA_POSES = []              # Task 7에서 채움
+EXTRA_POSES = [
+    {"name": "tail_lift", "view": "side",
+     "ops": [("rotate", "Tail1", 'X', -40), ("rotate", "Tail2", 'X', -25), ("rotate", "Tail3", 'X', -15)]},
+    {"name": "leg_spread", "view": "front",
+     "ops": [("rotate", "LeftUpperLeg", 'Y', -35), ("rotate", "RightUpperLeg", 'Y', 35)]},
+]
 
 
 def appendage_bone_rename():

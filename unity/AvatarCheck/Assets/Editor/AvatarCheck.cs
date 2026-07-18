@@ -41,6 +41,18 @@ public static class AvatarCheck
         { HumanBodyBones.RightUpperArm, "RightUpperArm" }, { HumanBodyBones.RightLowerArm, "RightLowerArm" }, { HumanBodyBones.RightHand, "RightHand" },
     };
 
+    // Optional Humanoid slots our rig also names identically (matches bone_map.py's
+    // OPTIONAL_HUMAN_BONES) — used to build the explicit human-role override below.
+    static readonly string[] OptionalHumanNames = {
+        "Chest", "UpperChest", "Neck", "LeftShoulder", "RightShoulder", "LeftToes", "RightToes",
+    };
+    static readonly string[] FingerHumanNames = (
+        from side in new[] { "Left", "Right" }
+        from finger in new[] { "Thumb", "Index", "Middle", "Ring", "Little" }
+        from seg in new[] { "Proximal", "Intermediate", "Distal" }
+        select $"{side}{finger}{seg}"
+    ).ToArray();
+
     public static void Run()
     {
         var results = new List<(string name, bool pass, string detail)>();
@@ -55,6 +67,33 @@ public static class AvatarCheck
             var importer = (ModelImporter)AssetImporter.GetAtPath(FbxAssetPath);
             importer.animationType = ModelImporterAnimationType.Human;
             importer.isReadable = true;   // laterality 프로브가 SkinnedMeshRenderer.BakeMesh를 쓴다
+            importer.SaveAndReimport();
+
+            // --- Explicit human bone-role override (Phase1 Task7) ------------------------
+            // Unity's automatic Humanoid role-mapper gets confused once Hips has many
+            // non-standard children: the character's Hips carries 2 legs + Spine + 8 skirt
+            // chain roots + the tail root (12 children vs. the dummy's 3). Empirically
+            // verified via a throwaway diagnostic: even though our bones are literally named
+            // "Spine"/"Chest"/"UpperChest", the auto-mapper shifts roles down by one
+            // (Spine role <- our "Chest" bone, Chest role <- our "UpperChest" bone, UpperChest
+            // left unmapped) — a structural-ambiguity artifact of the sibling count, not a
+            // naming problem. Neck/Head (which only gained 2 extra siblings each, from the
+            // scarf/hood-ear chains) were unaffected, isolating Hips's sibling count as the
+            // trigger. The `skeleton` array Unity derives from the FBX hierarchy is NOT
+            // affected by this (only the human-role heuristic is), so we keep Unity's own
+            // skeleton and supply the correct explicit `human` mapping ourselves, using the
+            // same identity-name convention as bone_map.py's REQUIRED_HUMAN_BONES /
+            // OPTIONAL_HUMAN_BONES (humanName == boneName). This is assertion-neutral: it
+            // does not change what "correct" means, only makes the importer produce the
+            // mapping our own bone names already declare.
+            var hd = importer.humanDescription;
+            var knownHumanNames = Required.Values.Concat(OptionalHumanNames).Concat(FingerHumanNames).ToHashSet();
+            var skeletonNames = hd.skeleton.Select(s => s.name).ToHashSet();
+            hd.human = knownHumanNames.Where(skeletonNames.Contains)
+                .Select(n => new HumanBone { humanName = n, boneName = n, limit = new HumanLimit { useDefaultValues = true } })
+                .ToArray();
+            importer.humanDescription = hd;
+            importer.avatarSetup = ModelImporterAvatarSetup.CreateFromThisModel;
             importer.SaveAndReimport();
             Application.logMessageReceived -= CaptureLog;
 
