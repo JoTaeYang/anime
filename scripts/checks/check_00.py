@@ -15,7 +15,9 @@ open_blend(paths.blend_path("00_mesh"))
 ob = bpy.data.objects.get(PROFILE.MESH_OBJECT)
 assert ob is not None and ob.type == 'MESH', f"{PROFILE.MESH_OBJECT} mesh missing"
 assert PROFILE.HEIGHT_RANGE[0] < ob.dimensions.z < PROFILE.HEIGHT_RANGE[1], f"height {ob.dimensions.z}"
-assert 1000 < len(ob.data.vertices) < 50000, f"verts {len(ob.data.vertices)}"
+# Vertex count: procedural meshes are sparse, blend meshes can be dense
+vert_min, vert_max = (1000, 50000) if PROFILE.SOURCE["kind"] == "procedural" else (10000, 1000000)
+assert vert_min < len(ob.data.vertices) < vert_max, f"verts {len(ob.data.vertices)}"
 # 트랜스폼 적용 확인: 원점 월드 0, 스케일 1, 회전 0
 assert ob.location.length < 1e-6, f"origin not at world zero: {tuple(ob.location)}"
 assert all(abs(s - 1.0) < 1e-6 for s in ob.scale), f"scale not applied: {tuple(ob.scale)}"

@@ -37,8 +37,10 @@ function Invoke-UnityCheck {
     }
 }
 
+$MeshStage = "scripts\stages\00_mesh.py"
+if ($Profile -ne "dummy") { $MeshStage = "scripts\stages\00_intake.py" }
 $Pipeline = [ordered]@{
-    "mesh"   = @("scripts\stages\00_mesh.py", "scripts\checks\check_00.py")
+    "mesh"   = @($MeshStage, "scripts\checks\check_00.py")
     "rig"    = @("scripts\stages\01_rig.py", "scripts\checks\check_01.py")
     "anim"   = @("scripts\stages\02_anim.py", "scripts\checks\check_02.py")
     "bake"   = @("scripts\stages\03_bake.py", "scripts\checks\check_03.py")
