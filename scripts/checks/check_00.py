@@ -16,7 +16,14 @@ ob = bpy.data.objects.get(PROFILE.MESH_OBJECT)
 assert ob is not None and ob.type == 'MESH', f"{PROFILE.MESH_OBJECT} mesh missing"
 assert PROFILE.HEIGHT_RANGE[0] < ob.dimensions.z < PROFILE.HEIGHT_RANGE[1], f"height {ob.dimensions.z}"
 # Vertex count: procedural meshes are sparse, blend meshes can be dense
-vert_min, vert_max = (1000, 50000) if PROFILE.SOURCE["kind"] == "procedural" else (10000, 1000000)
+kind = PROFILE.SOURCE["kind"]
+if kind == "procedural":
+    vert_min, vert_max = 1000, 50000
+elif kind == "blend":
+    # character.blend 실측 276,737 — 자산 뒤바뀜/실수 데시메이션을 잡을 만큼 조인다
+    vert_min, vert_max = 100_000, 400_000
+else:
+    raise AssertionError(f"unknown SOURCE kind: {kind} — add explicit bounds")
 assert vert_min < len(ob.data.vertices) < vert_max, f"verts {len(ob.data.vertices)}"
 # 트랜스폼 적용 확인: 원점 월드 0, 스케일 1, 회전 0
 assert ob.location.length < 1e-6, f"origin not at world zero: {tuple(ob.location)}"
