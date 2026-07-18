@@ -13,9 +13,10 @@ public static class AvatarCheck
 
     // Blender 쪽 scripts/lib/bone_map.py의 REQUIRED_HUMAN_BONES와 일치해야 한다
     // NOTE: this assertion verifies name-mapping completeness/consistency ONLY.
-    // Anatomical left/right correctness is guarded by the faces_plus_z assertion
-    // (hand x-order + toe z-direction) — the L/R compensation baked into the FBX
-    // bone names makes name comparison blind to lateral swaps.
+    // Anatomical left/right correctness is guarded by faces_plus_z (hand x-order +
+    // toe z-direction) AND the laterality probe (marker geometry side vs bone name).
+    // RESOLVED 2026-07-18: names are now the honest Blender L/R (no swap). Unity is
+    // left-handed, so a +Z-facing character's LEFT is at −X — hence LeftHand.x < RightHand.x.
     static readonly Dictionary<HumanBodyBones, string> Required = new Dictionary<HumanBodyBones, string>
     {
         { HumanBodyBones.Hips, "Hips" }, { HumanBodyBones.Spine, "Spine" }, { HumanBodyBones.Head, "Head" },
@@ -73,17 +74,20 @@ public static class AvatarCheck
                 var rh = anim.GetBoneTransform(HumanBodyBones.RightHand).position;
                 var lf = anim.GetBoneTransform(HumanBodyBones.LeftFoot).position;
                 var lt = anim.GetBoneTransform(HumanBodyBones.LeftToes).position;
-                bool facing = lh.x > rh.x && lt.z > lf.z;
+                // Unity는 왼손 좌표계 → +Z를 보는 캐릭터의 왼손은 −X, 오른손은 +X (LeftHand.x < RightHand.x).
+                // 발끝이 발보다 +Z 앞(toeZ > footZ)이면 +Z를 바라보는 것.
+                bool facing = lh.x < rh.x && lt.z > lf.z;
                 results.Add(("faces_plus_z", facing, $"leftHand.x={lh.x:F3} rightHand.x={rh.x:F3} toeZ-footZ={(lt.z - lf.z):F3}"));
 
-                // --- Laterality 프로브 (investigate/lr-swap) ---------------------------------
+                // --- Laterality 프로브 (RESOLVED 2026-07-18) --------------------------------
                 // 비대칭 마커(marker_L)는 Blender 해부학적 왼팔(+X)에만 붙인 유일한 비대칭 질량이다.
-                // 대칭 더미의 무게중심은 x≈0 이므로, Unity에서 스키닝한 mesh 무게중심 x의 "부호"가
-                //   해부학적-왼쪽 질량이 어느 월드 X면에 안착했는가 = 미러 여부
-                // 를 그대로 드러낸다. centroidX>0 → 미러 없음(정상), <0 → X-미러.
-                // 그 왼쪽 질량을 구동하는 본이 Left/Right 중 어느 이름인지는, 본과 그 지오메트리가
-                // 같은 면에 있으므로 sign(centroidX)==sign(lhX) 로 판정한다(별도 정점-본 조회 불필요).
-                // 정답 정의(ground truth): 해부학적 왼쪽 질량은 Unity +X 이고 그 본 이름은 Left*.
+                // 대칭 더미의 무게중심은 x≈0 이므로 Unity에서 스키닝한 mesh 무게중심 x의 "부호"가
+                // 해부학적-왼쪽 질량이 어느 월드 X면에 안착했는가를 드러낸다.
+                // 정답 정의: Unity(왼손 좌표계)에서 +Z를 보는 캐릭터의 왼쪽은 −X. 따라서 올바른 결과는
+                //   centroidX < 0 (왼쪽 질량이 Unity −X) AND 그 질량을 Left*-이름 본이 구동 AND lhX < rhX.
+                // 그 질량을 Left/Right 어느 이름 본이 구동하는지는 본과 지오메트리가 같은 면에 있으므로
+                // sign(centroidX)==sign(lhX) 로 판정한다(별도 정점-본 조회 불필요).
+                // 참고: 예전엔 여기에 "미러가 있다/왼쪽=+X"라는 방향 오류가 있었고 스왑이 그 보상이었다.
                 var smr = instance.GetComponentInChildren<SkinnedMeshRenderer>();
                 float centroidX = 0f, extX = 0f;
                 string extBone = "NONE";
@@ -111,10 +115,10 @@ public static class AvatarCheck
                     }
                     UnityEngine.Object.DestroyImmediate(baked);
                 }
-                bool markerAtPlusX = centroidX > 0f;                        // 해부학적-왼쪽 질량이 Unity +X?
-                bool markerBoneIsLeft = (centroidX > 0f) == (lh.x > 0f);    // 그 질량을 Left*본이 구동?
+                bool markerAtLeftX = centroidX < 0f;                        // 해부학적-왼쪽 질량이 Unity −X(왼쪽)?
+                bool markerBoneIsLeft = (centroidX < 0f) == (lh.x < 0f);    // 그 질량을 Left*본이 구동?
                 string markerSide = markerBoneIsLeft ? "Left*" : "Right*";
-                bool lateralityOk = markerAtPlusX && markerBoneIsLeft && lh.x > rh.x;
+                bool lateralityOk = markerAtLeftX && markerBoneIsLeft && lh.x < rh.x;
                 results.Add(("laterality", lateralityOk,
                     $"centroidX={centroidX:F4} markerDrivenBy={markerSide} extX={extX:F3} extBone={extBone} lhX={lh.x:F3} rhX={rh.x:F3}"));
 

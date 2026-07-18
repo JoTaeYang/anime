@@ -95,10 +95,10 @@ for view in ("front", "side", "threequarter", "back"):
 rig.data.pose_position = 'POSE'
 
 reset_pose()
-# Task 9의 L/R 리네임 스왑(FBX X-미러 보상) 이후 "LeftUpperArm"은 Blender −X쪽 본이다
-# → 팔을 위로 들려면 부호가 원안과 반대
-rotate_world("LeftUpperArm", 'Y', 80)
-rotate_world("RightUpperArm", 'Y', -80)
+# RESOLVED 2026-07-18: L/R 스왑 제거 후 "LeftUpperArm"은 다시 Blender +X(해부학적 왼쪽) 본이다
+# → 스왑 때 뒤집었던 부호를 원복한다 (좌우 팔을 대칭으로 위로).
+rotate_world("LeftUpperArm", 'Y', -80)
+rotate_world("RightUpperArm", 'Y', 80)
 set_view("front")
 render_tile("pose_armsup.png")
 order.append("pose_armsup.png")

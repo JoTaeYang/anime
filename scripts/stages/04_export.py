@@ -18,23 +18,22 @@ paths.ensure_dirs()
 #   2) +90°X 회전을 적용하지 않은 오브젝트 회전으로 남김
 #   3) bake_space_transform=False로 내보내면 축변환(-90°X)이 (2)의 +90°X를 상쇄해
 #      Unity에서 루트/아마추어 모두 identity가 된다.
-# PHASE 1 BLOCKER: 이 사전 회전 트릭은 bone_map.py의 L/R 스왑과 결합되어 있을 수 있다 — bone_map.py 상단 주석 참조
-# 실험 토글 (investigate/lr-swap): PRE_ROTATE=0 이면 사전 회전을 끄고 bake_space_transform=True로
-# 표준 익스포트(원래 pre-correction 설정). 기본(미설정/1)은 기존 pre-rotate + bake_space_transform=False.
+# RESOLVED (2026-07-18): 이 pre-rotate 트릭은 아마추어 루트 −90°X 회전만 교정한다.
+# bone_map.py의 (구)L/R 스왑과는 무관함이 config 매트릭스로 입증됐다: pre-rotate를 꺼도
+# (config B, bake_space_transform=True) 좌우 이름·지오메트리는 그대로였고, 켜고 끔이 바꾼
+# 것은 오직 아마추어 루트 회전(끄면 DummyRig에 90° 잔류 → root_children_identity 실패,
+# 켜면 identity)뿐이었다. 애초에 미러는 없었다. 상세: sdd/lr-swap-investigation.md
 import math
-import os
-PRE_ROTATE = os.environ.get("PRE_ROTATE", "1") != "0"
-if PRE_ROTATE:
-    _objs = [bpy.data.objects["DummyRig"], bpy.data.objects["Dummy"]]
-    bpy.ops.object.mode_set(mode='OBJECT')
-    bpy.ops.object.select_all(action='DESELECT')
-    for _o in _objs:
-        _o.select_set(True)
-        _o.rotation_euler = (math.radians(-90), 0.0, 0.0)
-    bpy.context.view_layer.objects.active = _objs[0]
-    bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
-    for _o in _objs:
-        _o.rotation_euler = (math.radians(90), 0.0, 0.0)
+_objs = [bpy.data.objects["DummyRig"], bpy.data.objects["Dummy"]]
+bpy.ops.object.mode_set(mode='OBJECT')
+bpy.ops.object.select_all(action='DESELECT')
+for _o in _objs:
+    _o.select_set(True)
+    _o.rotation_euler = (math.radians(-90), 0.0, 0.0)
+bpy.context.view_layer.objects.active = _objs[0]
+bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
+for _o in _objs:
+    _o.rotation_euler = (math.radians(90), 0.0, 0.0)
 
 kwargs = dict(
     filepath=str(paths.EXPORTS_DIR / "dummy.fbx"),
@@ -46,7 +45,7 @@ kwargs = dict(
     axis_forward='-Z',
     axis_up='Y',
     use_space_transform=True,
-    bake_space_transform=(not PRE_ROTATE), # pre-rotate ON→False(트릭이 노드회전 상쇄), OFF→True(표준)
+    bake_space_transform=False,            # 위 pre-rotate 트릭이 아마추어 노드 회전을 대신 상쇄
     add_leaf_bones=False,                  # `_end` 본 생성 방지
     primary_bone_axis='Y',
     secondary_bone_axis='X',

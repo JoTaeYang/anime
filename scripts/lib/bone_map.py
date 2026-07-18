@@ -1,29 +1,22 @@
-import os
-
-# 실험 토글 (investigate/lr-swap): 환경변수 LR_SWAP=0 이면 스왑 OFF(정직한 L→Left 매핑),
-# 기본(미설정/1)은 기존 스왑 ON 동작을 그대로 유지한다. bone_map은 03_bake에서만 쓰이므로
-# config 별 재실행은 bake+export+unity 로 충분하다.
-_SWAP = os.environ.get("LR_SWAP", "1") != "0"
-
-
 def _sides(template_l: dict) -> dict:
-    """{'DEF-x.L': 'LeftY'} 템플릿을 좌우 양쪽으로 확장한다.
+    """{'DEF-x.L': 'LeftY'} 템플릿을 좌우 양쪽으로 확장한다 (정직한 매핑).
 
-    좌우 스왑 (실험 대상): Blender의 .L 본(해부학적 왼쪽, 월드 +X)을 Unity 이름 'Right*'로,
-    .R 본을 'Left*'로 부여해 왔다. 근거는 "FBX 반입 시 X축 미러가 관측되어 이를 상쇄한다"였다.
+    Blender .L 본(해부학적 왼쪽, 월드 +X) → Unity 'Left*',
+    Blender .R 본(월드 −X)               → Unity 'Right*'.
 
-    PHASE 1 BLOCKER: 이 L/R 스왑은 04_export.py의 사전 회전(pre-rotate) 트릭과 결합된
-    보상일 가능성이 크다. 비대칭 마커로 스왑 없이 익스포트 설정만으로 미러 없는 정상
-    좌우가 나오는지 재검증 중. (LR_SWAP 환경변수로 토글; 04_export.py PRE_ROTATE 참조)"""
+    RESOLVED (2026-07-18): 예전엔 여기서 L/R을 스왑해 .L → 'Right*'로 부여했다. 근거였던
+    "FBX X-미러"는 실재하지 않았다. Blender→Unity FBX는 손대칭(chirality)을 보존한다:
+    Blender 해부학적 왼쪽(+X)은 Unity −X로 가는데, 왼손 좌표계인 Unity에서 +Z를 바라보는
+    캐릭터의 '왼쪽'이 바로 −X 이다(오른쪽 = +X). 따라서 정직한 매핑이 옳다. 스왑은
+    faces_plus_z의 손 검사(당시 lh.x>rh.x — Unity 왼손을 +X로 가정한 방향 오류)를
+    통과시키려 넣은 보상이었을 뿐이고, 좌우대칭 더미라 잘못된 이론이 검증을 통과했다.
+    비대칭 마커 실험(config 매트릭스 A/B/C)으로, 스왑 없이도 Unity −X(왼쪽)에 Left* 본이
+    온다는 것을 확인했다. 04_export.py의 pre-rotate 트릭과는 무관(그건 루트 회전만 담당).
+    상세: .superpowers/sdd/lr-swap-investigation.md"""
     out = {}
     for src, dst in template_l.items():
-        r = dst.replace("Left", "Right")
-        if _SWAP:
-            out[src] = r                                   # DEF-x.L → Right* (스왑 ON: 미러 상쇄 가설)
-            out[src.replace(".L", ".R")] = dst             # DEF-x.R → Left*
-        else:
-            out[src] = dst                                 # DEF-x.L → Left* (스왑 OFF: 정직한 매핑)
-            out[src.replace(".L", ".R")] = r               # DEF-x.R → Right*
+        out[src] = dst                                             # DEF-x.L → Left*
+        out[src.replace(".L", ".R")] = dst.replace("Left", "Right")  # DEF-x.R → Right*
     return out
 
 
