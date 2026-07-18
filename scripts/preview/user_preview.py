@@ -72,15 +72,18 @@ def render_video(filepath, frame_end, setup):
     scene.render.filepath = str(frames_dir / "f_")
     bpy.ops.render.render(animation=True)
 
-    ffmpeg = shutil.which("ffmpeg")
-    assert ffmpeg, "system ffmpeg not found on PATH; required for PNG->mp4 mux fallback"
-    subprocess.run([
-        ffmpeg, "-y", "-framerate", str(scene.render.fps),
-        "-i", str(frames_dir / "f_%04d.png"),
-        "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18",
-        str(filepath),
-    ], check=True)
-    shutil.rmtree(frames_dir)
+    try:
+        ffmpeg = shutil.which("ffmpeg")
+        assert ffmpeg, "system ffmpeg not found on PATH; required for PNG->mp4 mux fallback"
+        subprocess.run([
+            ffmpeg, "-y", "-framerate", str(scene.render.fps),
+            "-i", str(frames_dir / "f_%04d.png"),
+            "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18",
+            str(filepath),
+        ], check=True)
+    finally:
+        if frames_dir.exists():
+            shutil.rmtree(frames_dir)
 
 
 def reset_pose():
