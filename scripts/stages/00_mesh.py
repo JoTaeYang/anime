@@ -60,6 +60,21 @@ for side, m in (("L", lambda v: v), ("R", mirror)):
     parts.append(box_along(f"shin.{side}", m(h("shin.L")), m(t("shin.L")), 0.10, cuts=4))
     parts.append(box_along(f"foot.{side}", m(h("foot.L")), m(t("toe.L")), 0.08, cuts=3))
 
+# 비대칭 laterality 마커 (영구 tripwire): 해부학적 왼팔(Blender +X)에만 부착.
+# 대칭 더미의 유일한 비대칭 요소이므로 Unity mesh 무게중심 x의 부호가 "해부학적 왼쪽
+# 질량이 어느 월드 X면에 안착했는가"(=미러 여부)를 드러낸다. forearm.L↔hand.L 관절을
+# 감싸 배치 → DEF-forearm.L/DEF-hand.L 이 관통하므로 ARMATURE_AUTO가 전 정점을 왼팔에
+# 웨이트한다(check_01의 >98% 통과). 전부 x>0 이라 무게중심을 확실히 +X로 이동시킨다.
+_MK_C = t("forearm.L")  # forearm.L tail = hand.L head, 관절점
+bpy.ops.mesh.primitive_cube_add(size=0.09, location=(_MK_C[0], _MK_C[1], _MK_C[2]))
+_marker = bpy.context.active_object
+_marker.name = "marker_L"
+bpy.ops.object.mode_set(mode='EDIT')
+bpy.ops.mesh.select_all(action='SELECT')
+bpy.ops.mesh.subdivide(number_cuts=3)
+bpy.ops.object.mode_set(mode='OBJECT')
+parts.append(_marker)
+
 # 하나로 합침
 bpy.ops.object.select_all(action='DESELECT')
 for ob in parts:

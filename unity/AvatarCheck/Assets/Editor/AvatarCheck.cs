@@ -37,6 +37,7 @@ public static class AvatarCheck
             AssetDatabase.ImportAsset(FbxAssetPath, ImportAssetOptions.ForceSynchronousImport);
             var importer = (ModelImporter)AssetImporter.GetAtPath(FbxAssetPath);
             importer.animationType = ModelImporterAnimationType.Human;
+            importer.isReadable = true;   // laterality 프로브가 SkinnedMeshRenderer.BakeMesh를 쓴다
             importer.SaveAndReimport();
             Application.logMessageReceived -= CaptureLog;
 
@@ -74,6 +75,48 @@ public static class AvatarCheck
                 var lt = anim.GetBoneTransform(HumanBodyBones.LeftToes).position;
                 bool facing = lh.x > rh.x && lt.z > lf.z;
                 results.Add(("faces_plus_z", facing, $"leftHand.x={lh.x:F3} rightHand.x={rh.x:F3} toeZ-footZ={(lt.z - lf.z):F3}"));
+
+                // --- Laterality 프로브 (investigate/lr-swap) ---------------------------------
+                // 비대칭 마커(marker_L)는 Blender 해부학적 왼팔(+X)에만 붙인 유일한 비대칭 질량이다.
+                // 대칭 더미의 무게중심은 x≈0 이므로, Unity에서 스키닝한 mesh 무게중심 x의 "부호"가
+                //   해부학적-왼쪽 질량이 어느 월드 X면에 안착했는가 = 미러 여부
+                // 를 그대로 드러낸다. centroidX>0 → 미러 없음(정상), <0 → X-미러.
+                // 그 왼쪽 질량을 구동하는 본이 Left/Right 중 어느 이름인지는, 본과 그 지오메트리가
+                // 같은 면에 있으므로 sign(centroidX)==sign(lhX) 로 판정한다(별도 정점-본 조회 불필요).
+                // 정답 정의(ground truth): 해부학적 왼쪽 질량은 Unity +X 이고 그 본 이름은 Left*.
+                var smr = instance.GetComponentInChildren<SkinnedMeshRenderer>();
+                float centroidX = 0f, extX = 0f;
+                string extBone = "NONE";
+                if (smr != null)
+                {
+                    var baked = new Mesh();
+                    smr.BakeMesh(baked);                       // rest 포즈 스키닝 결과, 렌더러 로컬공간
+                    var l2w = smr.transform.localToWorldMatrix;
+                    var verts = baked.vertices;
+                    var bw = smr.sharedMesh.boneWeights;
+                    var bones = smr.bones;
+                    int ei = -1; float best = -1f; double sum = 0.0;
+                    for (int i = 0; i < verts.Length; i++)
+                    {
+                        Vector3 w = l2w.MultiplyPoint3x4(verts[i]);
+                        sum += w.x;
+                        float a = Mathf.Abs(w.x);
+                        if (a > best) { best = a; ei = i; extX = w.x; }
+                    }
+                    centroidX = verts.Length > 0 ? (float)(sum / verts.Length) : 0f;
+                    if (ei >= 0 && bw != null && ei < bw.Length && bones != null)
+                    {
+                        int bi = bw[ei].boneIndex0;
+                        if (bi >= 0 && bi < bones.Length && bones[bi] != null) extBone = bones[bi].name;
+                    }
+                    UnityEngine.Object.DestroyImmediate(baked);
+                }
+                bool markerAtPlusX = centroidX > 0f;                        // 해부학적-왼쪽 질량이 Unity +X?
+                bool markerBoneIsLeft = (centroidX > 0f) == (lh.x > 0f);    // 그 질량을 Left*본이 구동?
+                string markerSide = markerBoneIsLeft ? "Left*" : "Right*";
+                bool lateralityOk = markerAtPlusX && markerBoneIsLeft && lh.x > rh.x;
+                results.Add(("laterality", lateralityOk,
+                    $"centroidX={centroidX:F4} markerDrivenBy={markerSide} extX={extX:F3} extBone={extBone} lhX={lh.x:F3} rhX={rh.x:F3}"));
 
                 var badRots = new List<string>();
                 foreach (Transform child in instance.transform)

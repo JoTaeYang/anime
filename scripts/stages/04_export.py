@@ -19,17 +19,22 @@ paths.ensure_dirs()
 #   3) bake_space_transform=False로 내보내면 축변환(-90°X)이 (2)의 +90°X를 상쇄해
 #      Unity에서 루트/아마추어 모두 identity가 된다.
 # PHASE 1 BLOCKER: 이 사전 회전 트릭은 bone_map.py의 L/R 스왑과 결합되어 있을 수 있다 — bone_map.py 상단 주석 참조
+# 실험 토글 (investigate/lr-swap): PRE_ROTATE=0 이면 사전 회전을 끄고 bake_space_transform=True로
+# 표준 익스포트(원래 pre-correction 설정). 기본(미설정/1)은 기존 pre-rotate + bake_space_transform=False.
 import math
-_objs = [bpy.data.objects["DummyRig"], bpy.data.objects["Dummy"]]
-bpy.ops.object.mode_set(mode='OBJECT')
-bpy.ops.object.select_all(action='DESELECT')
-for _o in _objs:
-    _o.select_set(True)
-    _o.rotation_euler = (math.radians(-90), 0.0, 0.0)
-bpy.context.view_layer.objects.active = _objs[0]
-bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
-for _o in _objs:
-    _o.rotation_euler = (math.radians(90), 0.0, 0.0)
+import os
+PRE_ROTATE = os.environ.get("PRE_ROTATE", "1") != "0"
+if PRE_ROTATE:
+    _objs = [bpy.data.objects["DummyRig"], bpy.data.objects["Dummy"]]
+    bpy.ops.object.mode_set(mode='OBJECT')
+    bpy.ops.object.select_all(action='DESELECT')
+    for _o in _objs:
+        _o.select_set(True)
+        _o.rotation_euler = (math.radians(-90), 0.0, 0.0)
+    bpy.context.view_layer.objects.active = _objs[0]
+    bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
+    for _o in _objs:
+        _o.rotation_euler = (math.radians(90), 0.0, 0.0)
 
 kwargs = dict(
     filepath=str(paths.EXPORTS_DIR / "dummy.fbx"),
@@ -41,7 +46,7 @@ kwargs = dict(
     axis_forward='-Z',
     axis_up='Y',
     use_space_transform=True,
-    bake_space_transform=False,            # 위 pre-rotate 트릭이 대신 처리 (아마추어 노드 회전 상쇄)
+    bake_space_transform=(not PRE_ROTATE), # pre-rotate ON→False(트릭이 노드회전 상쇄), OFF→True(표준)
     add_leaf_bones=False,                  # `_end` 본 생성 방지
     primary_bone_axis='Y',
     secondary_bone_axis='X',

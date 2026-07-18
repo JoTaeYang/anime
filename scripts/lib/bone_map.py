@@ -1,19 +1,29 @@
+import os
+
+# 실험 토글 (investigate/lr-swap): 환경변수 LR_SWAP=0 이면 스왑 OFF(정직한 L→Left 매핑),
+# 기본(미설정/1)은 기존 스왑 ON 동작을 그대로 유지한다. bone_map은 03_bake에서만 쓰이므로
+# config 별 재실행은 bake+export+unity 로 충분하다.
+_SWAP = os.environ.get("LR_SWAP", "1") != "0"
+
+
 def _sides(template_l: dict) -> dict:
     """{'DEF-x.L': 'LeftY'} 템플릿을 좌우 양쪽으로 확장한다.
 
-    좌우 스왑: Blender(오른손 좌표계)를 Unity(왼손 좌표계)로 FBX 내보내면 X축이
-    반사(mirror)된다 — 이는 축 프리셋으로 되돌릴 수 없다(정방향을 뒤집지 않는 한).
-    Unity 휴머노이드 매퍼는 본 이름을 우선 사용하므로, Blender의 .L 본(월드 +X)을
-    Unity 이름 'Right*'로, .R 본을 'Left*'로 부여해 미러를 상쇄한다. 더미는 좌우
-    대칭이라 지오메트리상 문제 없음. (Task 9: faces_plus_z 교정)
+    좌우 스왑 (실험 대상): Blender의 .L 본(해부학적 왼쪽, 월드 +X)을 Unity 이름 'Right*'로,
+    .R 본을 'Left*'로 부여해 왔다. 근거는 "FBX 반입 시 X축 미러가 관측되어 이를 상쇄한다"였다.
 
     PHASE 1 BLOCKER: 이 L/R 스왑은 04_export.py의 사전 회전(pre-rotate) 트릭과 결합된
-    보상일 가능성이 크다. 비대칭 캐릭터 반입 전, 비대칭 테스트 더미로 스왑 없이
-    익스포트 설정만으로 미러 없는 정상 좌우가 나오는지 재검증할 것. (04_export.py 참조)"""
+    보상일 가능성이 크다. 비대칭 마커로 스왑 없이 익스포트 설정만으로 미러 없는 정상
+    좌우가 나오는지 재검증 중. (LR_SWAP 환경변수로 토글; 04_export.py PRE_ROTATE 참조)"""
     out = {}
     for src, dst in template_l.items():
-        out[src] = dst.replace("Left", "Right")            # DEF-x.L → Right* (FBX 미러 상쇄)
-        out[src.replace(".L", ".R")] = dst                 # DEF-x.R → Left*
+        r = dst.replace("Left", "Right")
+        if _SWAP:
+            out[src] = r                                   # DEF-x.L → Right* (스왑 ON: 미러 상쇄 가설)
+            out[src.replace(".L", ".R")] = dst             # DEF-x.R → Left*
+        else:
+            out[src] = dst                                 # DEF-x.L → Left* (스왑 OFF: 정직한 매핑)
+            out[src.replace(".L", ".R")] = r               # DEF-x.R → Right*
     return out
 
 
