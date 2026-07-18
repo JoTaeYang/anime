@@ -85,13 +85,17 @@ LM = {
     "toe.L":       {"head": [round(leg_x, 4), -0.09, 0.015], "tail": [round(leg_x, 4), -0.14, 0.015]},
 }
 
-out = paths.PROJECT_ROOT / "scripts" / "lib" / "profiles" / "character_landmarks.py"
+# task-10 Fix 3: character_landmarks.py는 2026-07-18에 hand-converge된 확정본이므로
+# 이 스크립트가 직접 덮어쓰지 않는다. draft 파일에 써서 운영자가 수동으로 diff/merge하게 한다.
+out = paths.PROJECT_ROOT / "scripts" / "lib" / "profiles" / "character_landmarks_draft.py"
 with open(out, "w", encoding="utf-8") as f:
     f.write("# estimate_landmarks.py 초안 + 오버레이 루프 수동 보정. 좌표는 미터.\n")
     f.write("LANDMARKS = ")
     import pprint
     f.write(pprint.pformat(LM, width=100))
     f.write("\n")
-print("LANDMARKS WRITTEN:", out)
+print("LANDMARKS DRAFT WRITTEN (NOT applied):", out)
+print("This does NOT overwrite character_landmarks.py (hand-converged 2026-07-18).")
+print("Review the draft, diff it against character_landmarks.py, and merge manually if warranted.")
 for k, v in LM.items():
     print(" ", k, v)

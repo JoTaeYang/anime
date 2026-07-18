@@ -1,5 +1,8 @@
 # estimate_landmarks.py 초안 + 오버레이 루프 수동 보정. 좌표는 미터.
 # Task 6 수렴: hips(spine.head)를 실측 골반 높이(z≈1.00)로 올리고 척추/다리 체인 재분배.
+# HAND-CONVERGED 2026-07-18: 이 파일은 확정본이다. scripts/tools/estimate_landmarks.py는
+# 더 이상 이 파일에 직접 쓰지 않고 character_landmarks_draft.py에만 쓴다 (task-10 Fix 3).
+# 절대 자동 재생성으로 이 파일을 덮어쓰지 말 것 — 재실행이 필요하면 draft를 사람이 diff/merge한다.
 LANDMARKS = {'foot.L': {'head': [0.135, 0.0, 0.13], 'tail': [0.135, -0.10, 0.03]},
  'forearm.L': {'head': [0.46, -0.10, 1.335], 'tail': [0.645, -0.116, 1.335]},
  'hand.L': {'head': [0.645, -0.116, 1.335], 'tail': [0.80, -0.116, 1.335]},

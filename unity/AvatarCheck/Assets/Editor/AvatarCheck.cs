@@ -18,9 +18,15 @@ public static class AvatarCheck
         public bool checkLateralityMarker; public string[] appendageBones;
     }
 
+    // task-10 Fix 2: outputs are namespaced per profile (build|exports|previews/<profile>/) so a
+    // dummy run can no longer clobber a character run's exports (or vice versa). run.ps1 sets
+    // ANIME_PROFILE before launching Unity via Start-Process, which inherits the parent's
+    // environment block by default — so the env var read below matches the Blender-side profile.
+    static string ProfileName() => Environment.GetEnvironmentVariable("ANIME_PROFILE") ?? "character";
+
     static PipelineMeta LoadMeta()
     {
-        string dir = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "..", "exports"));
+        string dir = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "..", "exports", ProfileName()));
         var files = Directory.GetFiles(dir, "*_meta.json");
         if (files.Length != 1) throw new FileNotFoundException($"expected exactly one *_meta.json in {dir}, found {files.Length}");
         return JsonUtility.FromJson<PipelineMeta>(File.ReadAllText(files[0]));
@@ -268,7 +274,7 @@ public static class AvatarCheck
 
     static void CopyFbxIntoProject(string fbxName)
     {
-        string src = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "..", "exports", fbxName));
+        string src = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "..", "exports", ProfileName(), fbxName));
         string dst = Path.GetFullPath(Path.Combine(Application.dataPath, "Dummy", "model.fbx"));
         if (!File.Exists(src)) throw new FileNotFoundException($"export first: {src}");
         Directory.CreateDirectory(Path.GetDirectoryName(dst));

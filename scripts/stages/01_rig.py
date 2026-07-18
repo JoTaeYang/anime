@@ -46,6 +46,12 @@ bpy.ops.object.mode_set(mode='OBJECT')
 # 2b) 랜드마크 배치 + 부속물 체인 (character 프로필: 스케일 대신 좌표 직접 배치)
 bpy.ops.object.mode_set(mode='EDIT')
 eb = meta.data.edit_bones
+# 손가락 리매핑용 "배치 전" 손목 스냅샷 (side별 실측). 아래 랜드마크 루프가 hand.L/R을
+# 덮어쓰기 전에 캡처해둔다 — lib.proportions.P는 dummy 전용 스케일 테이블이라 character
+# 메타리그(스케일 미적용)의 실제 기준과 최대 ~16% 어긋난다 (원인: Fix 1, task-10).
+_old_hand = {side: (eb[f"hand.{side}"].head.copy(),
+                     (eb[f"hand.{side}"].tail - eb[f"hand.{side}"].head).length)
+             for side in ("L", "R")}
 # 1) 랜드마크 배치 (양측 미러)
 for name, ht in PROFILE.LANDMARKS.items():
     for side_name, mirror in ((name, 1.0), (name.replace(".L", ".R"), -1.0)):
@@ -81,14 +87,13 @@ for _side in ("L", "R"):
                       "landmark_y=", _landmark_y, "expected=", _landmark_y + _sign * _BEND)
 
 # 2) 손가락: 손 본 변화에 맞춰 이동+스케일 (wrist 기준 상대 변환)
-#    기본 메타리그 hand.L 대비 새 hand.L의 (이동, 길이비)을 손가락·팜 전체에 적용
-#    (기본값은 lib.proportions.P["hand.L"] — dummy 좌표가 기본 메타리그 스케일본이므로 재사용)
-from lib.proportions import P as _DEFAULT
+#    랜드마크 배치 직전에 캡처한 실제 old wrist(_old_hand, side별)를 기준으로 새 hand.L/R의
+#    (이동, 길이비)을 손가락·팜 전체에 적용한다. _old_hand는 이미 side별로 캡처했으므로
+#    mirror를 곱하지 않는다 (mirror는 new_wrist에만 적용).
 from mathutils import Vector as _V
 for side, mirror in (("L", 1.0), ("R", -1.0)):
-    old_wrist = _V(_DEFAULT["hand.L"]["head"]); old_wrist.x *= mirror
+    old_wrist, old_len = _old_hand[side]
     new_wrist = _V(PROFILE.LANDMARKS["hand.L"]["head"]); new_wrist.x *= mirror
-    old_len = (_V(_DEFAULT["hand.L"]["tail"]) - _V(_DEFAULT["hand.L"]["head"])).length
     new_len = (_V(PROFILE.LANDMARKS["hand.L"]["tail"]) - _V(PROFILE.LANDMARKS["hand.L"]["head"])).length
     k = new_len / old_len if old_len > 1e-6 else 1.0
     for b in eb:
