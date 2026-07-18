@@ -59,16 +59,26 @@ for name, ht in PROFILE.LANDMARKS.items():
 #     "Vector.angle(other): zero length vectors have no valid angle" 로 rigify_generate 자체가
 #     죽는다(실측 확인, Task 5). dummy 프로필의 proportions.P는 이미 자연스러운 굽힘이 있어
 #     영향 없음(교차곱 근사-평행 검사로 게이트). 실제 좌표 수렴은 Task 6의 몫 — 여기서는 생성이
-#     죽지 않을 최소한의 강제 굽힘(1.5cm, -Y)만 부여한다.
+#     죽지 않을 최소한의 강제 굽힘(1.5cm)만 부여한다.
+#     부호: 캐릭터는 -Y를 바라본다. 무릎은 앞(-Y)으로, 팔꿈치는 뒤(+Y)로 굽는다 — 기본 메타리그
+#     (lib/proportions.py)로 교차검증: upper_arm.tail.y(0.0760) > shoulder.y(0.0229)/wrist.y(0.0423)
+#     → 팔꿈치는 +Y로 튀어나옴. thigh.tail.y(-0.0246) < hip/ankle.y → 무릎은 -Y로 튀어나옴.
+#     본 쓰기: use_connect인 자식 본의 head는 부모 tail과 라이브 동기화될 수 있어 두 번 따로
+#     쓰면 겹쳐 써지거나(2배) 덮어써질(무효화) 위험이 있다 — proximal.tail만 쓰고 distal.head는
+#     그 값을 그대로 복사해 단일 소스로 만든다.
 _BEND = 0.015
 for _side in ("L", "R"):
-    for _prox, _dist in ((f"thigh.{_side}", f"shin.{_side}"), (f"upper_arm.{_side}", f"forearm.{_side}")):
+    for _prox, _dist, _sign in ((f"thigh.{_side}", f"shin.{_side}", -1.0),
+                                 (f"upper_arm.{_side}", f"forearm.{_side}", +1.0)):
         if _prox in eb and _dist in eb:
             _vp = eb[_prox].tail - eb[_prox].head
             _vd = eb[_dist].tail - eb[_dist].head
             if _vp.length > 1e-6 and _vd.length > 1e-6 and _vp.normalized().cross(_vd.normalized()).length < 1e-4:
-                eb[_prox].tail.y -= _BEND
-                eb[_dist].head.y -= _BEND
+                _landmark_y = eb[_prox].tail.y
+                eb[_prox].tail.y = _landmark_y + _sign * _BEND
+                eb[_dist].head = eb[_prox].tail  # 단일 소스 복사 — 겹쳐쓰기/무효화 방지
+                print("NUDGE", _prox, eb[_prox].tail.y, _dist, eb[_dist].head.y,
+                      "landmark_y=", _landmark_y, "expected=", _landmark_y + _sign * _BEND)
 
 # 2) 손가락: 손 본 변화에 맞춰 이동+스케일 (wrist 기준 상대 변환)
 #    기본 메타리그 hand.L 대비 새 hand.L의 (이동, 길이비)을 손가락·팜 전체에 적용
