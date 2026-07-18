@@ -60,6 +60,8 @@ kwargs = dict(
     bake_anim_use_all_actions=False,       # 활성 액션(Idle)만
     bake_anim_force_startend_keying=True,
     mesh_smooth_type='OFF',
+    path_mode='COPY',                      # 팩된 텍스처를 익스포트에 포함시키는 전제
+    embed_textures=True,                   # 텍스처를 FBX 안에 임베드 (캐릭터 텍스처는 .blend 팩 상태 — 이게 없으면 흰 재질로 나감)
 )
 bpy.ops.export_scene.fbx(**op_kwargs(bpy.ops.export_scene.fbx, **kwargs))
 
