@@ -77,7 +77,9 @@ Unity에 적용)를 가리던 보상이었음. 스왑 폐기, 단언 교정(`lef
 - **완료 기준** (설계 문서 §8 그대로):
   1. [x] `run.ps1 all -Profile character` 클린 통과, Unity 단언 전부 초록 (10/10, 2026-07-18 재검증)
   2. [x] 극단 포즈 5종(팔 들기·쪼그리기·비틀기·꼬리 들기·다리 벌리기)에서 메시 파손 없음 — 에이전트 컨택트 시트 검사 통과
-  3. [ ] **사용자가 턴테이블/스틸을 보고 웨이트 품질 승인** — 확인 위치: `previews/user/turntable.mp4`, `previews/user/idle.mp4`, `previews/user/still_{armsup,crouch,twist,tail_lift,leg_spread}.png`
+  3. [x] **사용자가 턴테이블/스틸을 보고 웨이트 품질 승인** — 조건부 승인 2026-07-18 ("일단 괜찮은 것 같음").
+     idle의 T자 팔은 운반체 클립의 한계로 승인 범위 외 — 실제 idle은 Phase 2a에서 제작.
+     (프리뷰 위치: `previews/character/user/`)
   4. [ ] 사용자가 Unity 에디터에서 최종 확인 (Phase 0에서 미뤄둔 눈검증 겸) — `unity/AvatarCheck` 프로젝트에서 `exports/character.fbx` Humanoid 임포트 + idle 재생 확인
   5. [x] 더미 프로필 회귀 통과 유지 (`run.ps1 all -Profile dummy`, 10/10 그린, 2026-07-18 재검증)
 
