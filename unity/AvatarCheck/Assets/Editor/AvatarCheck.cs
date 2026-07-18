@@ -71,8 +71,8 @@ public static class AvatarCheck
 
             // --- Explicit human bone-role override (Phase1 Task7) ------------------------
             // Unity's automatic Humanoid role-mapper gets confused once Hips has many
-            // non-standard children: the character's Hips carries 2 legs + Spine + 8 skirt
-            // chain roots + the tail root (12 children vs. the dummy's 3). Empirically
+            // non-standard children: the character's Hips originally carried 2 legs + Spine +
+            // 8 skirt chain roots + the tail root (12 children vs. the dummy's 3). Empirically
             // verified via a throwaway diagnostic: even though our bones are literally named
             // "Spine"/"Chest"/"UpperChest", the auto-mapper shifts roles down by one
             // (Spine role <- our "Chest" bone, Chest role <- our "UpperChest" bone, UpperChest
@@ -86,6 +86,18 @@ public static class AvatarCheck
             // OPTIONAL_HUMAN_BONES (humanName == boneName). This is assertion-neutral: it
             // does not change what "correct" means, only makes the importer produce the
             // mapping our own bone names already declare.
+            //
+            // RE-TESTED 2026-07-18 (arch fix b): reparented the 6 lateral skirt chains from
+            // spine to pelvis.L/pelvis.R at the metarig source (scripts/lib/profiles/
+            // character.py), cutting Hips's direct children to ~8 (2 legs + Spine + tail +
+            // LeftPelvis + RightPelvis + skirt_f + skirt_b). Temporarily disabled this block
+            // and re-ran: auto-map FAILED IDENTICALLY (`required_15_mapped`:
+            // "Spine->(Chest) expected Spine"). So Hips's immediate child count alone isn't
+            // the (only) trigger — Unity's heuristic is evidently sensitive to something else
+            // in the hierarchy (e.g. total descendant count/depth under Hips, or the two new
+            // pelvis-with-3-children siblings themselves reading as "spine-like" branches).
+            // The override below is therefore retained as a real requirement, not a
+            // workaround for something now fixed upstream.
             var hd = importer.humanDescription;
             var knownHumanNames = Required.Values.Concat(OptionalHumanNames).Concat(FingerHumanNames).ToHashSet();
             var skeletonNames = hd.skeleton.Select(s => s.name).ToHashSet();

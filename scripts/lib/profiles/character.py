@@ -23,28 +23,36 @@ APPENDAGES = [
      "rename": {"DEF-tail": "Tail1", "DEF-tail.001": "Tail2", "DEF-tail.002": "Tail3", "DEF-tail.003": "Tail4", "DEF-tail.004": "Tail5"}},
 
     # 치마: 골반(spine) 둘레 45도 간격 8체인, 각 2본(허리 부착점 -> 중간 -> 뾰족한 하단 자락).
+    # parent 배정: 중앙(x=0) 2체인만 spine에 남기고, 좌/우 6체인은 pelvis.L/R로 옮긴다.
+    # 이유: 익스포트된 Hips가 8개 스커트 체인 루트를 전부 자식으로 떠안으면(+다리2+spine+
+    # tail+골반여분2 = ~14) Unity Humanoid 오토매퍼가 형제 수에 압도되어 역할을
+    # 한 칸씩 밀어 배정한다(Spine 역할<-Chest 본, Chest 역할<-UpperChest 본, UpperChest
+    # 미배정) — 이름은 이미 올바른데도 발생하는 구조적(형제 수) 오류. 좌/우 체인을
+    # pelvis.L/R(사람 메타리그에 이미 존재 -> DEF-pelvis.L/R -> LeftPelvis/RightPelvis)에
+    # 재부착하면 Hips 자식 수가 ~8로 줄고, pelvis 본은 각 3자식(레그 여분 없음)만 갖게 되어
+    # 오토매퍼가 다시 정상 동작할 가능성을 회복시킨다.
     {"chain": "skirt_f", "rigify_type": "limbs.simple_tentacle", "parent": "spine",
      "points": [[0.0, -0.09, 0.88], [0.0, -0.136, 0.64], [0.0, -0.20, 0.44]],
      "rename": {"DEF-skirt_f": "SkirtF1a", "DEF-skirt_f.001": "SkirtF1b"}},
-    {"chain": "skirt_fr", "rigify_type": "limbs.simple_tentacle", "parent": "spine",
+    {"chain": "skirt_fr", "rigify_type": "limbs.simple_tentacle", "parent": "pelvis.R",
      "points": [[-0.089, -0.089, 0.88], [-0.144, -0.144, 0.64], [-0.212, -0.212, 0.44]],
      "rename": {"DEF-skirt_fr": "SkirtFR1a", "DEF-skirt_fr.001": "SkirtFR1b"}},
-    {"chain": "skirt_r", "rigify_type": "limbs.simple_tentacle", "parent": "spine",
+    {"chain": "skirt_r", "rigify_type": "limbs.simple_tentacle", "parent": "pelvis.R",
      "points": [[-0.168, 0.0, 0.88], [-0.272, 0.0, 0.64], [-0.40, 0.0, 0.44]],
      "rename": {"DEF-skirt_r": "SkirtR1a", "DEF-skirt_r.001": "SkirtR1b"}},
-    {"chain": "skirt_br", "rigify_type": "limbs.simple_tentacle", "parent": "spine",
+    {"chain": "skirt_br", "rigify_type": "limbs.simple_tentacle", "parent": "pelvis.R",
      "points": [[-0.095, 0.095, 0.88], [-0.154, 0.154, 0.64], [-0.226, 0.226, 0.44]],
      "rename": {"DEF-skirt_br": "SkirtBR1a", "DEF-skirt_br.001": "SkirtBR1b"}},
     {"chain": "skirt_b", "rigify_type": "limbs.simple_tentacle", "parent": "spine",
      "points": [[0.0, 0.101, 0.88], [0.0, 0.163, 0.64], [0.0, 0.24, 0.44]],
      "rename": {"DEF-skirt_b": "SkirtB1a", "DEF-skirt_b.001": "SkirtB1b"}},
-    {"chain": "skirt_bl", "rigify_type": "limbs.simple_tentacle", "parent": "spine",
+    {"chain": "skirt_bl", "rigify_type": "limbs.simple_tentacle", "parent": "pelvis.L",
      "points": [[0.095, 0.095, 0.88], [0.154, 0.154, 0.64], [0.226, 0.226, 0.44]],
      "rename": {"DEF-skirt_bl": "SkirtBL1a", "DEF-skirt_bl.001": "SkirtBL1b"}},
-    {"chain": "skirt_l", "rigify_type": "limbs.simple_tentacle", "parent": "spine",
+    {"chain": "skirt_l", "rigify_type": "limbs.simple_tentacle", "parent": "pelvis.L",
      "points": [[0.168, 0.0, 0.88], [0.272, 0.0, 0.64], [0.40, 0.0, 0.44]],
      "rename": {"DEF-skirt_l": "SkirtL1a", "DEF-skirt_l.001": "SkirtL1b"}},
-    {"chain": "skirt_fl", "rigify_type": "limbs.simple_tentacle", "parent": "spine",
+    {"chain": "skirt_fl", "rigify_type": "limbs.simple_tentacle", "parent": "pelvis.L",
      "points": [[0.089, -0.089, 0.88], [0.144, -0.144, 0.64], [0.212, -0.212, 0.44]],
      "rename": {"DEF-skirt_fl": "SkirtFL1a", "DEF-skirt_fl.001": "SkirtFL1b"}},
 
