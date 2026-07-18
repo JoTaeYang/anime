@@ -65,6 +65,8 @@ for side, m in (("L", lambda v: v), ("R", mirror)):
 # 질량이 어느 월드 X면에 안착했는가"를 드러낸다(Unity 왼손좌표계에서 왼쪽=−X). forearm.L↔hand.L 관절을
 # 감싸 배치 → DEF-forearm.L/DEF-hand.L 이 관통하므로 ARMATURE_AUTO가 전 정점을 왼팔에
 # 웨이트한다(check_01의 >98% 통과). 전부 x>0 이라 무게중심을 확실히 +X로 이동시킨다.
+# 주의: 마커는 |x| 극값이 아니다(극값은 손끝 HAND_TIP) — Unity 프로브의 판정은 centroid만
+# 쓰고 extBone/extX는 리포트 전용이다.
 _MK_C = t("forearm.L")  # forearm.L tail = hand.L head, 관절점
 bpy.ops.mesh.primitive_cube_add(size=0.09, location=(_MK_C[0], _MK_C[1], _MK_C[2]))
 _marker = bpy.context.active_object
