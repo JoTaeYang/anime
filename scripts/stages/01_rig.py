@@ -132,5 +132,9 @@ rig.select_set(True)
 bpy.context.view_layer.objects.active = rig
 bpy.ops.object.parent_set(type='ARMATURE_AUTO')
 
+# 6) 웨이트 품질 보정 (character 프로필에서만 동작, dummy는 no-op)
+from tools.fix_weights import apply as _fix_weights  # scripts/가 sys.path 루트
+_fix_weights(dummy)
+
 save_as(paths.blend_path("01_rigged"))
 print("STAGE 01_rig OK")
