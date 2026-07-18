@@ -51,6 +51,7 @@ switch ($Stage) {
     "smoke" { Invoke-Blender "scripts\stages\smoke.py" }
     "unity" { Invoke-UnityCheck }
     "sheet" { Invoke-Blender "scripts\preview\contact_sheet.py" }
+    "userpreview" { Invoke-Blender "scripts\preview\user_preview.py" }
     "overlay" { Invoke-Blender "scripts\preview\metarig_overlay.py" }
     "all" {
         Invoke-Blender "scripts\stages\smoke.py"
