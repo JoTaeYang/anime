@@ -9,6 +9,9 @@ import numpy as np
 from mathutils import Matrix
 from lib import paths
 from lib.blender_utils import open_blend
+from lib.profiles import get_profile
+
+PROFILE = get_profile()
 
 TILE = 512
 open_blend(paths.blend_path("03_baked"))
@@ -120,6 +123,17 @@ set_view("front")
 render_tile("pose_twist.png")
 order.append("pose_twist.png")
 
+for pose in PROFILE.EXTRA_POSES:
+    reset_pose()
+    for op in pose["ops"]:
+        if op[0] == "rotate":
+            rotate_world(op[1], op[2], op[3])
+        elif op[0] == "translate":
+            translate_world(op[1], op[2])
+    set_view(pose["view"])
+    render_tile(f"pose_{pose['name']}.png")
+    order.append(f"pose_{pose['name']}.png")
+
 # 3) idle 2프레임
 reset_pose()
 act = bpy.data.actions.get("Idle")
@@ -130,16 +144,17 @@ for frame in (1, 24):
     render_tile(f"idle_f{frame}.png")
     order.append(f"idle_f{frame}.png")
 
-# 4) 3x3 합성 (Blender 이미지 원점은 좌하단 → 행을 위에서부터 채우려면 뒤집기)
-sheet = np.zeros((TILE * 3, TILE * 3, 4), dtype=np.float32)
+# 4) 격자 합성 (Blender 이미지 원점은 좌하단 → 행을 위에서부터 채우려면 뒤집기)
+rows = math.ceil(len(order) / 3)
+sheet = np.zeros((TILE * rows, TILE * 3, 4), dtype=np.float32)
 for i, name in enumerate(order):
     img = bpy.data.images.load(str(tiles_dir / name))
     px = np.array(img.pixels[:], dtype=np.float32).reshape(TILE, TILE, 4)
     row, col = divmod(i, 3)
-    y0 = TILE * 3 - (row + 1) * TILE
+    y0 = TILE * rows - (row + 1) * TILE
     sheet[y0:y0 + TILE, col * TILE:(col + 1) * TILE] = px
 
-out = bpy.data.images.new("sheet", TILE * 3, TILE * 3, alpha=True)
+out = bpy.data.images.new("sheet", TILE * 3, TILE * rows, alpha=True)
 out.pixels.foreach_set(sheet.ravel())
 out.filepath_raw = str(paths.PREVIEWS_DIR / "contact_sheet.png")
 out.file_format = 'PNG'

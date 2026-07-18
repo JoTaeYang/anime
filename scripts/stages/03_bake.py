@@ -6,7 +6,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import bpy
 from lib import paths
 from lib.blender_utils import open_blend, save_as, op_kwargs
-from lib.bone_map import BONE_RENAME
+from lib.profiles import get_profile
+
+PROFILE = get_profile()
+RENAME = PROFILE.bone_rename()
 
 open_blend(paths.blend_path("02_animated"))
 
@@ -81,12 +84,12 @@ for name, pname in parent_map.items():
 bpy.ops.object.mode_set(mode='OBJECT')
 
 # 4) Unity 이름으로 리네임 (본 리네임은 fcurve 경로를 자동 갱신한다)
-for old, new in BONE_RENAME.items():
+for old, new in RENAME.items():
     rig.data.bones[old].name = new
 
 # 5) 버텍스 그룹도 명시적으로 리네임 (자동 동기화에 의존하지 않는다)
-dummy = bpy.data.objects["Dummy"]
-for old, new in BONE_RENAME.items():
+dummy = bpy.data.objects[PROFILE.MESH_OBJECT]
+for old, new in RENAME.items():
     vg = dummy.vertex_groups.get(old)
     if vg is not None:
         vg.name = new

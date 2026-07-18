@@ -6,7 +6,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import bpy
 from lib import paths
 from lib.blender_utils import ensure_rigify, open_blend, save_as
-from lib.proportions import SCALE, P
+from lib.profiles import get_profile
+
+PROFILE = get_profile()
+P = PROFILE.LANDMARKS
 
 open_blend(paths.blend_path("00_mesh"))
 ensure_rigify()
@@ -15,8 +18,9 @@ ensure_rigify()
 bpy.ops.object.select_all(action='DESELECT')
 bpy.ops.object.armature_human_metarig_add()
 meta = bpy.context.active_object
-meta.scale = (SCALE,) * 3
-bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+if PROFILE.METARIG_SCALE:
+    meta.scale = (PROFILE.METARIG_SCALE,) * 3
+    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
 
 # 2) 얼굴 서브트리 + breast 제거 (박스 더미에 얼굴 본 100개는 노이즈)
 bpy.ops.object.mode_set(mode='EDIT')
@@ -49,7 +53,7 @@ rig = bpy.context.active_object
 assert rig.name == "rig", f"unexpected rig name {rig.name}"
 
 # 5) 자동 웨이트 바인딩 (DEF 본만 use_deform=True이므로 DEF에만 붙는다)
-dummy = bpy.data.objects["Dummy"]
+dummy = bpy.data.objects[PROFILE.MESH_OBJECT]
 bpy.ops.object.select_all(action='DESELECT')
 dummy.select_set(True)
 rig.select_set(True)

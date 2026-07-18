@@ -6,6 +6,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import bpy
 from lib import paths
 from lib.blender_utils import open_blend, op_kwargs
+from lib.profiles import get_profile
+
+PROFILE = get_profile()
 
 open_blend(paths.blend_path("03_baked"))
 paths.ensure_dirs()
@@ -24,7 +27,7 @@ paths.ensure_dirs()
 # 것은 오직 아마추어 루트 회전(끄면 DummyRig에 90° 잔류 → root_children_identity 실패,
 # 켜면 identity)뿐이었다. 애초에 미러는 없었다. 상세: sdd/lr-swap-investigation.md
 import math
-_objs = [bpy.data.objects["DummyRig"], bpy.data.objects["Dummy"]]
+_objs = [bpy.data.objects["DummyRig"], bpy.data.objects[PROFILE.MESH_OBJECT]]
 bpy.ops.object.mode_set(mode='OBJECT')
 bpy.ops.object.select_all(action='DESELECT')
 for _o in _objs:
@@ -36,7 +39,7 @@ for _o in _objs:
     _o.rotation_euler = (math.radians(90), 0.0, 0.0)
 
 kwargs = dict(
-    filepath=str(paths.EXPORTS_DIR / "dummy.fbx"),
+    filepath=str(paths.EXPORTS_DIR / PROFILE.FBX_NAME),
     use_selection=False,
     object_types={'ARMATURE', 'MESH'},
     apply_unit_scale=True,
@@ -59,4 +62,18 @@ kwargs = dict(
     mesh_smooth_type='OFF',
 )
 bpy.ops.export_scene.fbx(**op_kwargs(bpy.ops.export_scene.fbx, **kwargs))
+
+import json
+for _stale in paths.EXPORTS_DIR.glob("*_meta.json"):
+    _stale.unlink()
+meta = {
+    "fbx": PROFILE.FBX_NAME,
+    "expectedHipsY": PROFILE.HIPS_HEIGHT,
+    "hipsTol": PROFILE.HIPS_TOL,
+    "checkLateralityMarker": PROFILE.USE_LATERALITY_MARKER,
+    "appendageBones": sorted(PROFILE.appendage_bone_rename().values()),
+}
+with open(paths.EXPORTS_DIR / f"{PROFILE.NAME}_meta.json", "w") as f:
+    json.dump(meta, f, indent=1)
+print("META OK:", meta)
 print("STAGE 04_export OK")

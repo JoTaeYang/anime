@@ -1,4 +1,8 @@
-param([Parameter(Position = 0)][string]$Stage = "all")
+param(
+    [Parameter(Position = 0)][string]$Stage = "all",
+    [string]$Profile = "dummy"
+)
+$env:ANIME_PROFILE = $Profile
 
 $Root = Split-Path -Parent $PSScriptRoot
 $Blender = "C:\Program Files\Blender Foundation\Blender 5.1\blender.exe"
@@ -50,7 +54,7 @@ switch ($Stage) {
         foreach ($pair in $Pipeline.Values) { foreach ($s in $pair) { Invoke-Blender $s } }
         Invoke-UnityCheck
         Invoke-Blender "scripts\preview\contact_sheet.py"
-        Write-Host "ALL STAGES PASSED" -ForegroundColor Green
+        Write-Host "ALL STAGES PASSED ($Profile)" -ForegroundColor Green
     }
     default {
         if (-not $Pipeline.Contains($Stage)) {

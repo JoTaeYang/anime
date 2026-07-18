@@ -8,8 +8,23 @@ using UnityEngine;
 
 public static class AvatarCheck
 {
-    const string FbxAssetPath = "Assets/Dummy/dummy.fbx";
+    const string FbxAssetPath = "Assets/Dummy/model.fbx";
     static readonly List<string> ImportErrors = new List<string>();
+
+    [Serializable]
+    class PipelineMeta
+    {
+        public string fbx; public float expectedHipsY; public float hipsTol;
+        public bool checkLateralityMarker; public string[] appendageBones;
+    }
+
+    static PipelineMeta LoadMeta()
+    {
+        string dir = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "..", "exports"));
+        var files = Directory.GetFiles(dir, "*_meta.json");
+        if (files.Length != 1) throw new FileNotFoundException($"expected exactly one *_meta.json in {dir}, found {files.Length}");
+        return JsonUtility.FromJson<PipelineMeta>(File.ReadAllText(files[0]));
+    }
 
     // Blender 쪽 scripts/lib/bone_map.py의 REQUIRED_HUMAN_BONES와 일치해야 한다
     // NOTE: this assertion verifies name-mapping completeness/consistency ONLY.
@@ -32,7 +47,8 @@ public static class AvatarCheck
         GameObject instance = null;
         try
         {
-            CopyFbxIntoProject();
+            var meta = LoadMeta();
+            CopyFbxIntoProject(meta.fbx);
 
             Application.logMessageReceived += CaptureLog;
             AssetDatabase.ImportAsset(FbxAssetPath, ImportAssetOptions.ForceSynchronousImport);
@@ -68,7 +84,8 @@ public static class AvatarCheck
                 var anim = instance.GetComponent<Animator>();
 
                 float hipsY = anim.GetBoneTransform(HumanBodyBones.Hips).position.y;
-                results.Add(("hips_height", hipsY > 0.77f && hipsY < 0.97f, $"hipsY={hipsY:F4} expected 0.87±0.10"));
+                results.Add(("hips_height", hipsY > meta.expectedHipsY - meta.hipsTol && hipsY < meta.expectedHipsY + meta.hipsTol,
+                    $"hipsY={hipsY:F4} expected {meta.expectedHipsY:F4}±{meta.hipsTol:F2}"));
 
                 var lh = anim.GetBoneTransform(HumanBodyBones.LeftHand).position;
                 var rh = anim.GetBoneTransform(HumanBodyBones.RightHand).position;
@@ -88,39 +105,57 @@ public static class AvatarCheck
                 // 그 질량을 Left/Right 어느 이름 본이 구동하는지는 본과 지오메트리가 같은 면에 있으므로
                 // sign(centroidX)==sign(lhX) 로 판정한다(별도 정점-본 조회 불필요).
                 // 참고: 예전엔 여기에 "미러가 있다/왼쪽=+X"라는 방향 오류가 있었고 스왑이 그 보상이었다.
-                var smr = instance.GetComponentInChildren<SkinnedMeshRenderer>();
-                float centroidX = 0f, extX = 0f;
-                string extBone = "NONE";
-                if (smr != null)
+                if (meta.checkLateralityMarker)
                 {
-                    var baked = new Mesh();
-                    smr.BakeMesh(baked);                       // rest 포즈 스키닝 결과, 렌더러 로컬공간
-                    var l2w = smr.transform.localToWorldMatrix;
-                    var verts = baked.vertices;
-                    var bw = smr.sharedMesh.boneWeights;
-                    var bones = smr.bones;
-                    int ei = -1; float best = -1f; double sum = 0.0;
-                    for (int i = 0; i < verts.Length; i++)
+                    var smr = instance.GetComponentInChildren<SkinnedMeshRenderer>();
+                    float centroidX = 0f, extX = 0f;
+                    string extBone = "NONE";
+                    if (smr != null)
                     {
-                        Vector3 w = l2w.MultiplyPoint3x4(verts[i]);
-                        sum += w.x;
-                        float a = Mathf.Abs(w.x);
-                        if (a > best) { best = a; ei = i; extX = w.x; }
+                        var baked = new Mesh();
+                        smr.BakeMesh(baked);                       // rest 포즈 스키닝 결과, 렌더러 로컬공간
+                        var l2w = smr.transform.localToWorldMatrix;
+                        var verts = baked.vertices;
+                        var bw = smr.sharedMesh.boneWeights;
+                        var bones = smr.bones;
+                        int ei = -1; float best = -1f; double sum = 0.0;
+                        for (int i = 0; i < verts.Length; i++)
+                        {
+                            Vector3 w = l2w.MultiplyPoint3x4(verts[i]);
+                            sum += w.x;
+                            float a = Mathf.Abs(w.x);
+                            if (a > best) { best = a; ei = i; extX = w.x; }
+                        }
+                        centroidX = verts.Length > 0 ? (float)(sum / verts.Length) : 0f;
+                        if (ei >= 0 && bw != null && ei < bw.Length && bones != null)
+                        {
+                            int bi = bw[ei].boneIndex0;
+                            if (bi >= 0 && bi < bones.Length && bones[bi] != null) extBone = bones[bi].name;
+                        }
+                        UnityEngine.Object.DestroyImmediate(baked);
                     }
-                    centroidX = verts.Length > 0 ? (float)(sum / verts.Length) : 0f;
-                    if (ei >= 0 && bw != null && ei < bw.Length && bones != null)
-                    {
-                        int bi = bw[ei].boneIndex0;
-                        if (bi >= 0 && bi < bones.Length && bones[bi] != null) extBone = bones[bi].name;
-                    }
-                    UnityEngine.Object.DestroyImmediate(baked);
+                    bool markerAtLeftX = centroidX < 0f;                        // 해부학적-왼쪽 질량이 Unity −X(왼쪽)?
+                    bool markerBoneIsLeft = (centroidX < 0f) == (lh.x < 0f);    // 그 질량을 Left*본이 구동?
+                    string markerSide = markerBoneIsLeft ? "Left*" : "Right*";
+                    bool lateralityOk = markerAtLeftX && markerBoneIsLeft && lh.x < rh.x;
+                    results.Add(("laterality", lateralityOk,
+                        $"centroidX={centroidX:F4} markerDrivenBy={markerSide} extX={extX:F3} extBone={extBone} lhX={lh.x:F3} rhX={rh.x:F3}"));
                 }
-                bool markerAtLeftX = centroidX < 0f;                        // 해부학적-왼쪽 질량이 Unity −X(왼쪽)?
-                bool markerBoneIsLeft = (centroidX < 0f) == (lh.x < 0f);    // 그 질량을 Left*본이 구동?
-                string markerSide = markerBoneIsLeft ? "Left*" : "Right*";
-                bool lateralityOk = markerAtLeftX && markerBoneIsLeft && lh.x < rh.x;
-                results.Add(("laterality", lateralityOk,
-                    $"centroidX={centroidX:F4} markerDrivenBy={markerSide} extX={extX:F3} extBone={extBone} lhX={lh.x:F3} rhX={rh.x:F3}"));
+                else
+                {
+                    results.Add(("laterality", true, "skipped: profile has no marker"));
+                }
+
+                var appendageMissing = new List<string>();
+                foreach (var b in meta.appendageBones ?? Array.Empty<string>())
+                {
+                    if (FindDeep(instance.transform, b) == null) appendageMissing.Add(b);
+                }
+                bool appendagesOk = appendageMissing.Count == 0;
+                results.Add(("appendages_present", appendagesOk,
+                    (meta.appendageBones == null || meta.appendageBones.Length == 0)
+                        ? "none declared"
+                        : (appendagesOk ? "all present" : $"missing: {string.Join(", ", appendageMissing)}")));
 
                 var badRots = new List<string>();
                 foreach (Transform child in instance.transform)
@@ -169,10 +204,21 @@ public static class AvatarCheck
         EditorApplication.Exit(0);
     }
 
-    static void CopyFbxIntoProject()
+    static Transform FindDeep(Transform root, string name)
     {
-        string src = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "..", "exports", "dummy.fbx"));
-        string dst = Path.GetFullPath(Path.Combine(Application.dataPath, "Dummy", "dummy.fbx"));
+        if (root.name == name) return root;
+        foreach (Transform child in root)
+        {
+            var found = FindDeep(child, name);
+            if (found != null) return found;
+        }
+        return null;
+    }
+
+    static void CopyFbxIntoProject(string fbxName)
+    {
+        string src = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "..", "exports", fbxName));
+        string dst = Path.GetFullPath(Path.Combine(Application.dataPath, "Dummy", "model.fbx"));
         if (!File.Exists(src)) throw new FileNotFoundException($"export first: {src}");
         Directory.CreateDirectory(Path.GetDirectoryName(dst));
         // Delete any previously-imported asset (+ its .meta) so the humanoid avatar is

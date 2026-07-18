@@ -6,7 +6,9 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import bpy
 from lib import paths
 from lib.blender_utils import open_blend
-from lib.bone_map import BONE_RENAME
+from lib.profiles import get_profile
+
+PROFILE = get_profile()
 
 open_blend(paths.blend_path("03_baked"))
 
@@ -14,9 +16,10 @@ rig = bpy.data.objects.get("DummyRig")
 assert rig is not None and rig.type == 'ARMATURE'
 
 names = {b.name for b in rig.data.bones}
-assert names == set(BONE_RENAME.values()), (
-    f"bone set mismatch\n missing: {sorted(set(BONE_RENAME.values()) - names)}\n"
-    f" extra: {sorted(names - set(BONE_RENAME.values()))}"
+expected_names = set(PROFILE.bone_rename().values())
+assert names == expected_names, (
+    f"bone set mismatch\n missing: {sorted(expected_names - names)}\n"
+    f" extra: {sorted(names - expected_names)}"
 )
 
 b = rig.data.bones
@@ -72,7 +75,7 @@ def action_fcurves(action):
 paths_in_action = {fc.data_path for fc in action_fcurves(acts[0])}
 assert any('pose.bones["Hips"]' in p for p in paths_in_action), "Hips not keyed in baked action"
 
-dummy = bpy.data.objects["Dummy"]
+dummy = bpy.data.objects[PROFILE.MESH_OBJECT]
 vg = {g.name for g in dummy.vertex_groups}
 assert not any(n.startswith("DEF-") for n in vg), "vertex groups not renamed"
 assert dummy.modifiers[0].object == rig

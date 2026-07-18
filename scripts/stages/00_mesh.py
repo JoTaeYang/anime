@@ -7,7 +7,11 @@ import bpy
 from mathutils import Vector
 from lib import paths
 from lib.blender_utils import clean_scene, save_as
-from lib.proportions import P
+from lib.profiles import get_profile
+
+PROFILE = get_profile()
+assert PROFILE.SOURCE["kind"] == "procedural", "00_mesh는 procedural 프로필 전용 — character는 00_intake 사용"
+P = PROFILE.LANDMARKS
 
 clean_scene()
 paths.ensure_dirs()
@@ -67,15 +71,16 @@ for side, m in (("L", lambda v: v), ("R", mirror)):
 # 웨이트한다(check_01의 >98% 통과). 전부 x>0 이라 무게중심을 확실히 +X로 이동시킨다.
 # 주의: 마커는 |x| 극값이 아니다(극값은 손끝 HAND_TIP) — Unity 프로브의 판정은 centroid만
 # 쓰고 extBone/extX는 리포트 전용이다.
-_MK_C = t("forearm.L")  # forearm.L tail = hand.L head, 관절점
-bpy.ops.mesh.primitive_cube_add(size=0.09, location=(_MK_C[0], _MK_C[1], _MK_C[2]))
-_marker = bpy.context.active_object
-_marker.name = "marker_L"
-bpy.ops.object.mode_set(mode='EDIT')
-bpy.ops.mesh.select_all(action='SELECT')
-bpy.ops.mesh.subdivide(number_cuts=3)
-bpy.ops.object.mode_set(mode='OBJECT')
-parts.append(_marker)
+if PROFILE.USE_LATERALITY_MARKER:
+    _MK_C = t("forearm.L")  # forearm.L tail = hand.L head, 관절점
+    bpy.ops.mesh.primitive_cube_add(size=0.09, location=(_MK_C[0], _MK_C[1], _MK_C[2]))
+    _marker = bpy.context.active_object
+    _marker.name = "marker_L"
+    bpy.ops.object.mode_set(mode='EDIT')
+    bpy.ops.mesh.select_all(action='SELECT')
+    bpy.ops.mesh.subdivide(number_cuts=3)
+    bpy.ops.object.mode_set(mode='OBJECT')
+    parts.append(_marker)
 
 # 하나로 합침
 bpy.ops.object.select_all(action='DESELECT')
@@ -84,7 +89,7 @@ for ob in parts:
 bpy.context.view_layer.objects.active = parts[0]
 bpy.ops.object.join()
 dummy = bpy.context.active_object
-dummy.name = "Dummy"
+dummy.name = PROFILE.MESH_OBJECT
 # join 후 원점은 첫 파트(몸통) 중심에 남는다 — 월드 0으로 정리
 bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
 
