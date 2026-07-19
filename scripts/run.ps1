@@ -53,6 +53,7 @@ switch ($Stage) {
     "sheet" { Invoke-Blender "scripts\preview\contact_sheet.py" }
     "userpreview" { Invoke-Blender "scripts\preview\user_preview.py" }
     "overlay" { Invoke-Blender "scripts\preview\metarig_overlay.py" }
+    "walkcompare" { Invoke-Blender "scripts\preview\walk_compare.py" }
     "all" {
         Invoke-Blender "scripts\stages\smoke.py"
         foreach ($pair in $Pipeline.Values) { foreach ($s in $pair) { Invoke-Blender $s } }
@@ -62,7 +63,7 @@ switch ($Stage) {
     }
     default {
         if (-not $Pipeline.Contains($Stage)) {
-            Write-Host "usage: run.ps1 [smoke|mesh|rig|anim|bake|export|unity|sheet|overlay|userpreview|all]"
+            Write-Host "usage: run.ps1 [smoke|mesh|rig|anim|bake|export|unity|sheet|overlay|userpreview|walkcompare|all]"
             exit 2
         }
         foreach ($s in $Pipeline[$Stage]) { Invoke-Blender $s }
