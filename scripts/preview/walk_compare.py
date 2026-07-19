@@ -1,4 +1,4 @@
-"""レファレンス シート vs 我々の歩き렌더の2x8比較シート. T5 收束ループの目."""
+"""레퍼런스 시트 vs 우리 walk 렌더의 2x8 비교 시트. T5 수렴 루프의 눈."""
 import sys
 import math
 from pathlib import Path
@@ -14,12 +14,13 @@ from anim.walk_poses import KEY_FRAMES
 
 PROFILE = get_profile()
 TILE = 384
-# レファレンス8칸 실측 x구간 (2172x724px)
+# 레퍼런스 8칸 실측 x구간 (2172x724px)
 REF_BOXES = [(33, 276), (318, 542), (597, 815), (880, 1074),
              (1159, 1399), (1455, 1617), (1727, 1891), (1975, 2139)]
-# レファレンス피규어는 화면 오른쪽을 본다. 우리 캐릭터(-Y 전방)를 오른쪽 보기로 렌더하려면
-# 카메라를 -X쪽에 두고 +X를 바라보게 한다. (첫 실행에서 방향 어긋나면 이 상수만 뒤집는다)
-CAM_X = -4.0
+# 레퍼런스 피규어는 화면 왼쪽을 본다. 우리 캐릭터(-Y 전방)도 같은 왼쪽 보기로 맞추려면
+# 카메라를 -X쪽에 두고 +X를 바라보게 한다. (방향 어긋나면 이 상수 부호만 뒤집는다)
+# CAM_X 크기 = 프레이밍: 작을수록 피규어가 타일을 크게 채워 레퍼런스와 비교가 쉬워진다.
+CAM_X = -3.0
 CAM_ROT_Z = -90.0
 
 open_blend(paths.blend_path("02_animated"))
@@ -40,7 +41,7 @@ cam = bpy.data.objects.new("Cam", bpy.data.cameras.new("Cam"))
 scene.collection.objects.link(cam)
 scene.camera = cam
 mesh = bpy.data.objects[PROFILE.MESH_OBJECT]
-cz = mesh.dimensions.z * 0.5
+cz = mesh.dimensions.z * 0.5            # 세로 중심 (머리·발 모두 프레임 안)
 cam.location = (CAM_X, 0, cz)
 cam.rotation_euler = (math.radians(90), 0, math.radians(CAM_ROT_Z))
 
@@ -53,7 +54,7 @@ for i, f in enumerate(KEY_FRAMES):
     bpy.ops.render.render(write_still=True)
     ours.append(tiles_dir / f"ours_{i}.png")
 
-# レファレンス スライス → タイル サイズで リサンプル
+# 레퍼런스 슬라이스 → 타일 크기로 리샘플
 ref_img = bpy.data.images.load(str(paths.PROJECT_ROOT / "refs" / "walk" / "walk_side_8frames.png"))
 rw, rh = ref_img.size
 ref_px = np.array(ref_img.pixels[:], dtype=np.float32).reshape(rh, rw, 4)
