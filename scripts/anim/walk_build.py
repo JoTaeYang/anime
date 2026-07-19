@@ -6,6 +6,7 @@ import bpy
 from mathutils import Matrix
 
 from anim.walk_poses import FPS, FRAME_END, KEY_FRAMES, PARAMS, OVERRIDES
+from anim.followthrough import apply as _followthrough
 
 
 def _rotate_world(rig, pb, axis, deg):
@@ -121,5 +122,6 @@ def build(rig, scene):
                      "forearm_fk.L", "forearm_fk.R"):
             _key_all(pbs[name], f)
 
+    _followthrough(rig, scene)
     bpy.ops.object.mode_set(mode='OBJECT')
     rig.animation_data.action.name = "Walk"

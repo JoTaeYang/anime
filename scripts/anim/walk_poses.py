@@ -23,3 +23,18 @@ PARAMS = {
 # 키프레임별 미세 오버라이드: {frame: {"<control>": {"rot_world": (axis, deg)} | {"loc_delta": (x,y,z)}}}
 # T5 루프에서 레퍼런스와 어긋나는 관절을 여기에 추가한다.
 OVERRIDES = {}
+
+FOLLOWTHROUGH = {
+    "delay_frames": 3,     # 체인 단계당 지연
+    "damp": 0.6,           # 단계당 감쇠
+    # 체인 루트 컨트롤 → 체인 컨트롤 나열 (실측 컨트롤명, Global Constraints 참조)
+    "chains": [
+        ["tail", "tail.001", "tail.002", "tail.003", "tail.004"],
+        ["skirt_f", "skirt_f.001"], ["skirt_fr", "skirt_fr.001"],
+        ["skirt_r", "skirt_r.001"], ["skirt_br", "skirt_br.001"],
+        ["skirt_b", "skirt_b.001"], ["skirt_bl", "skirt_bl.001"],
+        ["skirt_l", "skirt_l.001"], ["skirt_fl", "skirt_fl.001"],
+        ["scarf_l", "scarf_l.001"], ["scarf_r", "scarf_r.001"],
+        ["hood_ear_l"], ["hood_ear_r"],
+    ],
+}
