@@ -310,10 +310,7 @@ public static class AvatarCheck
 
     static void CaptureLog(string condition, string stackTrace, LogType type)
     {
-        // 무한 임포트 루프 감지는 배치 모드에서 텍스처 추출 시 false positive로 보이며,
-        // 실제 임포트는 완료되므로 이 경고를 무시.
-        if ((type == LogType.Error || type == LogType.Exception || type == LogType.Warning)
-            && !condition.Contains("infinite import loop"))
+        if (type == LogType.Error || type == LogType.Exception || type == LogType.Warning)
             ImportErrors.Add($"[{type}] {condition}");
     }
 
