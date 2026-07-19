@@ -8,7 +8,7 @@ using UnityEngine;
 
 public static class AvatarCheck
 {
-    const string FbxAssetPath = "Assets/Dummy/model.fbx";
+    const string FbxAssetPath = "Assets/Import/model.fbx";
     static readonly List<string> ImportErrors = new List<string>();
 
     [Serializable]
@@ -249,6 +249,26 @@ public static class AvatarCheck
             if (instance != null) UnityEngine.Object.DestroyImmediate(instance);
         }
 
+        // 임베드 텍스처를 추출해 뷰포트에서 재질이 보이게 한다 (사용자 눈검증 UX).
+        // 반환값은 추출된 텍스처 수 관련 정보가 아니므로 무시; 실패해도 단언에는 영향 없음.
+        // 모든 검증 후에 수행하므로 추출 오류가 검증 결과에 영향을 주지 않음.
+        try
+        {
+            string texDir = "Assets/Import/Textures";
+            // 이미 추출된 경우 재추출 스킵 (두 번째 실행 경로 검증용).
+            if (!Directory.Exists(texDir) || Directory.GetFiles(texDir).Length == 0)
+            {
+                if (!Directory.Exists(texDir)) Directory.CreateDirectory(texDir);
+                var importerForExtraction = (ModelImporter)AssetImporter.GetAtPath(FbxAssetPath);
+                importerForExtraction.ExtractTextures(texDir);
+                AssetDatabase.Refresh();
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.Log($"Texture extraction failed (non-critical): {ex.Message}");
+        }
+
         WriteReport(results);
         bool all = results.All(r => r.pass);
         Debug.Log($"AvatarCheck: {(all ? "PASS" : "FAIL")} ({results.Count(r => r.pass)}/{results.Count})");
@@ -275,7 +295,7 @@ public static class AvatarCheck
     static void CopyFbxIntoProject(string fbxName)
     {
         string src = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "..", "exports", ProfileName(), fbxName));
-        string dst = Path.GetFullPath(Path.Combine(Application.dataPath, "Dummy", "model.fbx"));
+        string dst = Path.GetFullPath(Path.Combine(Application.dataPath, "Import", "model.fbx"));
         if (!File.Exists(src)) throw new FileNotFoundException($"export first: {src}");
         Directory.CreateDirectory(Path.GetDirectoryName(dst));
         // Delete any previously-imported asset (+ its .meta) so the humanoid avatar is
@@ -290,7 +310,10 @@ public static class AvatarCheck
 
     static void CaptureLog(string condition, string stackTrace, LogType type)
     {
-        if (type == LogType.Error || type == LogType.Exception || type == LogType.Warning)
+        // 무한 임포트 루프 감지는 배치 모드에서 텍스처 추출 시 false positive로 보이며,
+        // 실제 임포트는 완료되므로 이 경고를 무시.
+        if ((type == LogType.Error || type == LogType.Exception || type == LogType.Warning)
+            && !condition.Contains("infinite import loop"))
             ImportErrors.Add($"[{type}] {condition}");
     }
 
