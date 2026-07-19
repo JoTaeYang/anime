@@ -8,15 +8,15 @@ KEY_FRAMES = [1, 4, 7, 10, 13, 16, 19, 22]
 CONTACTS = {"L": (1, 12), "R": (13, 24)}
 
 PARAMS = {
-    "stride": 0.34,        # 보폭 (전후 총 이동량, m)
-    "foot_lift": 0.07,     # 스윙 중 발 최고 높이
+    "stride": 0.48,        # 보폭 (전후 총 이동량, m)
+    "foot_lift": 0.12,     # 스윙 중 발 최고 높이
     "foot_x_L": 0.084,     # 발 좌우 폭 (랜드마크 다리 x)
-    "torso_bob": 0.020,    # 몸통 상하 진폭 (접지 직후 최저, 통과 시 최고)
+    "torso_bob": 0.028,    # 몸통 상하 진폭 (접지 직후 최저, 통과 시 최고)
     "torso_lean_deg": 5.0, # 전방 숙임 (고정)
     "pelvis_yaw_deg": 6.0, # 골반 요잉 (왼발 전방일 때 왼골반 앞으로)
     "chest_counter_deg": 5.0,  # 가슴 반대 요잉
     "arm_down_deg": 72.0,  # T포즈에서 팔 내리는 기본 각 (rotate_world Y축: L +, R -)
-    "arm_swing_deg": 24.0, # 팔 전후 스윙 진폭 (다리와 반대 위상, world X축 회전)
+    "arm_swing_deg": 38.0, # 팔 전후 스윙 진폭 (다리와 반대 위상, world X축 회전)
     "elbow_bend_deg": 14.0,# 팔꿈치 상시 굽힘
 }
 
