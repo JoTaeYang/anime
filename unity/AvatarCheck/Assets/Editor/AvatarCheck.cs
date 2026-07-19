@@ -252,17 +252,14 @@ public static class AvatarCheck
         // 임베드 텍스처를 추출해 뷰포트에서 재질이 보이게 한다 (사용자 눈검증 UX).
         // 반환값은 추출된 텍스처 수 관련 정보가 아니므로 무시; 실패해도 단언에는 영향 없음.
         // 모든 검증 후에 수행하므로 추출 오류가 검증 결과에 영향을 주지 않음.
+        // CopyFbxIntoProject에서 매 실행마다 이전 추출을 삭제하므로 매번 신선한 상태로 추출.
         try
         {
             string texDir = "Assets/Import/Textures";
-            // 이미 추출된 경우 재추출 스킵 (두 번째 실행 경로 검증용).
-            if (!Directory.Exists(texDir) || Directory.GetFiles(texDir).Length == 0)
-            {
-                if (!Directory.Exists(texDir)) Directory.CreateDirectory(texDir);
-                var importerForExtraction = (ModelImporter)AssetImporter.GetAtPath(FbxAssetPath);
-                importerForExtraction.ExtractTextures(texDir);
-                AssetDatabase.Refresh();
-            }
+            if (!Directory.Exists(texDir)) Directory.CreateDirectory(texDir);
+            var importerForExtraction = (ModelImporter)AssetImporter.GetAtPath(FbxAssetPath);
+            importerForExtraction.ExtractTextures(texDir);
+            AssetDatabase.Refresh();
         }
         catch (System.Exception ex)
         {
@@ -304,6 +301,11 @@ public static class AvatarCheck
         // (exactly what the Task 9 correction loop does) applies a STALE bone mapping and
         // fails avatar creation. Fresh import = honest re-validation, not weakened checks.
         if (File.Exists(dst)) AssetDatabase.DeleteAsset(FbxAssetPath);
+        // Also delete any previously-extracted textures to guarantee fresh import state
+        // (prevents post-import-callback recursion when texture assets already exist).
+        string texturesPath = "Assets/Import/Textures";
+        if (Directory.Exists(Path.GetFullPath(Path.Combine(Application.dataPath, "Import/Textures"))))
+            AssetDatabase.DeleteAsset(texturesPath);
         File.Copy(src, dst, true);
         AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
     }
