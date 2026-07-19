@@ -13,6 +13,10 @@ FBX_NAME = "dummy.fbx"
 USE_LATERALITY_MARKER = True
 APPENDAGES = []
 EXTRA_POSES = []
+ANIM_ACTION = "carrier"
+ACTION_NAME = "Idle"
+CLIP_LEN = 1.958
+FRAME_END = 48
 
 
 def appendage_bone_rename():
