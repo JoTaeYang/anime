@@ -16,6 +16,7 @@ public static class AvatarCheck
     {
         public string fbx; public float expectedHipsY; public float hipsTol;
         public bool checkLateralityMarker; public string[] appendageBones;
+        public string clipName; public float clipLen;
     }
 
     // task-10 Fix 2: outputs are namespaced per profile (build|exports|previews/<profile>/) so a
@@ -68,11 +69,15 @@ public static class AvatarCheck
             var meta = LoadMeta();
             CopyFbxIntoProject(meta.fbx);
 
-            Application.logMessageReceived += CaptureLog;
             AssetDatabase.ImportAsset(FbxAssetPath, ImportAssetOptions.ForceSynchronousImport);
             var importer = (ModelImporter)AssetImporter.GetAtPath(FbxAssetPath);
             importer.animationType = ModelImporterAnimationType.Human;
             importer.isReadable = true;   // laterality 프로브가 SkinnedMeshRenderer.BakeMesh를 쓴다
+            // 검증 대상은 최종 휴머노이드 임포트다. 신규 반입 프로토콜의 제네릭 스테이징
+            // 임포트(위 ImportAsset)는 과도기 콘솔 경고를 낼 수 있으나 최종 임포트 상태와
+            // 무관 (에디터 확인 결과 최종 상태 경고 0 — 2026-07-19 사용자 확인). 캡처 창을
+            // 최종 임포트(아래 SaveAndReimport)로 정렬 — 특정 메시지 필터링이 아니다.
+            Application.logMessageReceived += CaptureLog;
             importer.SaveAndReimport();
 
             // --- Explicit human bone-role override (Phase1 Task7) ------------------------
@@ -115,8 +120,36 @@ public static class AvatarCheck
             importer.SaveAndReimport();
             Application.logMessageReceived -= CaptureLog;
 
+            // 사용자 승인(2026-07-19) 조건부 규칙 — 빈 포인터 경고만 비차단, 저장소에 내용
+            // 있으면 그 내용으로 실패. 침묵 화이트리스트 아님: "has animation import
+            // warnings" 배너는 콘솔 로그 포인터일 뿐 실제 내용이 아니므로, 임포터 내부
+            // 메시지 저장소(m_AnimationImportWarnings)를 진짜 근거로 대조한다. 저장소가
+            // 비어 있으면(에디터의 Import Messages 섹션과 동일 상태 — 2026-07-19 사용자
+            // 확인) 그 배너 항목만 비차단 처리하고 정보성 결과로 남긴다. 저장소에 실제
+            // 내용이 있으면 import_clean은 그 내용을 그대로 실패 사유에 담아 실패한다.
+            const string PointerMarker = "has animation import warnings. See Import Messages";
+            var pointerEntries = ImportErrors.Where(e => e.Contains(PointerMarker)).ToList();
+            var otherErrors = ImportErrors.Where(e => !e.Contains(PointerMarker)).ToList();
+            if (pointerEntries.Count > 0)
+            {
+                var so = new SerializedObject(importer);
+                var warnProp = so.FindProperty("m_AnimationImportWarnings");
+                string store = warnProp != null ? warnProp.stringValue : null;
+                if (string.IsNullOrEmpty(store))
+                {
+                    results.Add(("anim_warning_pointer", true,
+                        "empty pointer warning — importer message store empty; editor shows no Import Messages (user-verified 2026-07-19, approved conditional rule)"));
+                }
+                else
+                {
+                    otherErrors.AddRange(pointerEntries.Select(_ => $"[Warning] animation import warnings store content: {store}"));
+                }
+            }
+            ImportErrors.Clear();
+            ImportErrors.AddRange(otherErrors);
+
             results.Add(("import_clean", ImportErrors.Count == 0,
-                ImportErrors.Count == 0 ? "no errors/warnings" : string.Join(" | ", ImportErrors.Take(5))));
+                ImportErrors.Count == 0 ? "no errors/warnings" : string.Join(" | ", ImportErrors.Take(50))));
 
             var avatar = AssetDatabase.LoadAllAssetsAtPath(FbxAssetPath).OfType<Avatar>().FirstOrDefault();
             bool avatarOk = avatar != null && avatar.isValid && avatar.isHuman;
@@ -225,18 +258,29 @@ public static class AvatarCheck
 
                 var clip = AssetDatabase.LoadAllAssetsAtPath(FbxAssetPath).OfType<AnimationClip>()
                     .FirstOrDefault(c => !c.name.StartsWith("__preview"));
-                bool clipOk = clip != null && clip.length > 1.5f && clip.length < 2.5f;
-                results.Add(("idle_clip_present", clipOk, clip == null ? "no clip" : $"{clip.name} len={clip.length:F3}s"));
+                bool clipOk = clip != null && clip.length > meta.clipLen - 0.25f && clip.length < meta.clipLen + 0.25f;
+                results.Add(("clip_present", clipOk, clip == null ? "no clip" : $"{clip.name} len={clip.length:F3}s"));
 
                 if (clipOk)
                 {
+                    // t=0 vs t=len/2만 비교하면 walk에서 실패한다: 수직 bob 주기가 사이클의
+                    // 절반이라 t=0과 t=len/2가 같은 위상을 샘플링해 delta가 임계값 밑으로
+                    // 떨어진다 (check_02.py의 torso 이동 단언이 이미 겪은 동일한 이중-bob
+                    // 위상 충돌). t=0, 0.25, 0.5, 0.75 4개 지점을 샘플링해 t=0 대비 최대
+                    // 변위로 판정 — 위상에 무관하며, 정지된 클립에 대해서는 기존과 최소
+                    // 동일하거나 더 엄격하다 (임계값 0.004f 불변).
                     var chest = anim.GetBoneTransform(HumanBodyBones.Spine);
                     clip.SampleAnimation(instance, 0f);
                     Vector3 p0 = chest.position;
-                    clip.SampleAnimation(instance, clip.length * 0.5f);
-                    Vector3 pMid = chest.position;
-                    float delta = (p0 - pMid).magnitude;
-                    results.Add(("idle_actually_moves", delta > 0.004f, $"spine delta={delta:F4}m at t=0 vs t=mid"));
+                    float maxDelta = 0f; float maxT = 0f;
+                    foreach (float frac in new[] { 0.25f, 0.5f, 0.75f })
+                    {
+                        float t = clip.length * frac;
+                        clip.SampleAnimation(instance, t);
+                        float d = (p0 - chest.position).magnitude;
+                        if (d > maxDelta) { maxDelta = d; maxT = t; }
+                    }
+                    results.Add(("clip_moves", maxDelta > 0.004f, $"spine max delta={maxDelta:F4}m at t={maxT:F3}s (vs t=0)"));
                 }
             }
         }

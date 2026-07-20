@@ -59,7 +59,7 @@ for uni in PROFILE.appendage_bone_rename().values():
     assert uni in names, f"appendage bone {uni} missing after bake"
 
 acts = list(bpy.data.actions)
-assert len(acts) == 1 and acts[0].name == "Idle", [a.name for a in acts]
+assert len(acts) == 1 and acts[0].name == PROFILE.ACTION_NAME, [a.name for a in acts]
 
 
 def action_fcurves(action):
@@ -87,9 +87,15 @@ leftovers = [o.name for o in bpy.data.objects if o.name.startswith("WGT-") or o.
 assert not leftovers, f"leftover objects: {leftovers}"
 
 # 베이크가 실제 움직임을 담았는지 (IK 경유 다리 포함)
+# 프레임 (1, FRAME_END // 2) 고정 비교는 walk에서 실패한다: 이중 bob 위상 때문에
+# f1과 f12(FRAME_END//2) 사이 hips z 차이가 ~0.003으로 임계값 0.005에 못 미친다
+# (carrier의 단일 딥과 달리 walk는 보폭 주기 동안 두 번 오르내림). check_02.py의
+# torso 이동 단언과 동일하게 max-delta 스캔으로 일반화 (임계값 0.005는 불변).
 scene = bpy.context.scene
 def hips_z(f):
     scene.frame_set(f)
     return rig.pose.bones["Hips"].matrix.translation.z
-assert abs(hips_z(1) - hips_z(24)) > 0.005, "baked Idle does not move Hips"
+z1 = hips_z(1)
+max_delta = max(abs(z1 - hips_z(f)) for f in range(2, PROFILE.FRAME_END + 1))
+assert max_delta > 0.005, f"baked {PROFILE.ACTION_NAME} does not move Hips (max delta {max_delta:.4f})"
 print("CHECK_03 OK")
