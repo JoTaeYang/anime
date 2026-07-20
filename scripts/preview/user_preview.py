@@ -48,7 +48,7 @@ cam.rotation_euler = (math.radians(90), 0, 0)
 scene.camera = cam
 
 
-def render_video(filepath, frame_end, setup):
+def render_video(filepath, frame_end, setup, loop_count=1):
     # Blender 5.1 quirk (this environment, undocumented elsewhere in repo):
     # scene.render.image_settings.file_format rejects 'FFMPEG' (and every movie
     # format — AVI_JPEG/AVI_RAW too) at runtime with "enum 'FFMPEG' not found",
@@ -59,6 +59,12 @@ def render_video(filepath, frame_end, setup):
     # image_settings.file_format='FFMPEG' + scene.render.ffmpeg.* path is not
     # settable in this build. Fallback: render a PNG sequence to a temp dir,
     # then mux to H.264 mp4 with the system ffmpeg binary via subprocess.
+    #
+    # loop_count: the rendered frame range (1..frame_end) is muxed loop_count
+    # times via ffmpeg's -stream_loop, instead of rendering frame_end*loop_count
+    # frames in Blender. Used for cyclic actions (e.g. a 24f walk loop) where
+    # extending scene.frame_end past the action's last keyframe would just hold
+    # the final pose rather than repeat it.
     scene.render.resolution_x = 1920
     scene.render.resolution_y = 1080
     scene.render.fps = 24
@@ -75,12 +81,16 @@ def render_video(filepath, frame_end, setup):
     try:
         ffmpeg = shutil.which("ffmpeg")
         assert ffmpeg, "system ffmpeg not found on PATH; required for PNG->mp4 mux fallback"
-        subprocess.run([
-            ffmpeg, "-y", "-framerate", str(scene.render.fps),
+        cmd = [ffmpeg, "-y"]
+        if loop_count > 1:
+            cmd += ["-stream_loop", str(loop_count - 1)]
+        cmd += [
+            "-framerate", str(scene.render.fps),
             "-i", str(frames_dir / "f_%04d.png"),
             "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18",
             str(filepath),
-        ], check=True)
+        ]
+        subprocess.run(cmd, check=True)
     finally:
         if frames_dir.exists():
             shutil.rmtree(frames_dir)
@@ -127,6 +137,27 @@ def setup_idle():
 
 scene.frame_start = 1
 render_video(out_dir / "idle.mp4", 96, setup_idle)
+
+# 2b) 걷기(프로필 액션) 루프 영상 2종 — 측면 / 3/4, 3루프 (character 프로필 전용)
+act = bpy.data.actions.get(PROFILE.ACTION_NAME)
+if act is not None and PROFILE.NAME == "character":
+    def setup_walk_side():
+        pivot.animation_data_clear()
+        pivot.rotation_euler = (0, 0, math.radians(-90))   # 측면 (walk_compare와 동일 방향)
+        rig.data.pose_position = 'POSE'
+        rig.animation_data.action = act
+
+    scene.frame_start = 1
+    render_video(out_dir / "walk_side.mp4", PROFILE.FRAME_END, setup_walk_side, loop_count=3)
+
+    def setup_walk_tq():
+        pivot.animation_data_clear()
+        pivot.rotation_euler = (0, 0, math.radians(45))
+        rig.data.pose_position = 'POSE'
+        rig.animation_data.action = act
+
+    scene.frame_start = 1
+    render_video(out_dir / "walk_threequarter.mp4", PROFILE.FRAME_END, setup_walk_tq, loop_count=3)
 
 # 3) 극단 포즈 스틸 1536² — 부호는 contact_sheet.py 현행 규약과 동일
 #    (armsup: LeftUpperArm Y-80/RightUpperArm Y80, crouch: UpperLeg X-60/
