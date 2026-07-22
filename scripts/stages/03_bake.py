@@ -23,11 +23,11 @@ for pb in rig.pose.bones:
     if pb.name.startswith("DEF-"):
         pb.select = True   # Blender 5.1: 선택은 PoseBone.select (Bone.select 제거됨)
 
-rig.animation_data.action.name = "Idle_src"
+rig.animation_data.action.name = PROFILE.ACTION_NAME + "_src"
 selected_pose_bones = [pb for pb in rig.pose.bones if pb.name.startswith("DEF-")]
 bake_kwargs = op_kwargs(
     bpy.ops.nla.bake,
-    frame_start=1, frame_end=48, step=1,
+    frame_start=1, frame_end=PROFILE.FRAME_END, step=1,
     only_selected=True, visual_keying=True,
     clear_constraints=True, clear_parents=False,
     use_current_action=False, bake_types={'POSE'},
@@ -36,7 +36,7 @@ bake_kwargs = op_kwargs(
 # 못 봐서 "Nothing to bake"로 조용히 실패한다 -> temp_override로 컨텍스트 명시.
 with bpy.context.temp_override(active_object=rig, selected_pose_bones=selected_pose_bones):
     bpy.ops.nla.bake(**bake_kwargs)
-rig.animation_data.action.name = "Idle"
+rig.animation_data.action.name = PROFILE.ACTION_NAME
 bpy.ops.object.mode_set(mode='OBJECT')
 
 # 2) 각 DEF 본의 부모가 될 DEF 본을 삭제 전에 계산 — 2단계:
@@ -104,6 +104,7 @@ for old, new in RENAME.items():
 #         애초에 키를 넣지 않는다. 트위스트 본은 rest 유지 — 더미 idle에서 무해.
 #     (Hips는 루트 모션/높이 위해 location 유지)
 import re as _re
+from mathutils import Matrix
 
 
 def _all_fcurves(action):
@@ -114,6 +115,7 @@ def _all_fcurves(action):
 
 
 _idle = rig.animation_data.action if rig.animation_data else None
+_twist_bones = set()
 if _idle is not None:
     for _cb, _fcs in _all_fcurves(_idle):
         for _fc in _fcs:
@@ -121,21 +123,31 @@ if _idle is not None:
             if not _m:
                 continue
             _bone, _prop = _m.group(1), _m.group(2)
+            _rot_twist = _prop.startswith("rotation") and _bone.endswith("Twist")
             _drop = (
                 _prop == "scale"
                 or (_prop == "location" and _bone != "Hips")
                 or _prop.startswith("bbone_")
-                or (_prop.startswith("rotation") and _bone.endswith("Twist"))
+                or _rot_twist
             )
             if _drop:
                 _cb.fcurves.remove(_fc)
+            if _rot_twist:
+                _twist_bones.add(_bone)
+
+# 커브를 제거한 트위스트 본은 포즈 잔차(비주얼 키잉 부동소수)도 레스트로 리셋
+# — Unity 인비트윈 회전 불일치 경고("Inbetween bone rotation ... rotation error = ...")
+# 원천 차단. 위에서 이미 이 본들의 location/scale/rotation 커브를 전부 제거했으므로
+# matrix_basis 전체를 identity로 되돌려도 다른 채널 손실이 없다.
+for _bn in _twist_bones:
+    rig.pose.bones[_bn].matrix_basis = Matrix.Identity(4)
 
 # 6) 잔여물 정리: 위젯, 메타리그, 원본 액션, 드라이버
 for ob in list(bpy.data.objects):
     if ob.name.startswith("WGT-") or ob.name == "metarig":
         bpy.data.objects.remove(ob, do_unlink=True)
 for act in list(bpy.data.actions):
-    if act.name != "Idle":
+    if act.name != PROFILE.ACTION_NAME:
         bpy.data.actions.remove(act)
 if rig.animation_data:
     for drv in list(rig.animation_data.drivers):

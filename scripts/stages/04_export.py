@@ -4,6 +4,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import bpy
+from mathutils import Matrix
 from lib import paths
 from lib.blender_utils import open_blend, op_kwargs
 from lib.profiles import get_profile
@@ -38,6 +39,30 @@ bpy.ops.object.transform_apply(location=False, rotation=True, scale=False)
 for _o in _objs:
     _o.rotation_euler = (math.radians(90), 0.0, 0.0)
 
+# --- 부속물(비인간) 본 애니메이션 제거 (Task 6 후속 픽스, 인메모리만) ---
+# Unity Humanoid 클립은 비인간 본의 트랜스폼 커브를 폐기하고 "File 'model' has
+# animation import warnings" 경고를 남긴다 — 꼬리/치마/목도리/후드귀 팔로우스루의
+# Unity 인게임 구동은 스프링본(후속 작업) 소관이므로, 익스포트에서는 그 커브를
+# 제거하고 포즈도 레스트로 되돌린다. 이 스테이지는 blend를 저장하지 않으므로
+# 03_baked.blend는 전체 팔로우스루를 그대로 유지해 Blender 프리뷰에는 영향 없다.
+import re as _re2
+_rig = _objs[0]
+_appendage_names = set(PROFILE.appendage_bone_rename().values())
+if _appendage_names:
+    _act = _rig.animation_data.action if _rig.animation_data else None
+    if _act is not None:
+        for _layer in _act.layers:
+            for _strip in _layer.strips:
+                for _cb in _strip.channelbags:
+                    for _fc in list(_cb.fcurves):
+                        _m = _re2.search(r'pose\.bones\["([^"]+)"\]', _fc.data_path)
+                        if _m and _m.group(1) in _appendage_names:
+                            _cb.fcurves.remove(_fc)
+    for _name in _appendage_names:
+        _pb = _rig.pose.bones.get(_name)
+        if _pb is not None:
+            _pb.matrix_basis = Matrix.Identity(4)
+
 kwargs = dict(
     filepath=str(paths.EXPORTS_DIR / PROFILE.FBX_NAME),
     use_selection=False,
@@ -55,7 +80,15 @@ kwargs = dict(
     armature_nodetype='NULL',
     use_armature_deform_only=False,        # 이미 03에서 deform만 남김
     bake_anim=True,
-    bake_anim_use_all_bones=True,
+    # 키 있는 본만 익스포트 — True면 익스포트 시점에 전 본(트위스트 포함)을 재베이크한다.
+    # 03_bake가 트위스트 본 회전 커브를 의도적으로 스트립했으므로(Unity Humanoid
+    # inbetween 경고 방지), 여기서 다시 True로 굽으면 그 스트립이 무의미해지고
+    # 트위스트 본 회전이 (팔이 많이 움직이는 walk에서 특히) T포즈 아바타 설정 레스트와
+    # 어긋나 "Inbetween bone rotation ... does not match" 경고가 재발한다
+    # (idle은 팔이 거의 안 움직여 우연히 드러나지 않았을 뿐). False로 03의 스트립 결과를
+    # 그대로 존중한다 — 본체 DEF + 부속물(팔로우스루) 본은 이미 03에서 커브가 구워져
+    # 있으므로 애니메이션 손실은 없다.
+    bake_anim_use_all_bones=False,
     bake_anim_use_nla_strips=False,
     bake_anim_use_all_actions=False,       # 활성 액션(Idle)만
     bake_anim_force_startend_keying=True,
@@ -74,6 +107,8 @@ meta = {
     "hipsTol": PROFILE.HIPS_TOL,
     "checkLateralityMarker": PROFILE.USE_LATERALITY_MARKER,
     "appendageBones": sorted(PROFILE.appendage_bone_rename().values()),
+    "clipName": PROFILE.ACTION_NAME,
+    "clipLen": PROFILE.CLIP_LEN,
 }
 with open(paths.EXPORTS_DIR / f"{PROFILE.NAME}_meta.json", "w") as f:
     json.dump(meta, f, indent=1)

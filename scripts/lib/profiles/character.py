@@ -11,6 +11,10 @@ HIPS_TOL = 0.12
 HEIGHT_RANGE = (1.85, 1.95)
 FBX_NAME = "character.fbx"
 USE_LATERALITY_MARKER = False
+ANIM_ACTION = "walk"
+ACTION_NAME = "Walk"
+CLIP_LEN = 1.0
+FRAME_END = 24
 
 # 부속물 체인 초안. 좌표는 previews/char_front_negY.png, previews/char_side.png 관찰 기반.
 # Blender 좌표계: 캐릭터는 -Y를 바라본다 (front = -Y, back = +Y), 해부학적 왼쪽 = +X.
