@@ -139,11 +139,17 @@ scene.frame_start = 1
 render_video(out_dir / "idle.mp4", 96, setup_idle)
 
 # 2b) 걷기(프로필 액션) 루프 영상 2종 — 측면 / 3/4, 3루프 (character 프로필 전용)
+# 걷기는 발 접지가 판정 핵심이라 전신이 반드시 프레임에 들어야 한다. 공용 3.6m는
+# 16:9 가로 프레임에서 세로 커버리지가 ~1.46m뿐이라 1.9m 캐릭터의 발/정수리가
+# 잘린다(턴테이블·idle에서는 지금까지 허용된 크롭). 걷기 영상만 5.5m로 물린다
+# (세로 ~2.2m 커버) — 이후 스틸 렌더를 위해 블록 끝에서 원복.
+WALK_CAM_Y = -5.5
 act = bpy.data.actions.get(PROFILE.ACTION_NAME)
 if act is not None and PROFILE.NAME == "character":
     def setup_walk_side():
         pivot.animation_data_clear()
         pivot.rotation_euler = (0, 0, math.radians(-90))   # 측면 (walk_compare와 동일 방향)
+        cam.location = (0, WALK_CAM_Y, 0)
         rig.data.pose_position = 'POSE'
         rig.animation_data.action = act
 
@@ -153,11 +159,13 @@ if act is not None and PROFILE.NAME == "character":
     def setup_walk_tq():
         pivot.animation_data_clear()
         pivot.rotation_euler = (0, 0, math.radians(45))
+        cam.location = (0, WALK_CAM_Y, 0)
         rig.data.pose_position = 'POSE'
         rig.animation_data.action = act
 
     scene.frame_start = 1
     render_video(out_dir / "walk_threequarter.mp4", PROFILE.FRAME_END, setup_walk_tq, loop_count=3)
+    cam.location = (0, -3.6, 0)
 
 # 3) 극단 포즈 스틸 1536² — 부호는 contact_sheet.py 현행 규약과 동일
 #    (armsup: LeftUpperArm Y-80/RightUpperArm Y80, crouch: UpperLeg X-60/

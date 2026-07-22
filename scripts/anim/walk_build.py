@@ -94,13 +94,23 @@ def build(rig, scene):
         _rotate_world(rig, pbs["hips"], 'Z', yaw)
         _rotate_world(rig, pbs["chest"], 'Z', -PARAMS["chest_counter_deg"] * math.sin(2 * math.pi * cycle_t))
 
-        # --- 팔 (FK): 내리고, 다리 반대 위상 스윙, 팔꿈치 상시 굽힘 ---
+        # --- 팔 (FK): 내리고, 다리 반대 위상 스윙 ---
+        # 팔꿈치는 고정각이 아니라 전방 스윙에서 더 굽고 후방에서 펴진다
+        # (실보행 굴곡-신전 ROM ~30°; 굽힘 위상은 어깨보다 arm_drag_frames 지연 —
+        # 오버랩). 손목은 그 2배 지연으로 스윙 반대 방향으로 끌린다.
         for side, sgn, leg_offset in (("L", +1.0, 0.5), ("R", -1.0, 0.0)):
             ua = pbs[f"upper_arm_fk.{side}"]
             _rotate_world(rig, ua, 'Y', sgn * PARAMS["arm_down_deg"])  # 팔 내림 (컨택트시트 부호 규약)
             swing = PARAMS["arm_swing_deg"] * math.sin(2 * math.pi * ((cycle_t + leg_offset) % 1.0))
             _rotate_world(rig, ua, 'X', swing)
-            _rotate_world(rig, pbs[f"forearm_fk.{side}"], 'X', -PARAMS["elbow_bend_deg"])
+            drag = PARAMS["arm_drag_frames"] / FRAME_END
+            bend_ph = (cycle_t - drag + leg_offset) % 1.0
+            bend = PARAMS["elbow_bend_deg"] + PARAMS["elbow_swing_deg"] * max(0.0, math.sin(2 * math.pi * bend_ph))
+            _rotate_world(rig, pbs[f"forearm_fk.{side}"], 'X', -bend)
+            hand = pbs.get(f"hand_fk.{side}")
+            if hand is not None:
+                hand_ph = (cycle_t - 2.0 * drag + leg_offset) % 1.0
+                _rotate_world(rig, hand, 'X', -PARAMS["wrist_drag_deg"] * math.sin(2 * math.pi * hand_ph))
 
         # --- 키 오버라이드 (T5 루프가 채움) ---
         for ctrl, spec in OVERRIDES.get(src_f, {}).items():
@@ -119,8 +129,10 @@ def build(rig, scene):
         for name in ("torso", "hips", "chest",
                      "foot_ik.L", "foot_ik.R",
                      "upper_arm_fk.L", "upper_arm_fk.R",
-                     "forearm_fk.L", "forearm_fk.R"):
-            _key_all(pbs[name], f)
+                     "forearm_fk.L", "forearm_fk.R",
+                     "hand_fk.L", "hand_fk.R"):
+            if name in pbs:
+                _key_all(pbs[name], f)
 
     _followthrough(rig, scene)
     bpy.ops.object.mode_set(mode='OBJECT')
