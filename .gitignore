@@ -9,3 +9,15 @@ unity/AvatarCheck/Logs/
 unity/AvatarCheck/UserSettings/
 unity/AvatarCheck/obj/
 unity/AvatarCheck/Assets/Import/
+
+# Mixamo 원본 재배포 금지 (Adobe 약관) — 목록/설정만 커밋
+assets/mocap/*.fbx
+# Task 3/4 생성물 (스크립트로 재생성 가능)
+unity/AvatarCheck/Assets/Clips/
+unity/AvatarCheck/Assets/Clips.meta
+unity/AvatarCheck/Assets/Play/Player.controller
+unity/AvatarCheck/Assets/Play/Player.controller.meta
+unity/AvatarCheck/Assets/Play/PlayScene.unity
+unity/AvatarCheck/Assets/Play/PlayScene.unity.meta
+unity/AvatarCheck/clips_report.json
+unity/AvatarCheck/playscene_report.json
