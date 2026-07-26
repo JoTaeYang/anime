@@ -17,12 +17,16 @@ function Invoke-Blender([string]$RelScript) {
     }
 }
 
-function Invoke-Unity([string]$Method, [string]$LogName, [string]$ReportName) {
+function Invoke-Unity([string]$Method, [string]$LogName, [string]$ReportName, [switch]$Graphics) {
     Write-Host ">>> unity: $Method"
     # Unity relaunches as a separate process, so $LASTEXITCODE after `& $Unity` is
     # unreliable (Task 8). Use Start-Process -Wait -PassThru and read .ExitCode.
-    $unityArgs = @(
-        "-batchmode", "-nographics", "-quit",
+    # -Graphics drops -nographics for stages that render frames (e.g. capture); all
+    # existing callers omit it and keep the byte-identical headless arg list.
+    $unityArgs = @("-batchmode")
+    if (-not $Graphics) { $unityArgs += "-nographics" }
+    $unityArgs += @(
+        "-quit",
         "-projectPath", (Join-Path $Root "unity\AvatarCheck"),
         "-executeMethod", $Method,
         "-logFile", (Join-Path $Root "unity\AvatarCheck\Logs\$LogName")
@@ -37,6 +41,15 @@ function Invoke-Unity([string]$Method, [string]$LogName, [string]$ReportName) {
     }
 }
 function Invoke-UnityCheck { Invoke-Unity "AvatarCheck.Run" "check.log" "report.json" }
+
+function Invoke-UnityCapture {
+    # Renders clip frames -> needs graphics, so NOT -nographics. No report.json to print;
+    # print the per-clip capture.json instead if it landed.
+    $clip = if ($env:ANIME_CAPTURE_CLIP) { $env:ANIME_CAPTURE_CLIP } else { "Walk" }
+    Invoke-Unity "ClipCapture.Run" "capture.log" "unused_capture_report.json" -Graphics
+    $capJson = Join-Path $Root "previews\character\unity_capture\${clip}_capture.json"
+    if (Test-Path $capJson) { Get-Content $capJson }
+}
 
 $MeshStage = "scripts\stages\00_mesh.py"
 if ($Profile -ne "dummy") { $MeshStage = "scripts\stages\00_intake.py" }
@@ -53,6 +66,7 @@ switch ($Stage) {
     "unity" { Invoke-UnityCheck }
     "clips" { Invoke-Unity "ClipImport.Run" "clips.log" "clips_report.json" }
     "playscene" { Invoke-Unity "PlaySceneBuild.Run" "playscene.log" "playscene_report.json" }
+    "capture" { Invoke-UnityCapture }
     "sheet" { Invoke-Blender "scripts\preview\contact_sheet.py" }
     "userpreview" { Invoke-Blender "scripts\preview\user_preview.py" }
     "overlay" { Invoke-Blender "scripts\preview\metarig_overlay.py" }
@@ -66,7 +80,7 @@ switch ($Stage) {
     }
     default {
         if (-not $Pipeline.Contains($Stage)) {
-            Write-Host "usage: run.ps1 [smoke|mesh|rig|anim|bake|export|unity|clips|playscene|sheet|overlay|userpreview|walkcompare|all]"
+            Write-Host "usage: run.ps1 [smoke|mesh|rig|anim|bake|export|unity|clips|playscene|capture|sheet|overlay|userpreview|walkcompare|all]"
             exit 2
         }
         foreach ($s in $Pipeline[$Stage]) { Invoke-Blender $s }
