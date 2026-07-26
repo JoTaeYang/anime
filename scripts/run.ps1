@@ -52,6 +52,7 @@ switch ($Stage) {
     "smoke" { Invoke-Blender "scripts\stages\smoke.py" }
     "unity" { Invoke-UnityCheck }
     "clips" { Invoke-Unity "ClipImport.Run" "clips.log" "clips_report.json" }
+    "playscene" { Invoke-Unity "PlaySceneBuild.Run" "playscene.log" "playscene_report.json" }
     "sheet" { Invoke-Blender "scripts\preview\contact_sheet.py" }
     "userpreview" { Invoke-Blender "scripts\preview\user_preview.py" }
     "overlay" { Invoke-Blender "scripts\preview\metarig_overlay.py" }
@@ -65,7 +66,7 @@ switch ($Stage) {
     }
     default {
         if (-not $Pipeline.Contains($Stage)) {
-            Write-Host "usage: run.ps1 [smoke|mesh|rig|anim|bake|export|unity|clips|sheet|overlay|userpreview|walkcompare|all]"
+            Write-Host "usage: run.ps1 [smoke|mesh|rig|anim|bake|export|unity|clips|playscene|sheet|overlay|userpreview|walkcompare|all]"
             exit 2
         }
         foreach ($s in $Pipeline[$Stage]) { Invoke-Blender $s }
