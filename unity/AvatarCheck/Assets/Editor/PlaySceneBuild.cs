@@ -46,6 +46,12 @@ public static class PlaySceneBuild
             bt.AddChild(Clip("Idle"), 0f); bt.AddChild(Clip("Walk"), 0.5f); bt.AddChild(Clip("Run"), 1f);
             sm.defaultState = loco;
 
+            // Foot IK 시도 (스펙 §2): 상태 iKOnFeet + 레이어 IK pass. 캡처에서 발 관통
+            // 개선이 확인되지 않으면 이 블록을 제거하고 보고서에 기록한다 (침묵 금지).
+            var layers = ctrl.layers;
+            layers[0].iKPass = true;
+            ctrl.layers = layers;
+
             AnimatorState MakeState(string clipName)
             {
                 var s = sm.AddState(clipName);
@@ -60,6 +66,9 @@ public static class PlaySceneBuild
             }
             var a1 = MakeState("Attack1"); var a2 = MakeState("Attack2"); var a3 = MakeState("Attack3");
             var roll = MakeState("Roll"); var hit = MakeState("Hit"); var die = MakeState("Death");
+
+            foreach (var st in new[] { loco, a1, a2, a3, roll, hit })
+                st.iKOnFeet = true;
 
             var tA1 = loco.AddTransition(a1); tA1.AddCondition(AnimatorConditionMode.If, 0, "Attack"); tA1.duration = 0.05f;
             var tA2 = a1.AddTransition(a2); tA2.AddCondition(AnimatorConditionMode.If, 0, "Attack"); tA2.duration = 0.05f;
@@ -88,6 +97,8 @@ public static class PlaySceneBuild
             anim.runtimeAnimatorController = ctrl;
             anim.applyRootMotion = false;   // 이동은 PlayerDrive가 담당 (In Place 클립 전제)
             player.AddComponent<PlayerDrive>();
+            int springs = SpringBoneSetup.Attach(player);
+            results.Add(("springs_attached", springs == 13, $"chains={springs} expected 13"));
             var cam = Camera.main;
             cam.transform.position = new Vector3(0, 2.2f, -4.5f);
             var fc = cam.gameObject.AddComponent<FollowCam>();
