@@ -297,6 +297,13 @@ public static class AvatarCheck
         // 반환값은 추출된 텍스처 수 관련 정보가 아니므로 무시; 실패해도 단언에는 영향 없음.
         // 모든 검증 후에 수행하므로 추출 오류가 검증 결과에 영향을 주지 않음.
         // CopyFbxIntoProject에서 매 실행마다 이전 추출을 삭제하므로 매번 신선한 상태로 추출.
+        // Tracks whether extraction actually produced texture files before any risky
+        // rename/remap/reimport step. If an exception fires after this point, the failure
+        // can affect texture wiring, so the materials_textured assertion must record a
+        // failure rather than be silently omitted (which would leave allPass true despite
+        // a broken texture pipeline). When no files were extracted (dummy-style profiles
+        // with no embedded textures), extraction hiccups stay non-critical (log only).
+        bool extractedFilesDetected = false;
         try
         {
             string texDir = "Assets/Import/Textures";
@@ -304,6 +311,10 @@ public static class AvatarCheck
             var importerForExtraction = (ModelImporter)AssetImporter.GetAtPath(FbxAssetPath);
             importerForExtraction.ExtractTextures(texDir);
             AssetDatabase.Refresh();
+
+            string absTexDir = Path.GetFullPath(Path.Combine(Application.dataPath, "Import", "Textures"));
+            extractedFilesDetected = Directory.Exists(absTexDir)
+                && Directory.GetFiles(absTexDir).Any(f => !f.EndsWith(".meta"));
 
             // ExtractTextures writes each FBX-embedded texture under its Blender-embedded
             // name, which carries NO file extension (e.g. "Image_0"). Left alone this breaks
@@ -323,7 +334,6 @@ public static class AvatarCheck
             // material pipeline. The material description then binds its slots by name (verified:
             // Material_0._MainTex -> Image_0). Idempotent: files that already have an extension
             // (a prior run, or a re-run) are left untouched; shape/remap steps are safe to repeat.
-            string absTexDir = Path.GetFullPath(Path.Combine(Application.dataPath, "Import", "Textures"));
             bool renamedAny = false;
             if (Directory.Exists(absTexDir))
             {
@@ -408,7 +418,17 @@ public static class AvatarCheck
         }
         catch (System.Exception ex)
         {
-            Debug.Log($"Texture extraction failed (non-critical): {ex.Message}");
+            if (extractedFilesDetected)
+            {
+                // Extraction already produced texture files, so a failure here can leave the
+                // texture pipeline broken. Record it as a real assertion failure instead of
+                // silently omitting materials_textured (which would keep allPass true).
+                results.Add(("materials_textured", false, "extraction/remap exception: " + ex.Message));
+            }
+            else
+            {
+                Debug.Log($"Texture extraction failed (non-critical): {ex.Message}");
+            }
         }
 
         WriteReport(results);
