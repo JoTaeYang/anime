@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
@@ -159,6 +160,15 @@ public static class ClipCapture
             anim.Rebind();
             anim.Update(0f);
 
+            // 스프링 부착 — 런타임(PlaySceneBuild)과 동일한 SpringBoneSetup.Attach로 부속물
+            // 체인을 붙인다. 우리 캐릭터는 13개, Y Bot/RefAttack 리그는 부속물이 없어 0 (조용히
+            // 스킵). springCount는 JSON "springs"로 노출돼 이 비대칭을 가시화한다. Attach 내부
+            // Init()이 여기서 Rebind/Update(0) 직후에 호출돼 rest 포즈를 기준으로 잡는다.
+            var springChains = new List<SpringBoneChain>();
+            int springCount = SpringBoneSetup.Attach(player);
+            if (springCount > 0)
+                springChains.AddRange(player.GetComponentsInChildren<SpringBoneChain>(true));
+
             // Guarantee a light so renders are not black even if the default light is missing.
             if (UnityEngine.Object.FindObjectsOfType<Light>().All(l => l.type != LightType.Directional))
             {
@@ -199,7 +209,12 @@ public static class ClipCapture
             for (int i = 0; i < SAMPLES; i++)
             {
                 float t = (i / (float)SAMPLES) * clip.length;
-                while (cur + DT * 0.5f < t) { anim.Update(DT); cur += DT; }
+                while (cur + DT * 0.5f < t)
+                {
+                    anim.Update(DT);
+                    foreach (var sc in springChains) sc.Step(DT);   // 런타임 LateUpdate와 동일 틱
+                    cur += DT;
+                }
 
                 // 샘플별 발/무릎 수치 — 프레임(눈)과 프로브(숫자)를 잇는 교차 검증.
                 var lf = anim.GetBoneTransform(HumanBodyBones.LeftFoot);
@@ -225,6 +240,8 @@ public static class ClipCapture
                         .Append(",\"hipsY\":").Append(hips != null ? hips.position.y.ToString("F3") : "-1")
                         .Append(",\"headZ\":").Append(head != null ? head.position.z.ToString("F3") : "-1")
                         .Append(",\"spineZlean\":").Append(spine != null && head != null ? (head.position.z - spine.position.z).ToString("F3") : "-1")
+                        .Append(",\"tailZ\":").Append(TailTip(player, "z"))
+                        .Append(",\"tailY\":").Append(TailTip(player, "y"))
                         .Append("}");
                 }
 
@@ -292,6 +309,7 @@ public static class ClipCapture
             // JSON summary (16 frames = 8 samples x 2 views).
             string json = "{\"clip\":\"" + clipName + "\",\"length\":" + clip.length.ToString("F4") +
                           ",\"model\":\"" + modelPath.Replace("\\", "/") + "\",\"frames\":16" +
+                          ",\"springs\":" + springCount +
                           ",\"samples\":[" + poseLog + "]" +
                           (bindLog != null ? "," + bindLog : "") + "}";
             File.WriteAllText(jsonPath, json);
@@ -328,6 +346,15 @@ public static class ClipCapture
         File.WriteAllBytes(path, png);
         if (png == null || png.Length == 0 || new FileInfo(path).Length == 0)
             throw new Exception("zero-byte PNG: " + path);
+    }
+
+    // Tail5(스프링 체인 끝점)의 world 좌표 한 축 — 물리 작동 증명. 샘플마다 값이 달라지면
+    // 꼬리가 흔들린다는 뜻; 전 샘플 동일값이면 Step이 안 돌거나 부속물이 없는 리그다.
+    static string TailTip(GameObject player, string axis)
+    {
+        var t = player.GetComponentsInChildren<Transform>(true).FirstOrDefault(x => x.name == "Tail5");
+        if (t == null) return "-1";
+        return (axis == "z" ? t.position.z : t.position.y).ToString("F3");
     }
 
     static void Cleanup(ref RenderTexture rt, ref GameObject camObj, string ctrlPath)
