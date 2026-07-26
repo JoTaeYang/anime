@@ -17,25 +17,26 @@ function Invoke-Blender([string]$RelScript) {
     }
 }
 
-function Invoke-UnityCheck {
-    Write-Host ">>> unity: AvatarCheck.Run"
+function Invoke-Unity([string]$Method, [string]$LogName, [string]$ReportName) {
+    Write-Host ">>> unity: $Method"
     # Unity relaunches as a separate process, so $LASTEXITCODE after `& $Unity` is
     # unreliable (Task 8). Use Start-Process -Wait -PassThru and read .ExitCode.
     $unityArgs = @(
         "-batchmode", "-nographics", "-quit",
         "-projectPath", (Join-Path $Root "unity\AvatarCheck"),
-        "-executeMethod", "AvatarCheck.Run",
-        "-logFile", (Join-Path $Root "unity\AvatarCheck\Logs\check.log")
+        "-executeMethod", $Method,
+        "-logFile", (Join-Path $Root "unity\AvatarCheck\Logs\$LogName")
     )
     $proc = Start-Process -FilePath $Unity -ArgumentList $unityArgs -Wait -PassThru -NoNewWindow
     $code = $proc.ExitCode
-    $report = Join-Path $Root "unity\AvatarCheck\report.json"
+    $report = Join-Path $Root "unity\AvatarCheck\$ReportName"
     if (Test-Path $report) { Get-Content $report }
     if ($code -ne 0) {
-        Write-Host "FAILED: Unity check (exit $code)" -ForegroundColor Red
+        Write-Host "FAILED: $Method (exit $code)" -ForegroundColor Red
         exit $code
     }
 }
+function Invoke-UnityCheck { Invoke-Unity "AvatarCheck.Run" "check.log" "report.json" }
 
 $MeshStage = "scripts\stages\00_mesh.py"
 if ($Profile -ne "dummy") { $MeshStage = "scripts\stages\00_intake.py" }
@@ -50,6 +51,7 @@ $Pipeline = [ordered]@{
 switch ($Stage) {
     "smoke" { Invoke-Blender "scripts\stages\smoke.py" }
     "unity" { Invoke-UnityCheck }
+    "clips" { Invoke-Unity "ClipImport.Run" "clips.log" "clips_report.json" }
     "sheet" { Invoke-Blender "scripts\preview\contact_sheet.py" }
     "userpreview" { Invoke-Blender "scripts\preview\user_preview.py" }
     "overlay" { Invoke-Blender "scripts\preview\metarig_overlay.py" }
@@ -63,7 +65,7 @@ switch ($Stage) {
     }
     default {
         if (-not $Pipeline.Contains($Stage)) {
-            Write-Host "usage: run.ps1 [smoke|mesh|rig|anim|bake|export|unity|sheet|overlay|userpreview|walkcompare|all]"
+            Write-Host "usage: run.ps1 [smoke|mesh|rig|anim|bake|export|unity|clips|sheet|overlay|userpreview|walkcompare|all]"
             exit 2
         }
         foreach ($s in $Pipeline[$Stage]) { Invoke-Blender $s }
