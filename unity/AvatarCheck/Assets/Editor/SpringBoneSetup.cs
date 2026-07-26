@@ -1,24 +1,23 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-// meta appendageBones(단일 원천)의 이름 규칙으로 체인을 묶어 SpringBoneChain을
-// 부착하는 정적 유틸. PlaySceneBuild(씬 생성)와 ClipCapture(캡처) 양쪽에서 호출.
-// 그룹 튜닝값은 아래 테이블이 단일 원천 — 수렴 루프(스펙 §3)의 수정 대상.
+// meta appendageBones(?⑥씪 ?먯쿇)???대쫫 洹쒖튃?쇰줈 泥댁씤??臾띠뼱 SpringBoneChain??// 遺李⑺븯???뺤쟻 ?좏떥. PlaySceneBuild(???앹꽦)? ClipCapture(罹≪쿂) ?묒そ?먯꽌 ?몄텧.
+// 洹몃９ ?쒕떇媛믪? ?꾨옒 ?뚯씠釉붿씠 ?⑥씪 ?먯쿇 ???섎졃 猷⑦봽(?ㅽ럺 짠3)???섏젙 ???
 public static class SpringBoneSetup
 {
-    // (체인 본 이름 나열, stiffness, damping, gravity, maxAngleDeg, useLegColliders)
+    // (泥댁씤 蹂??대쫫 ?섏뿴, stiffness, damping, gravity, maxAngleDeg, useLegColliders)
     static readonly (string[] chain, float st, float dp, float gr, float ang, bool col)[] Chains =
     {
         (new[]{"Tail1","Tail2","Tail3","Tail4","Tail5"}, 0.06f, 0.15f, 0.5f, 45f, false),
-        (new[]{"SkirtF1a","SkirtF1b"},   0.20f, 0.25f, 1.5f, 30f, true),
-        (new[]{"SkirtFR1a","SkirtFR1b"}, 0.20f, 0.25f, 1.5f, 30f, true),
-        (new[]{"SkirtR1a","SkirtR1b"},   0.20f, 0.25f, 1.5f, 30f, true),
-        (new[]{"SkirtBR1a","SkirtBR1b"}, 0.20f, 0.25f, 1.5f, 30f, true),
-        (new[]{"SkirtB1a","SkirtB1b"},   0.20f, 0.25f, 1.5f, 30f, true),
-        (new[]{"SkirtBL1a","SkirtBL1b"}, 0.20f, 0.25f, 1.5f, 30f, true),
-        (new[]{"SkirtL1a","SkirtL1b"},   0.20f, 0.25f, 1.5f, 30f, true),
-        (new[]{"SkirtFL1a","SkirtFL1b"}, 0.20f, 0.25f, 1.5f, 30f, true),
+        (new[]{"SkirtF1a","SkirtF1b"}, 0.15f, 0.25f, 1.5f, 40f, true),
+        (new[]{"SkirtFR1a","SkirtFR1b"}, 0.15f, 0.25f, 1.5f, 40f, true),
+        (new[]{"SkirtR1a","SkirtR1b"}, 0.15f, 0.25f, 1.5f, 40f, true),
+        (new[]{"SkirtBR1a","SkirtBR1b"}, 0.15f, 0.25f, 1.5f, 40f, true),
+        (new[]{"SkirtB1a","SkirtB1b"}, 0.15f, 0.25f, 1.5f, 40f, true),
+        (new[]{"SkirtBL1a","SkirtBL1b"}, 0.15f, 0.25f, 1.5f, 40f, true),
+        (new[]{"SkirtL1a","SkirtL1b"}, 0.15f, 0.25f, 1.5f, 40f, true),
+        (new[]{"SkirtFL1a","SkirtFL1b"}, 0.15f, 0.25f, 1.5f, 40f, true),
         (new[]{"ScarfL1a","ScarfL1b"},   0.08f, 0.20f, 2.0f, 50f, false),
         (new[]{"ScarfR1a","ScarfR1b"},   0.08f, 0.20f, 2.0f, 50f, false),
         (new[]{"HoodEarL"},              0.12f, 0.20f, 0.3f, 25f, false),
@@ -26,7 +25,7 @@ public static class SpringBoneSetup
     };
     static readonly (string bone, float r)[] LegColliders =
     {
-        ("LeftUpperLeg", 0.09f), ("RightUpperLeg", 0.09f),
+        ("LeftUpperLeg", 0.11f), ("RightUpperLeg", 0.11f),
         ("LeftLowerLeg", 0.07f), ("RightLowerLeg", 0.07f),
     };
 
@@ -48,7 +47,7 @@ public static class SpringBoneSetup
         foreach (var (chain, st, dp, gr, ang, col) in Chains)
         {
             var bones = chain.Select(n => byName.TryGetValue(n, out var t) ? t : null).ToArray();
-            if (bones.Any(b => b == null)) continue;   // 부속물 없는 모델(Y Bot 등)은 조용히 스킵
+            if (bones.Any(b => b == null)) continue;   // 遺?띾Ъ ?녿뒗 紐⑤뜽(Y Bot ??? 議곗슜???ㅽ궢
             var sb = bones[0].gameObject.GetComponent<SpringBoneChain>()
                      ?? bones[0].gameObject.AddComponent<SpringBoneChain>();
             sb.bones = bones;
