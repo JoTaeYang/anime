@@ -67,6 +67,14 @@ switch ($Stage) {
     "clips" { Invoke-Unity "ClipImport.Run" "clips.log" "clips_report.json" }
     "playscene" { Invoke-Unity "PlaySceneBuild.Run" "playscene.log" "playscene_report.json" }
     "capture" { Invoke-UnityCapture }
+    "probe" {
+        # Numeric retarget diagnosis. Like `clips`, it needs no rendering, so keep the
+        # headless (-nographics) arg list. No unity/AvatarCheck report to print; the probe
+        # writes previews/character/unity_capture/retarget_probe.json — print that after.
+        Invoke-Unity "RetargetProbe.Run" "probe.log" "unused_probe_report.json"
+        $probeJson = Join-Path $Root "previews\character\unity_capture\retarget_probe.json"
+        if (Test-Path $probeJson) { Get-Content $probeJson }
+    }
     "sheet" { Invoke-Blender "scripts\preview\contact_sheet.py" }
     "userpreview" { Invoke-Blender "scripts\preview\user_preview.py" }
     "overlay" { Invoke-Blender "scripts\preview\metarig_overlay.py" }
@@ -80,7 +88,7 @@ switch ($Stage) {
     }
     default {
         if (-not $Pipeline.Contains($Stage)) {
-            Write-Host "usage: run.ps1 [smoke|mesh|rig|anim|bake|export|unity|clips|playscene|capture|sheet|overlay|userpreview|walkcompare|all]"
+            Write-Host "usage: run.ps1 [smoke|mesh|rig|anim|bake|export|unity|clips|playscene|capture|probe|sheet|overlay|userpreview|walkcompare|all]"
             exit 2
         }
         foreach ($s in $Pipeline[$Stage]) { Invoke-Blender $s }
