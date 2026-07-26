@@ -131,6 +131,14 @@ public static class ClipCapture
             anim.runtimeAnimatorController = ctrl;
             anim.applyRootMotion = false;                        // walk-in-place: feet step fore/aft
             anim.cullingMode = AnimatorCullingMode.AlwaysAnimate; // never cull in edit stepping
+            // 에디트 모드 batch에서 cam.Render()는 스킨 행렬을 갱신하지 않아 바인드 포즈에
+            // 가까운 살을 그린다 (BakeMesh로 확인: 본·정점은 정상 보폭인데 렌더만 정지 —
+            // 이 도구의 3번째이자 최종 캡처 아티팩트). 렌더마다 스킨 행렬 재계산을 강제한다.
+            foreach (var s in player.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+            {
+                s.updateWhenOffscreen = true;
+                s.forceMatrixRecalculationPerRender = true;
+            }
             anim.Rebind();
             anim.Update(0f);
 
@@ -162,16 +170,80 @@ public static class ClipCapture
             var tex = new Texture2D(W, H, TextureFormat.RGB24, false);
             var pp = player.transform.position;
 
+            // RUNTIME sampling — ONE continuous playback, stepping forward to each target time
+            // (RetargetProbe's exact pattern). Per-sample Rebind() was a second capture artifact:
+            // in edit-mode batch, Update(DT) after a Rebind does not advance the state machine,
+            // so every sample rendered the same phase (YBot frames 0 and 4 were identical
+            // instead of mirrored). Sample times are ascending, so continuous stepping visits
+            // each phase exactly once.
+            float cur = 0f;
+            var poseLog = new System.Text.StringBuilder();
+            string bindLog = null;
             for (int i = 0; i < SAMPLES; i++)
             {
                 float t = (i / (float)SAMPLES) * clip.length;
+                while (cur + DT * 0.5f < t) { anim.Update(DT); cur += DT; }
 
-                // RUNTIME sampling: rewind to clip start (Rebind) then step forward to t in
-                // fixed DT increments — the honest Animator solve, not AnimationMode.
-                anim.Rebind();
-                anim.Update(0f);
-                int stepCount = Mathf.RoundToInt(t / DT);
-                for (int s = 0; s < stepCount; s++) anim.Update(DT);
+                // 샘플별 발/무릎 수치 — 프레임(눈)과 프로브(숫자)를 잇는 교차 검증.
+                var lf = anim.GetBoneTransform(HumanBodyBones.LeftFoot);
+                var rf = anim.GetBoneTransform(HumanBodyBones.RightFoot);
+                if (lf != null && rf != null)
+                {
+                    if (poseLog.Length > 0) poseLog.Append(",");
+                    poseLog.Append("{\"i\":").Append(i)
+                        .Append(",\"lz\":").Append(lf.position.z.ToString("F3"))
+                        .Append(",\"rz\":").Append(rf.position.z.ToString("F3"))
+                        .Append(",\"sep\":").Append(Mathf.Abs(lf.position.z - rf.position.z).ToString("F3"))
+                        .Append("}");
+                }
+
+                // 바인딩 진단 (i==2, 최대 보폭 시점 1회): 스킨 렌더러가 참조하는 다리 본이
+                // 애니메이터가 움직이는 그 Transform 인스턴스인지 + 이름 중복 여부 +
+                // 스킨 본 배열 내 다리 관련 본들의 world z. 뼈는 걷는데 메시가 안 따라가는
+                // 원인(중복 계층/트위스트 본 정지)을 가르는 데이터.
+                if (i == 2)
+                {
+                    var smr = player.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                        .OrderByDescending(s => s.bones.Length).FirstOrDefault();
+                    if (smr != null)
+                    {
+                        var all = player.GetComponentsInChildren<Transform>(true);
+                        var dup = all.GroupBy(x => x.name).Where(g => g.Count() > 1)
+                                     .Select(g => g.Key + "x" + g.Count()).ToArray();
+                        bool lfInSkin = smr.bones.Contains(lf);
+                        var legBones = smr.bones.Where(b => b != null && b.name.Contains("Leg"))
+                            .Select(b => "{\"n\":\"" + b.name + "\",\"z\":" + b.position.z.ToString("F3") +
+                                         ",\"isAnim\":" + (b == anim.GetBoneTransform(HumanBodyBones.LeftUpperLeg) ||
+                                                           b == anim.GetBoneTransform(HumanBodyBones.RightUpperLeg) ||
+                                                           b == anim.GetBoneTransform(HumanBodyBones.LeftLowerLeg) ||
+                                                           b == anim.GetBoneTransform(HumanBodyBones.RightLowerLeg)
+                                                           ? "true" : "false") + "}");
+                        // 렌더러 전수 조사 + 스킨 결과를 직접 구워 정점 z-폭 측정: 눈에 보이는
+                        // 메시가 이 SMR인지, 스키닝이 실제로 보폭만큼 정점을 벌리는지 확정.
+                        var rends = player.GetComponentsInChildren<Renderer>(true)
+                            .Select(r => "{\"n\":\"" + r.name + "\",\"type\":\"" + r.GetType().Name +
+                                         "\",\"enabled\":" + (r.enabled ? "true" : "false") +
+                                         ",\"activeGO\":" + (r.gameObject.activeInHierarchy ? "true" : "false") + "}");
+                        var baked = new Mesh();
+                        smr.BakeMesh(baked);
+                        var verts = baked.vertices;
+                        float minZ = float.MaxValue, maxZ = float.MinValue, minY = float.MaxValue;
+                        foreach (var v in verts)
+                        {
+                            var w = smr.transform.TransformPoint(v);
+                            if (w.y < 0.35f) { minZ = Mathf.Min(minZ, w.z); maxZ = Mathf.Max(maxZ, w.z); }
+                            minY = Mathf.Min(minY, w.y);
+                        }
+                        UnityEngine.Object.DestroyImmediate(baked);
+                        bindLog = "\"skin\":{\"renderer\":\"" + smr.name + "\",\"boneCount\":" + smr.bones.Length +
+                                  ",\"leftFootInSkinBones\":" + (lfInSkin ? "true" : "false") +
+                                  ",\"dupNames\":[" + string.Join(",", dup.Select(d => "\"" + d + "\"")) + "]" +
+                                  ",\"legBonesAtMaxStride\":[" + string.Join(",", legBones) + "]" +
+                                  ",\"renderers\":[" + string.Join(",", rends) + "]" +
+                                  ",\"bakedLowMeshZSpan\":{\"minZ\":" + minZ.ToString("F3") + ",\"maxZ\":" + maxZ.ToString("F3") +
+                                  ",\"minY\":" + minY.ToString("F3") + "}}";
+                    }
+                }
 
                 // Side view: whole body from the character's left, eye-level.
                 ShootView(cam, rt, tex,
@@ -188,7 +260,9 @@ public static class ClipCapture
 
             // JSON summary (16 frames = 8 samples x 2 views).
             string json = "{\"clip\":\"" + clipName + "\",\"length\":" + clip.length.ToString("F4") +
-                          ",\"model\":\"" + modelPath.Replace("\\", "/") + "\",\"frames\":16}";
+                          ",\"model\":\"" + modelPath.Replace("\\", "/") + "\",\"frames\":16" +
+                          ",\"samples\":[" + poseLog + "]" +
+                          (bindLog != null ? "," + bindLog : "") + "}";
             File.WriteAllText(jsonPath, json);
 
             Debug.Log($"ClipCapture: wrote 16 PNGs for '{clipName}' on '{modelPath}' (len={clip.length:F3}s, runtime path) to {outDir}");
