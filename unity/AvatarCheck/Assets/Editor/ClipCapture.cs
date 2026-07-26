@@ -36,6 +36,16 @@ public static class ClipCapture
     const string YBotAssetPath = "Assets/Clips/YBotWalking.fbx";
     const string YBotSourceRel = "YBotWalking.fbx"; // under assets/mocap/
 
+    // With-Skin 레퍼런스 소스: 클립명 -> (Assets 경로, assets/mocap 파일명).
+    // 같은 모션을 레퍼런스 리그(네이티브)와 우리 캐릭터(리타게팅)에 나란히 재생해
+    // 리타게팅 차이를 눈으로 가르는 비교 재료. 필요 시 여기에 추가.
+    static readonly System.Collections.Generic.Dictionary<string, (string asset, string src)> RefSources =
+        new System.Collections.Generic.Dictionary<string, (string, string)>
+        {
+            { "YBotWalk", (YBotAssetPath, YBotSourceRel) },
+            { "RefAttack", ("Assets/Clips/RefAttack.fbx", "RefAttack.fbx") },
+        };
+
     static string RepoRoot() =>
         Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", ".."));
 
@@ -55,26 +65,31 @@ public static class ClipCapture
     // Fresh-import the Y Bot reference (Mixamo "Walking" WITH SKIN) from assets/mocap into
     // Assets/Clips, same protocol as ClipImport: DeleteAsset first, Human type, avatar from
     // this model, take renamed to "YBotWalk", loopTime=true. Idempotent.
-    public static void ImportYBot()
+    public static void ImportYBot() => ImportRef("YBotWalk");
+
+    // With-Skin 레퍼런스 FBX를 assets/mocap에서 Assets/Clips로 신규 반입 (항상 새 임포트,
+    // Human 타입, 자체 아바타, 테이크명 = 클립명, 루프). Idempotent.
+    static void ImportRef(string clipName)
     {
-        string src = Path.Combine(RepoRoot(), "assets", "mocap", YBotSourceRel);
+        var (assetPath, srcRel) = RefSources[clipName];
+        string src = Path.Combine(RepoRoot(), "assets", "mocap", srcRel);
         if (!File.Exists(src))
-            throw new Exception("Y Bot source missing: " + src + " (assets/mocap/YBotWalking.fbx 선행)");
+            throw new Exception("reference source missing: " + src + " (assets/mocap/" + srcRel + " 선행)");
         if (!AssetDatabase.IsValidFolder("Assets/Clips"))
             AssetDatabase.CreateFolder("Assets", "Clips");
-        if (AssetDatabase.LoadMainAssetAtPath(YBotAssetPath) != null)
-            AssetDatabase.DeleteAsset(YBotAssetPath);   // 신규 반입 프로토콜: 항상 새 임포트
-        File.Copy(src, Path.GetFullPath(YBotAssetPath), overwrite: true);
-        AssetDatabase.ImportAsset(YBotAssetPath, ImportAssetOptions.ForceSynchronousImport);
+        if (AssetDatabase.LoadMainAssetAtPath(assetPath) != null)
+            AssetDatabase.DeleteAsset(assetPath);   // 신규 반입 프로토콜: 항상 새 임포트
+        File.Copy(src, Path.GetFullPath(assetPath), overwrite: true);
+        AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceSynchronousImport);
 
-        var importer = (ModelImporter)AssetImporter.GetAtPath(YBotAssetPath);
+        var importer = (ModelImporter)AssetImporter.GetAtPath(assetPath);
         importer.animationType = ModelImporterAnimationType.Human;
         importer.avatarSetup = ModelImporterAvatarSetup.CreateFromThisModel;
         var takes = importer.defaultClipAnimations;
-        foreach (var t in takes) { t.name = "YBotWalk"; t.loopTime = true; }
+        foreach (var t in takes) { t.name = clipName; t.loopTime = true; }
         importer.clipAnimations = takes;
         importer.SaveAndReimport();
-        Debug.Log("ClipCapture.ImportYBot: imported " + YBotAssetPath + " (take 'YBotWalk', loop)");
+        Debug.Log("ClipCapture.ImportRef: imported " + assetPath + " (take '" + clipName + "', loop)");
     }
 
     public static void Run()
@@ -90,10 +105,12 @@ public static class ClipCapture
         string ctrlPath = null;
         try
         {
-            // Y Bot reference guard: if the model points at the Y Bot asset and it isn't
-            // imported yet, bring it in from assets/mocap first (idempotent).
-            if (modelPath == YBotAssetPath && AssetDatabase.LoadMainAssetAtPath(YBotAssetPath) == null)
-                ImportYBot();
+            // 레퍼런스 가드: 모델이 레퍼런스 자산을 가리키거나 클립이 레퍼런스 소스에
+            // 정의되어 있는데 아직 미반입이면 assets/mocap에서 가져온다 (idempotent).
+            foreach (var kv in RefSources)
+                if ((modelPath == kv.Value.asset || clipName == kv.Key) &&
+                    AssetDatabase.LoadMainAssetAtPath(kv.Value.asset) == null)
+                    ImportRef(kv.Key);
 
             var clip = Clip(clipName);
             if (clip == null)
@@ -189,11 +206,25 @@ public static class ClipCapture
                 var rf = anim.GetBoneTransform(HumanBodyBones.RightFoot);
                 if (lf != null && rf != null)
                 {
+                    float Knee(HumanBodyBones up, HumanBodyBones low, HumanBodyBones foot)
+                    {
+                        var u = anim.GetBoneTransform(up); var l = anim.GetBoneTransform(low); var f2 = anim.GetBoneTransform(foot);
+                        if (u == null || l == null || f2 == null) return -1f;
+                        return Vector3.Angle(u.position - l.position, f2.position - l.position);
+                    }
+                    var hips = anim.GetBoneTransform(HumanBodyBones.Hips);
+                    var spine = anim.GetBoneTransform(HumanBodyBones.Spine);
+                    var head = anim.GetBoneTransform(HumanBodyBones.Head);
                     if (poseLog.Length > 0) poseLog.Append(",");
                     poseLog.Append("{\"i\":").Append(i)
                         .Append(",\"lz\":").Append(lf.position.z.ToString("F3"))
                         .Append(",\"rz\":").Append(rf.position.z.ToString("F3"))
                         .Append(",\"sep\":").Append(Mathf.Abs(lf.position.z - rf.position.z).ToString("F3"))
+                        .Append(",\"kneeL\":").Append((180f - Knee(HumanBodyBones.LeftUpperLeg, HumanBodyBones.LeftLowerLeg, HumanBodyBones.LeftFoot)).ToString("F1"))
+                        .Append(",\"kneeR\":").Append((180f - Knee(HumanBodyBones.RightUpperLeg, HumanBodyBones.RightLowerLeg, HumanBodyBones.RightFoot)).ToString("F1"))
+                        .Append(",\"hipsY\":").Append(hips != null ? hips.position.y.ToString("F3") : "-1")
+                        .Append(",\"headZ\":").Append(head != null ? head.position.z.ToString("F3") : "-1")
+                        .Append(",\"spineZlean\":").Append(spine != null && head != null ? (head.position.z - spine.position.z).ToString("F3") : "-1")
                         .Append("}");
                 }
 
