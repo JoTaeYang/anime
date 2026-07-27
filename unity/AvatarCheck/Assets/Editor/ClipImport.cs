@@ -31,6 +31,14 @@ public static class ClipImport
             if (!AssetDatabase.IsValidFolder("Assets/Clips"))
                 AssetDatabase.CreateFolder("Assets", "Clips");
 
+            // 아바타 원천: 스킨 포함 Y Bot (assets/mocap/YBotWalking.fbx). 미반입이면 반입.
+            if (AssetDatabase.LoadMainAssetAtPath("Assets/Clips/YBotWalking.fbx") == null)
+                ClipCapture.ImportYBot();
+            var ybotAvatar = AssetDatabase.LoadAllAssetsAtPath("Assets/Clips/YBotWalking.fbx")
+                .OfType<Avatar>().FirstOrDefault();
+            if (ybotAvatar == null || !ybotAvatar.isValid || !ybotAvatar.isHuman)
+                throw new Exception("Y Bot source avatar invalid/missing — assets/mocap/YBotWalking.fbx (With Skin) 필요");
+
             foreach (var e in cfg.clips)
             {
                 string src = Path.Combine(RepoRoot(), "assets", "mocap", e.file);
@@ -46,8 +54,16 @@ public static class ClipImport
                 AssetDatabase.ImportAsset(assetPath, ImportAssetOptions.ForceSynchronousImport);
 
                 var importer = (ModelImporter)AssetImporter.GetAtPath(assetPath);
-                importer.animationType = ModelImporterAnimationType.Human;   // Mixamo 표준 스켈레톤은 자동 매핑이 정상 동작
-                importer.avatarSetup = ModelImporterAvatarSetup.CreateFromThisModel;
+                importer.animationType = ModelImporterAnimationType.Human;
+                // 아바타는 스킨 포함 Y Bot 임포트에서 복사한다 (2026-07-27 근본 원인 수정).
+                // Without-Skin FBX는 뼈대만 있어 CreateFromThisModel의 T포즈 캘리브레이션이
+                // 부실해지고, 그 아바타로 구운 근육 커브는 "다른" 아바타로 리타게팅할 때만
+                // 왜곡된다 (무릎 20~30도 얕아짐, 왼발목 +31도 — 네이티브 재생은 왜곡이
+                // 상쇄되어 정상으로 보임. 교차 계측으로 실증: WalkNative deep vs Walk-on-
+                // character shallow, YBotWalk[with-skin] 리타게팅은 1~4도 일치).
+                // 모든 Mixamo 클립은 동일 mixamorig 스켈레톤이므로 아바타 공유가 표준 관행.
+                importer.avatarSetup = ModelImporterAvatarSetup.CopyFromOther;
+                importer.sourceAvatar = ybotAvatar;
                 var takes = importer.defaultClipAnimations;
                 foreach (var t in takes) { t.name = e.name; t.loopTime = e.loop; }
                 importer.clipAnimations = takes;
@@ -75,9 +91,13 @@ public static class ClipImport
                 results.Add(($"import_clean:{e.name}", otherErrors.Count == 0,
                     otherErrors.Count == 0 ? "no errors/warnings" : string.Join(" | ", otherErrors.Take(50))));
 
-                var avatar = AssetDatabase.LoadAllAssetsAtPath(assetPath).OfType<Avatar>().FirstOrDefault();
-                results.Add(($"avatar_human:{e.name}", avatar != null && avatar.isValid && avatar.isHuman,
-                    avatar == null ? "no avatar" : $"isValid={avatar.isValid} isHuman={avatar.isHuman}"));
+                // CopyFromOther는 자산 내 Avatar 서브에셋을 만들지 않으므로, 단언의 대상은
+                // "실제로 배정된 아바타"(= sourceAvatar)의 유효성이다 — 검사 의도(휴머노이드
+                // 유효 임포트) 동일, 대상만 정직하게 재지정 (약화 아님: 위에서 원천 아바타가
+                // invalid면 전체 run이 throw로 실패한다).
+                var assigned = ((ModelImporter)AssetImporter.GetAtPath(assetPath)).sourceAvatar;
+                results.Add(($"avatar_human:{e.name}", assigned != null && assigned.isValid && assigned.isHuman,
+                    assigned == null ? "no source avatar" : $"copied YBot avatar isValid={assigned.isValid} isHuman={assigned.isHuman}"));
 
                 var clip = AssetDatabase.LoadAllAssetsAtPath(assetPath).OfType<AnimationClip>()
                     .FirstOrDefault(c => c.name == e.name);
