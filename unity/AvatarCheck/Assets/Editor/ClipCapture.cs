@@ -242,6 +242,16 @@ public static class ClipCapture
                         .Append(",\"spineZlean\":").Append(spine != null && head != null ? (head.position.z - spine.position.z).ToString("F3") : "-1")
                         .Append(",\"tailZ\":").Append(TailTip(player, "z"))
                         .Append(",\"tailY\":").Append(TailTip(player, "y"))
+                        // 자세 바이어스 계측 (배 내밈 진단): pelvisLean = 힙→척추 벡터의
+                        // 전후 성분(+ = 상체 기저가 앞으로), hipsZoff = 힙이 두 발 중점보다
+                        // 앞(+)/뒤(-)로 얼마나 나가 있는가.
+                        .Append(",\"pelvisLean\":").Append(spine != null && hips != null
+                            ? ((spine.position - hips.position).normalized.z).ToString("F3") : "-1")
+                        .Append(",\"hipsZoff\":").Append(hips != null
+                            ? (hips.position.z - (lf.position.z + rf.position.z) * 0.5f).ToString("F3") : "-1")
+                        // 발 피치(도): 발→발끝 벡터의 지면 대비 기울기. +면 발끝 들림.
+                        .Append(",\"footPitchL\":").Append(FootPitch(anim, HumanBodyBones.LeftFoot, HumanBodyBones.LeftToes))
+                        .Append(",\"footPitchR\":").Append(FootPitch(anim, HumanBodyBones.RightFoot, HumanBodyBones.RightToes))
                         .Append("}");
                 }
 
@@ -350,6 +360,16 @@ public static class ClipCapture
 
     // Tail5(스프링 체인 끝점)의 world 좌표 한 축 — 물리 작동 증명. 샘플마다 값이 달라지면
     // 꼬리가 흔들린다는 뜻; 전 샘플 동일값이면 Step이 안 돌거나 부속물이 없는 리그다.
+    static string FootPitch(Animator anim, HumanBodyBones foot, HumanBodyBones toes)
+    {
+        var f = anim.GetBoneTransform(foot);
+        var t = anim.GetBoneTransform(toes);
+        if (f == null || t == null) return "-999";
+        Vector3 v = t.position - f.position;
+        float horiz = new Vector2(v.x, v.z).magnitude;
+        return (Mathf.Atan2(v.y, Mathf.Max(0.0001f, horiz)) * Mathf.Rad2Deg).ToString("F1");
+    }
+
     static string TailTip(GameObject player, string axis)
     {
         var t = player.GetComponentsInChildren<Transform>(true).FirstOrDefault(x => x.name == "Tail5");
