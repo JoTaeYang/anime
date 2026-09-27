@@ -1,0 +1,1210 @@
+{
+ "_doc": {
+  "owner": "check_g5_skin.py (T20). Production scripts read only.",
+  "format": "poses[]: id, group (sheet: shoulder/elbow/wrist/hip/knee/ankle/spine_head/full), side (l/r/c), tier (judged/report), joint (joint name, list of joint names, or 'all' = every limb joint both sides), rot {bone: [X, Y, Z] local Euler degrees, rotation_mode XYZ (Blender: X applied first, all about the bone's rest frame)}, kind + col (sheet row/column labels; limb col = signed pose angle), view (cell render view). Bones not listed stay at rest. Twist bones (upperarm_twist_x, lowerarm_twist_x) are never listed: their constraints drive them.",
+  "sign_derivation": "From canonical_skeleton.json rest_matrix columns (X, Y = bone axis, Z). Rotating the bone by +a about local axis A moves its tail along A x Y (right hand rule). Arm L: X=(-0.028,+0.202,-0.979)~-Z, Y~+X, Z=(+0.037,-0.978,-0.203)~-Y. Arm R: X=(-0.029,-0.176,+0.984)~+Z, Y~-X, Z=(-0.042,-0.983,-0.177)~-Y. => +X: X x Y = +Z_local ~ -Y world, arm/forearm/hand moves forward (-Y) on both sides (G4.4: lowerarm +X -> hand -Y). +Z: Z x Y = -X_local: L -> +Z world (raise), R -> -Z world (lower); so shoulder raise = upperarm_l Z +a, upperarm_r Z -a. Shoulder forward = upperarm X +a, back = X -a. Leg L/R (thigh, calf): X~+X, Y~-Z, Z~+Y. +X: tail moves +Z_local ~ +Y (back) (G4.4: calf +X -> foot +Y) => knee flexion = calf X +a, hip flexion (foot forward -Y) = thigh X -a, extension = X +a. +Z: tail moves -X_local ~ -X world: thigh_l Z -a and thigh_r Z +a = abduction (foot outward). Foot L/R: X~(+0.91,+-0.4,..), Y ~ toward foot_tip (-Y), Z~-Z. +X: toe moves -Z => ankle dorsiflexion (toe up, the G3 ankle_30 direction) = foot X -a, plantarflexion = X +a. Spine_01/spine_02/head: X=+X, Y=+Z, Z=-Y. +X: top moves -Y => forward bend = X +a, back = X -a. +Z: top moves -X => bend to the character right (side_r) = Z +a, side_l = Z -a. +Y twist turns the front (-Y) toward +X (character left). Twist poses: upperarm / hand local Y +-a (bone axis).",
+  "labels": "shoulder_raise a: arm up by a from T-pose. shoulder_fwd a>0 forward, a<0 back. hip_flex a>0 flexion, a<0 extension. ankle a>0 dorsiflexion (toe up), a<0 plantarflexion. wrist_bend a: hand X +a (a>0 hand toward -Y). ids use 'm' for a minus sign.",
+  "tier": "judged = poses carried over from G3 (plan Phase 5 main decision 2026-09-25): shoulder raise/forward 30 and 60, elbow 30 and 60, knee 30 and 60, hip flexion 30 and 60 (not extension), wrist twist +90 (hand local +Y, the G3 wrist_twist_90), ankle 30 (dorsiflexion, the G3 ankle_30). Everything else is report (visual judgement; thresholds fixed by main after first measurement).",
+  "ranges": "spec section 4, per side: shoulder raise 0-170 (30/60/90/130/170), shoulder forward/back (30/60/90, -45/-90), upperarm twist +-90, elbow 0-140 (30/60/90/140), wrist twist +-90, wrist bend +-60, hip flexion +-60 (30/60/-30/-60), hip abduction 30/45, knee 0-130 (30/60/90/130), ankle +-30; spine_01/spine_02 bend forward/back/side 30, head bend forward/back/side 30; representative full-body poses: swing windup/impact, walk contact/passing, run max stride, hit lean back, death fall forward, jump crouch. Shoulder raise rotates upperarm only (shoulder bone at rest), same as G3."
+ },
+ "rotation_mode": "XYZ",
+ "poses": [
+  {
+   "id": "shoulder_raise_30_l",
+   "group": "shoulder",
+   "side": "l",
+   "tier": "judged",
+   "joint": "shoulder",
+   "kind": "shoulder_raise",
+   "col": "30",
+   "view": "front",
+   "rot": {
+    "upperarm_l": [0, 0, 30]
+   }
+  },
+  {
+   "id": "shoulder_raise_60_l",
+   "group": "shoulder",
+   "side": "l",
+   "tier": "judged",
+   "joint": "shoulder",
+   "kind": "shoulder_raise",
+   "col": "60",
+   "view": "front",
+   "rot": {
+    "upperarm_l": [0, 0, 60]
+   }
+  },
+  {
+   "id": "shoulder_raise_90_l",
+   "group": "shoulder",
+   "side": "l",
+   "tier": "report",
+   "joint": "shoulder",
+   "kind": "shoulder_raise",
+   "col": "90",
+   "view": "front",
+   "rot": {
+    "upperarm_l": [0, 0, 90]
+   }
+  },
+  {
+   "id": "shoulder_raise_130_l",
+   "group": "shoulder",
+   "side": "l",
+   "tier": "report",
+   "joint": "shoulder",
+   "kind": "shoulder_raise",
+   "col": "130",
+   "view": "front",
+   "rot": {
+    "upperarm_l": [0, 0, 130]
+   }
+  },
+  {
+   "id": "shoulder_raise_170_l",
+   "group": "shoulder",
+   "side": "l",
+   "tier": "report",
+   "joint": "shoulder",
+   "kind": "shoulder_raise",
+   "col": "170",
+   "view": "front",
+   "rot": {
+    "upperarm_l": [0, 0, 170]
+   }
+  },
+  {
+   "id": "shoulder_fwd_30_l",
+   "group": "shoulder",
+   "side": "l",
+   "tier": "judged",
+   "joint": "shoulder",
+   "kind": "shoulder_fwd",
+   "col": "30",
+   "view": "top",
+   "rot": {
+    "upperarm_l": [30, 0, 0]
+   }
+  },
+  {
+   "id": "shoulder_fwd_60_l",
+   "group": "shoulder",
+   "side": "l",
+   "tier": "judged",
+   "joint": "shoulder",
+   "kind": "shoulder_fwd",
+   "col": "60",
+   "view": "top",
+   "rot": {
+    "upperarm_l": [60, 0, 0]
+   }
+  },
+  {
+   "id": "shoulder_fwd_90_l",
+   "group": "shoulder",
+   "side": "l",
+   "tier": "report",
+   "joint": "shoulder",
+   "kind": "shoulder_fwd",
+   "col": "90",
+   "view": "top",
+   "rot": {
+    "upperarm_l": [90, 0, 0]
+   }
+  },
+  {
+   "id": "shoulder_fwd_m45_l",
+   "group": "shoulder",
+   "side": "l",
+   "tier": "report",
+   "joint": "shoulder",
+   "kind": "shoulder_fwd",
+   "col": "-45",
+   "view": "top",
+   "rot": {
+    "upperarm_l": [-45, 0, 0]
+   }
+  },
+  {
+   "id": "shoulder_fwd_m90_l",
+   "group": "shoulder",
+   "side": "l",
+   "tier": "report",
+   "joint": "shoulder",
+   "kind": "shoulder_fwd",
+   "col": "-90",
+   "view": "top",
+   "rot": {
+    "upperarm_l": [-90, 0, 0]
+   }
+  },
+  {
+   "id": "upperarm_twist_90_l",
+   "group": "shoulder",
+   "side": "l",
+   "tier": "report",
+   "joint": [
+    "shoulder",
+    "elbow"
+   ],
+   "kind": "upperarm_twist",
+   "col": "90",
+   "view": "front",
+   "rot": {
+    "upperarm_l": [0, 90, 0]
+   }
+  },
+  {
+   "id": "upperarm_twist_m90_l",
+   "group": "shoulder",
+   "side": "l",
+   "tier": "report",
+   "joint": [
+    "shoulder",
+    "elbow"
+   ],
+   "kind": "upperarm_twist",
+   "col": "-90",
+   "view": "front",
+   "rot": {
+    "upperarm_l": [0, -90, 0]
+   }
+  },
+  {
+   "id": "elbow_30_l",
+   "group": "elbow",
+   "side": "l",
+   "tier": "judged",
+   "joint": "elbow",
+   "kind": "elbow",
+   "col": "30",
+   "view": "top",
+   "rot": {
+    "lowerarm_l": [30, 0, 0]
+   }
+  },
+  {
+   "id": "elbow_60_l",
+   "group": "elbow",
+   "side": "l",
+   "tier": "judged",
+   "joint": "elbow",
+   "kind": "elbow",
+   "col": "60",
+   "view": "top",
+   "rot": {
+    "lowerarm_l": [60, 0, 0]
+   }
+  },
+  {
+   "id": "elbow_90_l",
+   "group": "elbow",
+   "side": "l",
+   "tier": "report",
+   "joint": "elbow",
+   "kind": "elbow",
+   "col": "90",
+   "view": "top",
+   "rot": {
+    "lowerarm_l": [90, 0, 0]
+   }
+  },
+  {
+   "id": "elbow_140_l",
+   "group": "elbow",
+   "side": "l",
+   "tier": "report",
+   "joint": "elbow",
+   "kind": "elbow",
+   "col": "140",
+   "view": "top",
+   "rot": {
+    "lowerarm_l": [140, 0, 0]
+   }
+  },
+  {
+   "id": "wrist_twist_90_l",
+   "group": "wrist",
+   "side": "l",
+   "tier": "judged",
+   "joint": "wrist",
+   "kind": "wrist_twist",
+   "col": "90",
+   "view": "front",
+   "rot": {
+    "hand_l": [0, 90, 0]
+   }
+  },
+  {
+   "id": "wrist_twist_m90_l",
+   "group": "wrist",
+   "side": "l",
+   "tier": "report",
+   "joint": "wrist",
+   "kind": "wrist_twist",
+   "col": "-90",
+   "view": "front",
+   "rot": {
+    "hand_l": [0, -90, 0]
+   }
+  },
+  {
+   "id": "wrist_bend_60_l",
+   "group": "wrist",
+   "side": "l",
+   "tier": "report",
+   "joint": "wrist",
+   "kind": "wrist_bend",
+   "col": "60",
+   "view": "top",
+   "rot": {
+    "hand_l": [60, 0, 0]
+   }
+  },
+  {
+   "id": "wrist_bend_m60_l",
+   "group": "wrist",
+   "side": "l",
+   "tier": "report",
+   "joint": "wrist",
+   "kind": "wrist_bend",
+   "col": "-60",
+   "view": "top",
+   "rot": {
+    "hand_l": [-60, 0, 0]
+   }
+  },
+  {
+   "id": "hip_flex_30_l",
+   "group": "hip",
+   "side": "l",
+   "tier": "judged",
+   "joint": "hip",
+   "kind": "hip_flex",
+   "col": "30",
+   "view": "side",
+   "rot": {
+    "thigh_l": [-30, 0, 0]
+   }
+  },
+  {
+   "id": "hip_flex_60_l",
+   "group": "hip",
+   "side": "l",
+   "tier": "judged",
+   "joint": "hip",
+   "kind": "hip_flex",
+   "col": "60",
+   "view": "side",
+   "rot": {
+    "thigh_l": [-60, 0, 0]
+   }
+  },
+  {
+   "id": "hip_flex_m30_l",
+   "group": "hip",
+   "side": "l",
+   "tier": "report",
+   "joint": "hip",
+   "kind": "hip_flex",
+   "col": "-30",
+   "view": "side",
+   "rot": {
+    "thigh_l": [30, 0, 0]
+   }
+  },
+  {
+   "id": "hip_flex_m60_l",
+   "group": "hip",
+   "side": "l",
+   "tier": "report",
+   "joint": "hip",
+   "kind": "hip_flex",
+   "col": "-60",
+   "view": "side",
+   "rot": {
+    "thigh_l": [60, 0, 0]
+   }
+  },
+  {
+   "id": "hip_abd_30_l",
+   "group": "hip",
+   "side": "l",
+   "tier": "report",
+   "joint": "hip",
+   "kind": "hip_abd",
+   "col": "30",
+   "view": "front",
+   "rot": {
+    "thigh_l": [0, 0, -30]
+   }
+  },
+  {
+   "id": "hip_abd_45_l",
+   "group": "hip",
+   "side": "l",
+   "tier": "report",
+   "joint": "hip",
+   "kind": "hip_abd",
+   "col": "45",
+   "view": "front",
+   "rot": {
+    "thigh_l": [0, 0, -45]
+   }
+  },
+  {
+   "id": "knee_30_l",
+   "group": "knee",
+   "side": "l",
+   "tier": "judged",
+   "joint": "knee",
+   "kind": "knee",
+   "col": "30",
+   "view": "side",
+   "rot": {
+    "calf_l": [30, 0, 0]
+   }
+  },
+  {
+   "id": "knee_60_l",
+   "group": "knee",
+   "side": "l",
+   "tier": "judged",
+   "joint": "knee",
+   "kind": "knee",
+   "col": "60",
+   "view": "side",
+   "rot": {
+    "calf_l": [60, 0, 0]
+   }
+  },
+  {
+   "id": "knee_90_l",
+   "group": "knee",
+   "side": "l",
+   "tier": "report",
+   "joint": "knee",
+   "kind": "knee",
+   "col": "90",
+   "view": "side",
+   "rot": {
+    "calf_l": [90, 0, 0]
+   }
+  },
+  {
+   "id": "knee_130_l",
+   "group": "knee",
+   "side": "l",
+   "tier": "report",
+   "joint": "knee",
+   "kind": "knee",
+   "col": "130",
+   "view": "side",
+   "rot": {
+    "calf_l": [130, 0, 0]
+   }
+  },
+  {
+   "id": "ankle_30_l",
+   "group": "ankle",
+   "side": "l",
+   "tier": "judged",
+   "joint": "ankle",
+   "kind": "ankle",
+   "col": "30",
+   "view": "side",
+   "rot": {
+    "foot_l": [-30, 0, 0]
+   }
+  },
+  {
+   "id": "ankle_m30_l",
+   "group": "ankle",
+   "side": "l",
+   "tier": "report",
+   "joint": "ankle",
+   "kind": "ankle",
+   "col": "-30",
+   "view": "side",
+   "rot": {
+    "foot_l": [30, 0, 0]
+   }
+  },
+  {
+   "id": "shoulder_raise_30_r",
+   "group": "shoulder",
+   "side": "r",
+   "tier": "judged",
+   "joint": "shoulder",
+   "kind": "shoulder_raise",
+   "col": "30",
+   "view": "front",
+   "rot": {
+    "upperarm_r": [0, 0, -30]
+   }
+  },
+  {
+   "id": "shoulder_raise_60_r",
+   "group": "shoulder",
+   "side": "r",
+   "tier": "judged",
+   "joint": "shoulder",
+   "kind": "shoulder_raise",
+   "col": "60",
+   "view": "front",
+   "rot": {
+    "upperarm_r": [0, 0, -60]
+   }
+  },
+  {
+   "id": "shoulder_raise_90_r",
+   "group": "shoulder",
+   "side": "r",
+   "tier": "report",
+   "joint": "shoulder",
+   "kind": "shoulder_raise",
+   "col": "90",
+   "view": "front",
+   "rot": {
+    "upperarm_r": [0, 0, -90]
+   }
+  },
+  {
+   "id": "shoulder_raise_130_r",
+   "group": "shoulder",
+   "side": "r",
+   "tier": "report",
+   "joint": "shoulder",
+   "kind": "shoulder_raise",
+   "col": "130",
+   "view": "front",
+   "rot": {
+    "upperarm_r": [0, 0, -130]
+   }
+  },
+  {
+   "id": "shoulder_raise_170_r",
+   "group": "shoulder",
+   "side": "r",
+   "tier": "report",
+   "joint": "shoulder",
+   "kind": "shoulder_raise",
+   "col": "170",
+   "view": "front",
+   "rot": {
+    "upperarm_r": [0, 0, -170]
+   }
+  },
+  {
+   "id": "shoulder_fwd_30_r",
+   "group": "shoulder",
+   "side": "r",
+   "tier": "judged",
+   "joint": "shoulder",
+   "kind": "shoulder_fwd",
+   "col": "30",
+   "view": "top",
+   "rot": {
+    "upperarm_r": [30, 0, 0]
+   }
+  },
+  {
+   "id": "shoulder_fwd_60_r",
+   "group": "shoulder",
+   "side": "r",
+   "tier": "judged",
+   "joint": "shoulder",
+   "kind": "shoulder_fwd",
+   "col": "60",
+   "view": "top",
+   "rot": {
+    "upperarm_r": [60, 0, 0]
+   }
+  },
+  {
+   "id": "shoulder_fwd_90_r",
+   "group": "shoulder",
+   "side": "r",
+   "tier": "report",
+   "joint": "shoulder",
+   "kind": "shoulder_fwd",
+   "col": "90",
+   "view": "top",
+   "rot": {
+    "upperarm_r": [90, 0, 0]
+   }
+  },
+  {
+   "id": "shoulder_fwd_m45_r",
+   "group": "shoulder",
+   "side": "r",
+   "tier": "report",
+   "joint": "shoulder",
+   "kind": "shoulder_fwd",
+   "col": "-45",
+   "view": "top",
+   "rot": {
+    "upperarm_r": [-45, 0, 0]
+   }
+  },
+  {
+   "id": "shoulder_fwd_m90_r",
+   "group": "shoulder",
+   "side": "r",
+   "tier": "report",
+   "joint": "shoulder",
+   "kind": "shoulder_fwd",
+   "col": "-90",
+   "view": "top",
+   "rot": {
+    "upperarm_r": [-90, 0, 0]
+   }
+  },
+  {
+   "id": "upperarm_twist_90_r",
+   "group": "shoulder",
+   "side": "r",
+   "tier": "report",
+   "joint": [
+    "shoulder",
+    "elbow"
+   ],
+   "kind": "upperarm_twist",
+   "col": "90",
+   "view": "front",
+   "rot": {
+    "upperarm_r": [0, 90, 0]
+   }
+  },
+  {
+   "id": "upperarm_twist_m90_r",
+   "group": "shoulder",
+   "side": "r",
+   "tier": "report",
+   "joint": [
+    "shoulder",
+    "elbow"
+   ],
+   "kind": "upperarm_twist",
+   "col": "-90",
+   "view": "front",
+   "rot": {
+    "upperarm_r": [0, -90, 0]
+   }
+  },
+  {
+   "id": "elbow_30_r",
+   "group": "elbow",
+   "side": "r",
+   "tier": "judged",
+   "joint": "elbow",
+   "kind": "elbow",
+   "col": "30",
+   "view": "top",
+   "rot": {
+    "lowerarm_r": [30, 0, 0]
+   }
+  },
+  {
+   "id": "elbow_60_r",
+   "group": "elbow",
+   "side": "r",
+   "tier": "judged",
+   "joint": "elbow",
+   "kind": "elbow",
+   "col": "60",
+   "view": "top",
+   "rot": {
+    "lowerarm_r": [60, 0, 0]
+   }
+  },
+  {
+   "id": "elbow_90_r",
+   "group": "elbow",
+   "side": "r",
+   "tier": "report",
+   "joint": "elbow",
+   "kind": "elbow",
+   "col": "90",
+   "view": "top",
+   "rot": {
+    "lowerarm_r": [90, 0, 0]
+   }
+  },
+  {
+   "id": "elbow_140_r",
+   "group": "elbow",
+   "side": "r",
+   "tier": "report",
+   "joint": "elbow",
+   "kind": "elbow",
+   "col": "140",
+   "view": "top",
+   "rot": {
+    "lowerarm_r": [140, 0, 0]
+   }
+  },
+  {
+   "id": "wrist_twist_90_r",
+   "group": "wrist",
+   "side": "r",
+   "tier": "judged",
+   "joint": "wrist",
+   "kind": "wrist_twist",
+   "col": "90",
+   "view": "front",
+   "rot": {
+    "hand_r": [0, 90, 0]
+   }
+  },
+  {
+   "id": "wrist_twist_m90_r",
+   "group": "wrist",
+   "side": "r",
+   "tier": "report",
+   "joint": "wrist",
+   "kind": "wrist_twist",
+   "col": "-90",
+   "view": "front",
+   "rot": {
+    "hand_r": [0, -90, 0]
+   }
+  },
+  {
+   "id": "wrist_bend_60_r",
+   "group": "wrist",
+   "side": "r",
+   "tier": "report",
+   "joint": "wrist",
+   "kind": "wrist_bend",
+   "col": "60",
+   "view": "top",
+   "rot": {
+    "hand_r": [60, 0, 0]
+   }
+  },
+  {
+   "id": "wrist_bend_m60_r",
+   "group": "wrist",
+   "side": "r",
+   "tier": "report",
+   "joint": "wrist",
+   "kind": "wrist_bend",
+   "col": "-60",
+   "view": "top",
+   "rot": {
+    "hand_r": [-60, 0, 0]
+   }
+  },
+  {
+   "id": "hip_flex_30_r",
+   "group": "hip",
+   "side": "r",
+   "tier": "judged",
+   "joint": "hip",
+   "kind": "hip_flex",
+   "col": "30",
+   "view": "side",
+   "rot": {
+    "thigh_r": [-30, 0, 0]
+   }
+  },
+  {
+   "id": "hip_flex_60_r",
+   "group": "hip",
+   "side": "r",
+   "tier": "judged",
+   "joint": "hip",
+   "kind": "hip_flex",
+   "col": "60",
+   "view": "side",
+   "rot": {
+    "thigh_r": [-60, 0, 0]
+   }
+  },
+  {
+   "id": "hip_flex_m30_r",
+   "group": "hip",
+   "side": "r",
+   "tier": "report",
+   "joint": "hip",
+   "kind": "hip_flex",
+   "col": "-30",
+   "view": "side",
+   "rot": {
+    "thigh_r": [30, 0, 0]
+   }
+  },
+  {
+   "id": "hip_flex_m60_r",
+   "group": "hip",
+   "side": "r",
+   "tier": "report",
+   "joint": "hip",
+   "kind": "hip_flex",
+   "col": "-60",
+   "view": "side",
+   "rot": {
+    "thigh_r": [60, 0, 0]
+   }
+  },
+  {
+   "id": "hip_abd_30_r",
+   "group": "hip",
+   "side": "r",
+   "tier": "report",
+   "joint": "hip",
+   "kind": "hip_abd",
+   "col": "30",
+   "view": "front",
+   "rot": {
+    "thigh_r": [0, 0, 30]
+   }
+  },
+  {
+   "id": "hip_abd_45_r",
+   "group": "hip",
+   "side": "r",
+   "tier": "report",
+   "joint": "hip",
+   "kind": "hip_abd",
+   "col": "45",
+   "view": "front",
+   "rot": {
+    "thigh_r": [0, 0, 45]
+   }
+  },
+  {
+   "id": "knee_30_r",
+   "group": "knee",
+   "side": "r",
+   "tier": "judged",
+   "joint": "knee",
+   "kind": "knee",
+   "col": "30",
+   "view": "side",
+   "rot": {
+    "calf_r": [30, 0, 0]
+   }
+  },
+  {
+   "id": "knee_60_r",
+   "group": "knee",
+   "side": "r",
+   "tier": "judged",
+   "joint": "knee",
+   "kind": "knee",
+   "col": "60",
+   "view": "side",
+   "rot": {
+    "calf_r": [60, 0, 0]
+   }
+  },
+  {
+   "id": "knee_90_r",
+   "group": "knee",
+   "side": "r",
+   "tier": "report",
+   "joint": "knee",
+   "kind": "knee",
+   "col": "90",
+   "view": "side",
+   "rot": {
+    "calf_r": [90, 0, 0]
+   }
+  },
+  {
+   "id": "knee_130_r",
+   "group": "knee",
+   "side": "r",
+   "tier": "report",
+   "joint": "knee",
+   "kind": "knee",
+   "col": "130",
+   "view": "side",
+   "rot": {
+    "calf_r": [130, 0, 0]
+   }
+  },
+  {
+   "id": "ankle_30_r",
+   "group": "ankle",
+   "side": "r",
+   "tier": "judged",
+   "joint": "ankle",
+   "kind": "ankle",
+   "col": "30",
+   "view": "side",
+   "rot": {
+    "foot_r": [-30, 0, 0]
+   }
+  },
+  {
+   "id": "ankle_m30_r",
+   "group": "ankle",
+   "side": "r",
+   "tier": "report",
+   "joint": "ankle",
+   "kind": "ankle",
+   "col": "-30",
+   "view": "side",
+   "rot": {
+    "foot_r": [30, 0, 0]
+   }
+  },
+  {
+   "id": "spine_01_bend_fwd_30",
+   "group": "spine_head",
+   "side": "c",
+   "tier": "report",
+   "joint": "all",
+   "kind": "spine_01_bend",
+   "col": "fwd",
+   "view": "side",
+   "rot": {
+    "spine_01": [30, 0, 0]
+   }
+  },
+  {
+   "id": "spine_01_bend_back_30",
+   "group": "spine_head",
+   "side": "c",
+   "tier": "report",
+   "joint": "all",
+   "kind": "spine_01_bend",
+   "col": "back",
+   "view": "side",
+   "rot": {
+    "spine_01": [-30, 0, 0]
+   }
+  },
+  {
+   "id": "spine_01_bend_side_l_30",
+   "group": "spine_head",
+   "side": "c",
+   "tier": "report",
+   "joint": "all",
+   "kind": "spine_01_bend",
+   "col": "side_l",
+   "view": "front",
+   "rot": {
+    "spine_01": [0, 0, -30]
+   }
+  },
+  {
+   "id": "spine_01_bend_side_r_30",
+   "group": "spine_head",
+   "side": "c",
+   "tier": "report",
+   "joint": "all",
+   "kind": "spine_01_bend",
+   "col": "side_r",
+   "view": "front",
+   "rot": {
+    "spine_01": [0, 0, 30]
+   }
+  },
+  {
+   "id": "spine_02_bend_fwd_30",
+   "group": "spine_head",
+   "side": "c",
+   "tier": "report",
+   "joint": "all",
+   "kind": "spine_02_bend",
+   "col": "fwd",
+   "view": "side",
+   "rot": {
+    "spine_02": [30, 0, 0]
+   }
+  },
+  {
+   "id": "spine_02_bend_back_30",
+   "group": "spine_head",
+   "side": "c",
+   "tier": "report",
+   "joint": "all",
+   "kind": "spine_02_bend",
+   "col": "back",
+   "view": "side",
+   "rot": {
+    "spine_02": [-30, 0, 0]
+   }
+  },
+  {
+   "id": "spine_02_bend_side_l_30",
+   "group": "spine_head",
+   "side": "c",
+   "tier": "report",
+   "joint": "all",
+   "kind": "spine_02_bend",
+   "col": "side_l",
+   "view": "front",
+   "rot": {
+    "spine_02": [0, 0, -30]
+   }
+  },
+  {
+   "id": "spine_02_bend_side_r_30",
+   "group": "spine_head",
+   "side": "c",
+   "tier": "report",
+   "joint": "all",
+   "kind": "spine_02_bend",
+   "col": "side_r",
+   "view": "front",
+   "rot": {
+    "spine_02": [0, 0, 30]
+   }
+  },
+  {
+   "id": "head_bend_fwd_30",
+   "group": "spine_head",
+   "side": "c",
+   "tier": "report",
+   "joint": "all",
+   "kind": "head_bend",
+   "col": "fwd",
+   "view": "side",
+   "rot": {
+    "head": [30, 0, 0]
+   }
+  },
+  {
+   "id": "head_bend_back_30",
+   "group": "spine_head",
+   "side": "c",
+   "tier": "report",
+   "joint": "all",
+   "kind": "head_bend",
+   "col": "back",
+   "view": "side",
+   "rot": {
+    "head": [-30, 0, 0]
+   }
+  },
+  {
+   "id": "head_bend_side_l_30",
+   "group": "spine_head",
+   "side": "c",
+   "tier": "report",
+   "joint": "all",
+   "kind": "head_bend",
+   "col": "side_l",
+   "view": "front",
+   "rot": {
+    "head": [0, 0, -30]
+   }
+  },
+  {
+   "id": "head_bend_side_r_30",
+   "group": "spine_head",
+   "side": "c",
+   "tier": "report",
+   "joint": "all",
+   "kind": "head_bend",
+   "col": "side_r",
+   "view": "front",
+   "rot": {
+    "head": [0, 0, 30]
+   }
+  },
+  {
+   "id": "swing_windup",
+   "group": "full",
+   "side": "c",
+   "tier": "report",
+   "joint": "all",
+   "kind": "full",
+   "col": "swing_windup",
+   "view": "front+three_quarter",
+   "rot": {
+    "spine_01": [-10, -20, 0],
+    "spine_02": [-5, -15, 0],
+    "head": [0, 15, 0],
+    "upperarm_r": [-40, 0, -60],
+    "lowerarm_r": [30, 0, 0],
+    "hand_r": [-60, 0, 0],
+    "upperarm_l": [30, 0, -20],
+    "lowerarm_l": [40, 0, 0],
+    "thigh_l": [-20, 0, 0],
+    "calf_l": [30, 0, 0],
+    "foot_l": [-10, 0, 0],
+    "thigh_r": [-10, 0, 0],
+    "calf_r": [20, 0, 0],
+    "foot_r": [-10, 0, 0]
+   }
+  },
+  {
+   "id": "swing_impact",
+   "group": "full",
+   "side": "c",
+   "tier": "report",
+   "joint": "all",
+   "kind": "full",
+   "col": "swing_impact",
+   "view": "front+three_quarter",
+   "rot": {
+    "spine_01": [15, 10, 0],
+    "spine_02": [10, 10, 0],
+    "head": [-10, -15, 0],
+    "upperarm_r": [50, 0, 10],
+    "lowerarm_r": [10, 0, 0],
+    "hand_r": [-60, 0, 0],
+    "upperarm_l": [-20, 0, -30],
+    "lowerarm_l": [20, 0, 0],
+    "thigh_l": [-40, 0, 0],
+    "calf_l": [50, 0, 0],
+    "foot_l": [-10, 0, 0],
+    "thigh_r": [20, 0, 0],
+    "calf_r": [20, 0, 0],
+    "foot_r": [0, 0, 0]
+   }
+  },
+  {
+   "id": "walk_contact",
+   "group": "full",
+   "side": "c",
+   "tier": "report",
+   "joint": "all",
+   "kind": "full",
+   "col": "walk_contact",
+   "view": "front+three_quarter",
+   "rot": {
+    "spine_01": [5, 5, 0],
+    "upperarm_l": [-20, 0, -40],
+    "lowerarm_l": [15, 0, 0],
+    "upperarm_r": [20, 0, 40],
+    "lowerarm_r": [20, 0, 0],
+    "thigh_l": [-30, 0, 0],
+    "calf_l": [5, 0, 0],
+    "foot_l": [-15, 0, 0],
+    "thigh_r": [20, 0, 0],
+    "calf_r": [15, 0, 0],
+    "foot_r": [10, 0, 0]
+   }
+  },
+  {
+   "id": "walk_passing",
+   "group": "full",
+   "side": "c",
+   "tier": "report",
+   "joint": "all",
+   "kind": "full",
+   "col": "walk_passing",
+   "view": "front+three_quarter",
+   "rot": {
+    "upperarm_l": [0, 0, -40],
+    "lowerarm_l": [15, 0, 0],
+    "upperarm_r": [0, 0, 40],
+    "lowerarm_r": [15, 0, 0],
+    "thigh_l": [-5, 0, 0],
+    "calf_l": [10, 0, 0],
+    "foot_l": [-5, 0, 0],
+    "thigh_r": [-35, 0, 0],
+    "calf_r": [60, 0, 0],
+    "foot_r": [-10, 0, 0]
+   }
+  },
+  {
+   "id": "run_max_stride",
+   "group": "full",
+   "side": "c",
+   "tier": "report",
+   "joint": "all",
+   "kind": "full",
+   "col": "run_max_stride",
+   "view": "front+three_quarter",
+   "rot": {
+    "spine_01": [15, -10, 0],
+    "spine_02": [5, 0, 0],
+    "upperarm_l": [-40, 0, -40],
+    "lowerarm_l": [80, 0, 0],
+    "upperarm_r": [45, 0, 40],
+    "lowerarm_r": [80, 0, 0],
+    "thigh_l": [-60, 0, 0],
+    "calf_l": [30, 0, 0],
+    "foot_l": [-15, 0, 0],
+    "thigh_r": [30, 0, 0],
+    "calf_r": [80, 0, 0],
+    "foot_r": [20, 0, 0]
+   }
+  },
+  {
+   "id": "hit_lean_back",
+   "group": "full",
+   "side": "c",
+   "tier": "report",
+   "joint": "all",
+   "kind": "full",
+   "col": "hit_lean_back",
+   "view": "front+three_quarter",
+   "rot": {
+    "spine_01": [-25, 0, 0],
+    "spine_02": [-20, 0, 0],
+    "head": [-25, 0, 0],
+    "upperarm_l": [-30, 0, 30],
+    "lowerarm_l": [20, 0, 0],
+    "upperarm_r": [-30, 0, -30],
+    "lowerarm_r": [20, 0, 0],
+    "thigh_l": [15, 0, 0],
+    "calf_l": [20, 0, 0],
+    "thigh_r": [-15, 0, 0],
+    "calf_r": [25, 0, 0],
+    "foot_r": [-10, 0, 0]
+   }
+  },
+  {
+   "id": "death_fall_forward",
+   "group": "full",
+   "side": "c",
+   "tier": "report",
+   "joint": "all",
+   "kind": "full",
+   "col": "death_fall_forward",
+   "view": "front+three_quarter",
+   "rot": {
+    "spine_01": [35, 0, 0],
+    "spine_02": [25, 0, 0],
+    "head": [20, 0, 10],
+    "upperarm_l": [70, 0, -20],
+    "lowerarm_l": [30, 0, 0],
+    "hand_l": [20, 0, 0],
+    "upperarm_r": [70, 0, 20],
+    "lowerarm_r": [30, 0, 0],
+    "hand_r": [20, 0, 0],
+    "thigh_l": [-40, 0, 0],
+    "calf_l": [70, 0, 0],
+    "foot_l": [20, 0, 0],
+    "thigh_r": [-30, 0, 0],
+    "calf_r": [60, 0, 0],
+    "foot_r": [20, 0, 0]
+   }
+  },
+  {
+   "id": "jump_crouch",
+   "group": "full",
+   "side": "c",
+   "tier": "report",
+   "joint": "all",
+   "kind": "full",
+   "col": "jump_crouch",
+   "view": "front+three_quarter",
+   "rot": {
+    "spine_01": [25, 0, 0],
+    "spine_02": [10, 0, 0],
+    "head": [-20, 0, 0],
+    "upperarm_l": [-40, 0, -30],
+    "lowerarm_l": [20, 0, 0],
+    "upperarm_r": [-40, 0, 30],
+    "lowerarm_r": [20, 0, 0],
+    "thigh_l": [-70, 0, -10],
+    "calf_l": [100, 0, 0],
+    "foot_l": [-30, 0, 0],
+    "thigh_r": [-70, 0, 10],
+    "calf_r": [100, 0, 0],
+    "foot_r": [-30, 0, 0]
+   }
+  }
+ ]
+}

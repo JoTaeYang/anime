@@ -1,0 +1,167 @@
+{
+ "_doc": "A1 render cameras (s10a). front: orthographic, fitted to the reference framing on the f1 pose (fit: elevation grid 0-25 deg step 0.25, per elevation linear least squares of the reference f1 landmark extents in 448x576 px = s * projection + (u0, v0); landmarks = head top, belt bbox, both foot bboxes from ref/metrics.json frame 1; image = 896x1152 = 2x the reference). three_quarter: fixed azimuth / elevation framing all key poses. Blender camera looks along local -Z, up = local +Y.",
+ "reference_f1_px": {
+  "head_top_y": 108.0,
+  "belt_bbox": [
+   122,
+   324,
+   331,
+   379
+  ],
+  "foot_r_bbox": [
+   110,
+   448,
+   193,
+   486
+  ],
+  "foot_l_bbox": [
+   255,
+   448,
+   341,
+   486
+  ]
+ },
+ "front": {
+  "name": "front",
+  "type": "orthographic",
+  "resolution": [
+   896,
+   1152
+  ],
+  "sensor_fit": "VERTICAL",
+  "ortho_scale": 2.1251660029065196,
+  "location": [
+   -0.007969419471919537,
+   -5.914473056793213,
+   1.239544153213501
+  ],
+  "view_dir": [
+   0.0,
+   0.9961947202682495,
+   -0.08715574443340302
+  ],
+  "right": [
+   1.0,
+   -0.0,
+   0.0
+  ],
+  "up": [
+   0.0,
+   0.08715574443340302,
+   0.9961947202682495
+  ],
+  "matrix_world": [
+   [
+    1.0,
+    0.0,
+    0.0,
+    -0.007969419471919537
+   ],
+   [
+    0.0,
+    0.08715574443340302,
+    -0.9961947202682495,
+    -5.914473056793213
+   ],
+   [
+    0.0,
+    0.9961947202682495,
+    0.08715574443340302,
+    1.239544153213501
+   ],
+   [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "clip_start": 0.01,
+  "clip_end": 20.0,
+  "fit": {
+   "elev_deg": 5.0,
+   "s_px_per_m": 271.037650335185,
+   "u0": 226.16001283353506,
+   "v0": 482.9701509701421,
+   "rms_px": 1.65891290435988,
+   "residual_px": {
+    "head_top_y": 3.04,
+    "belt_x0": -2.41,
+    "belt_x1": 2.23,
+    "belt_y0": -0.26,
+    "belt_y1": -0.79,
+    "shoe_r_x0": -2.17,
+    "shoe_r_x1": 1.33,
+    "shoe_r_y0": -1.57,
+    "shoe_r_y1": 0.67,
+    "shoe_l_x0": -0.74,
+    "shoe_l_x1": 1.76,
+    "shoe_l_y0": -1.4,
+    "shoe_l_y1": 0.31
+   }
+  }
+ },
+ "three_quarter": {
+  "name": "three_quarter",
+  "type": "orthographic",
+  "resolution": [
+   896,
+   1152
+  ],
+  "sensor_fit": "VERTICAL",
+  "ortho_scale": 2.449160015124678,
+  "location": [
+   -3.9893321990966797,
+   -3.9047091007232666,
+   2.3501739501953125
+  ],
+  "view_dir": [
+   0.6830127239227295,
+   0.6830127239227295,
+   -0.258819043636322
+  ],
+  "right": [
+   0.7071068286895752,
+   -0.7071068286895752,
+   0.0
+  ],
+  "up": [
+   0.1830126941204071,
+   0.1830126941204071,
+   0.9659258127212524
+  ],
+  "matrix_world": [
+   [
+    0.7071068286895752,
+    0.1830126941204071,
+    -0.6830127239227295,
+    -3.9893321990966797
+   ],
+   [
+    -0.7071068286895752,
+    0.1830126941204071,
+    -0.6830127239227295,
+    -3.9047091007232666
+   ],
+   [
+    0.0,
+    0.9659258127212524,
+    0.258819043636322,
+    2.3501739501953125
+   ],
+   [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ]
+  ],
+  "clip_start": 0.01,
+  "clip_end": 20.0,
+  "fit": {
+   "azimuth_deg_toward_char_right": 45.0,
+   "elevation_deg": 15.0,
+   "framing": "union of the 7 key poses (GOB_mesh + GOB_club evaluated), 10 % margin"
+  }
+ }
+}

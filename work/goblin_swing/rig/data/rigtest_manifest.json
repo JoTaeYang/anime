@@ -1,0 +1,348 @@
+{
+ "_doc": {
+  "clip": "Action 'rigtest' on GOB_rig (source gob_r04_ctrl.blend, script s07a_rigtest.py). Keys only on CTRL_* pose bones (location, rotation_euler, scale) and PROPS custom properties; every key frame keys the full control state. DEF / MCH are never keyed.",
+  "action_slot": "Blender 5.1 slotted action: act.slots.new(id_type='OBJECT', name='GOB_rig') -> identifier 'OBGOB_rig'; arm.animation_data.action = act; arm.animation_data.action_slot = slot. F-curves live in the slot's channelbag (bpy_extras.anim_utils.action_get_channelbag_for_slot(act, slot).fcurves). use_fake_user True, use_frame_range True (frame_start..frame_end).",
+  "frames": "frame_start / frame_end inclusive; segments share their boundary frame (end of one = start of the next); segment start/end are key frames.",
+  "covers": "item keys tested inside the segment (G7.1 checklist).",
+  "foot_lock": "a side is listed only when, for the whole segment, that leg is IK and its CTRL_foot_ik_x transform and all four roll props (foot_roll / foot_bank / heel_twist / toe_twist) are constant (CTRL_root also constant), so its DEF foot must stay fixed in the world; foot roll / bank sweep segments are never marked (the ankle moves by design, planted quality = G6.7).",
+  "events": "operator calls: kind switch / snap (last key at frame-1 in the old space / mode, operator at frame, full key at frame) plus ready_pose / reset_rig. Two events on the same frame = both chains at once.",
+  "interpolation": "PROPS: int spaces CONSTANT; ik_fk CONSTANT except the keys that start a blend (BEZIER, arm_ik_fk_x 0 -> 1 and 1 -> 0 in arm_ik_fk); foot_* BEZIER. CTRL: BEZIER auto-clamped.",
+  "ranges": "values written by the script are inside ctrl_manifest sweep / clamps (asserted); snap / switch compensation values come from the operators. COG down -0.05 m (>= -0.08), foot IK not lifted.",
+  "segments": "root: CTRL_root forward/side move + yaw (feet follow the root). cog: CTRL_torso down 50 mm, side / fore-aft 40 mm, rot X +20/-15, Y +-20, Z +-10 (hip -> ankle <= 139 mm). pelvis (T31c, waist pivot of T24c): CTRL_torso loc Y -0.05 first (held), CTRL_pelvis rot X +12/-12 (hips back / forward), rot Y +15/-15 (yaw), rot Z +8/-8 (hip sway), then loc (X +0.015, Z +0.015) and (X -0.015, Y +0.015 down, Z -0.015), pelvis identity, COG back up; spine controls identity; planned hip -> ankle <= 136 mm (leg 151 mm). The rotations keep the waist (DEF spine_01 head) still; the loc keys move it by design. arm_fk: shoulder, upperarm raise / forward / twist, elbow, hand X/Y/Z both arms. arm_ik_fk: FK pose, blend 0 -> 1 onto the IK rest, IK hand move, snap TO_FK, FK move, snap TO_IK, IK move, blend 1 -> 0, back to rest. head_space: chest rot with head in chest space, hold, switch to world, hold, chest / spine move (head rotation stays), hold, switch to chest, hold, rest. hand_ik_space_l_weapon: left arm snap TO_IK, left IK hand move, switch to weapon space (3) with the club at rest, CTRL_weapon socket offset + right arm FK move carry the left hand, club back to rest, switch back to world, rest, snap TO_FK. weapon_world: weapon_space -> world (3), right arm moves away, club moves in the world, arm back to rest, weapon_space -> hand_r (0), CTRL_weapon -> identity (club back in the socket). foot_roll_bank_l / _r: ready_pose (CTRL_torso -15 mm, elbows 15 deg), foot_roll / foot_bank sweep of one foot about 90 % of its clamp each way, then back to rest. leg_fk: snap TO_FK both legs, thigh / calf / foot FK motion, rest, snap TO_IK. rest: reset_rig at the last two keys (last frame = canonical rest)."
+ },
+ "action": "rigtest",
+ "armature": "GOB_rig",
+ "slot": "OBGOB_rig",
+ "fps": 24,
+ "frame_start": 1,
+ "frame_end": 583,
+ "segments": [
+  {
+   "name": "root",
+   "start": 1,
+   "end": 31,
+   "covers": [
+    "root"
+   ],
+   "foot_lock": []
+  },
+  {
+   "name": "cog",
+   "start": 31,
+   "end": 85,
+   "covers": [
+    "cog"
+   ],
+   "foot_lock": [
+    "l",
+    "r"
+   ]
+  },
+  {
+   "name": "pelvis",
+   "start": 85,
+   "end": 157,
+   "covers": [
+    "pelvis"
+   ],
+   "foot_lock": [
+    "l",
+    "r"
+   ]
+  },
+  {
+   "name": "arm_fk",
+   "start": 157,
+   "end": 211,
+   "covers": [
+    "arm_fk_l",
+    "arm_fk_r"
+   ],
+   "foot_lock": [
+    "l",
+    "r"
+   ]
+  },
+  {
+   "name": "arm_ik_fk",
+   "start": 211,
+   "end": 289,
+   "covers": [
+    "arm_ik_l",
+    "arm_ik_r",
+    "ikfk_blend_l",
+    "ikfk_blend_r",
+    "snap_arm_l",
+    "snap_arm_r"
+   ],
+   "foot_lock": [
+    "l",
+    "r"
+   ]
+  },
+  {
+   "name": "head_space",
+   "start": 289,
+   "end": 337,
+   "covers": [
+    "head_space"
+   ],
+   "foot_lock": [
+    "l",
+    "r"
+   ]
+  },
+  {
+   "name": "hand_ik_space_l_weapon",
+   "start": 337,
+   "end": 405,
+   "covers": [
+    "hand_ik_space_l_weapon",
+    "weapon_offset",
+    "snap_arm_l"
+   ],
+   "foot_lock": [
+    "l",
+    "r"
+   ]
+  },
+  {
+   "name": "weapon_world",
+   "start": 405,
+   "end": 457,
+   "covers": [
+    "weapon_world",
+    "weapon_return"
+   ],
+   "foot_lock": [
+    "l",
+    "r"
+   ]
+  },
+  {
+   "name": "foot_roll_bank_l",
+   "start": 457,
+   "end": 501,
+   "covers": [
+    "ready_pose",
+    "foot_roll_l",
+    "foot_bank_l"
+   ],
+   "foot_lock": []
+  },
+  {
+   "name": "foot_roll_bank_r",
+   "start": 501,
+   "end": 545,
+   "covers": [
+    "foot_roll_r",
+    "foot_bank_r"
+   ],
+   "foot_lock": []
+  },
+  {
+   "name": "leg_fk",
+   "start": 545,
+   "end": 571,
+   "covers": [
+    "leg_fk_l",
+    "leg_fk_r",
+    "snap_leg_l",
+    "snap_leg_r"
+   ],
+   "foot_lock": []
+  },
+  {
+   "name": "rest",
+   "start": 571,
+   "end": 583,
+   "covers": [
+    "rest"
+   ],
+   "foot_lock": []
+  }
+ ],
+ "events": [
+  {
+   "frame": 242,
+   "kind": "snap",
+   "op": "goblin.snap_ikfk",
+   "args": {
+    "chain": "arm_l",
+    "direction": "TO_FK"
+   },
+   "segment": "arm_ik_fk"
+  },
+  {
+   "frame": 242,
+   "kind": "snap",
+   "op": "goblin.snap_ikfk",
+   "args": {
+    "chain": "arm_r",
+    "direction": "TO_FK"
+   },
+   "segment": "arm_ik_fk"
+  },
+  {
+   "frame": 257,
+   "kind": "snap",
+   "op": "goblin.snap_ikfk",
+   "args": {
+    "chain": "arm_l",
+    "direction": "TO_IK"
+   },
+   "segment": "arm_ik_fk"
+  },
+  {
+   "frame": 257,
+   "kind": "snap",
+   "op": "goblin.snap_ikfk",
+   "args": {
+    "chain": "arm_r",
+    "direction": "TO_IK"
+   },
+   "segment": "arm_ik_fk"
+  },
+  {
+   "frame": 302,
+   "kind": "switch",
+   "op": "goblin.switch_space",
+   "args": {
+    "prop": "head_space",
+    "value": 1
+   },
+   "segment": "head_space"
+  },
+  {
+   "frame": 323,
+   "kind": "switch",
+   "op": "goblin.switch_space",
+   "args": {
+    "prop": "head_space",
+    "value": 0
+   },
+   "segment": "head_space"
+  },
+  {
+   "frame": 338,
+   "kind": "snap",
+   "op": "goblin.snap_ikfk",
+   "args": {
+    "chain": "arm_l",
+    "direction": "TO_IK"
+   },
+   "segment": "hand_ik_space_l_weapon"
+  },
+  {
+   "frame": 353,
+   "kind": "switch",
+   "op": "goblin.switch_space",
+   "args": {
+    "prop": "hand_ik_space_l",
+    "value": 3
+   },
+   "segment": "hand_ik_space_l_weapon"
+  },
+  {
+   "frame": 390,
+   "kind": "switch",
+   "op": "goblin.switch_space",
+   "args": {
+    "prop": "hand_ik_space_l",
+    "value": 0
+   },
+   "segment": "hand_ik_space_l_weapon"
+  },
+  {
+   "frame": 405,
+   "kind": "snap",
+   "op": "goblin.snap_ikfk",
+   "args": {
+    "chain": "arm_l",
+    "direction": "TO_FK"
+   },
+   "segment": "hand_ik_space_l_weapon"
+  },
+  {
+   "frame": 406,
+   "kind": "switch",
+   "op": "goblin.switch_space",
+   "args": {
+    "prop": "weapon_space",
+    "value": 3
+   },
+   "segment": "weapon_world"
+  },
+  {
+   "frame": 443,
+   "kind": "switch",
+   "op": "goblin.switch_space",
+   "args": {
+    "prop": "weapon_space",
+    "value": 0
+   },
+   "segment": "weapon_world"
+  },
+  {
+   "frame": 465,
+   "kind": "ready_pose",
+   "op": "goblin.ready_pose",
+   "args": {},
+   "segment": "foot_roll_bank_l"
+  },
+  {
+   "frame": 546,
+   "kind": "snap",
+   "op": "goblin.snap_ikfk",
+   "args": {
+    "chain": "leg_l",
+    "direction": "TO_FK"
+   },
+   "segment": "leg_fk"
+  },
+  {
+   "frame": 546,
+   "kind": "snap",
+   "op": "goblin.snap_ikfk",
+   "args": {
+    "chain": "leg_r",
+    "direction": "TO_FK"
+   },
+   "segment": "leg_fk"
+  },
+  {
+   "frame": 571,
+   "kind": "snap",
+   "op": "goblin.snap_ikfk",
+   "args": {
+    "chain": "leg_l",
+    "direction": "TO_IK"
+   },
+   "segment": "leg_fk"
+  },
+  {
+   "frame": 571,
+   "kind": "snap",
+   "op": "goblin.snap_ikfk",
+   "args": {
+    "chain": "leg_r",
+    "direction": "TO_IK"
+   },
+   "segment": "leg_fk"
+  },
+  {
+   "frame": 577,
+   "kind": "reset_rig",
+   "op": "goblin.reset_rig",
+   "args": {},
+   "segment": "rest"
+  },
+  {
+   "frame": 583,
+   "kind": "reset_rig",
+   "op": "goblin.reset_rig",
+   "args": {},
+   "segment": "rest"
+  }
+ ]
+}

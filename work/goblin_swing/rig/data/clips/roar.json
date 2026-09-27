@@ -1,0 +1,5435 @@
+{
+ "_doc": "owner: scripts/s12_clip_anim.py (T130, spec d-29 R3); authored: poses[].ctrl_overrides / props_overrides, breakdowns, interpolation, contact_ranges, sections, key_frames, reference, match_first_frame, gate_id. Written back by s12: poses[].ctrl, props, def, measure; keyed_frames; anim_measure.",
+ "gate_id": {
+  "C1": "Q1.1",
+  "C2": {
+   "id": "Q1.2",
+   "report": true
+  },
+  "C3": "Q1.2",
+  "C4": "Q1.2",
+  "C5": "Q2.1",
+  "C6": "Q2.2",
+  "C7": "Q2.2",
+  "M1": "Q2.2",
+  "C8": "Q2.3",
+  "C9": "Q2.3",
+  "C10": "Q2.3",
+  "M2": {
+   "id": "Q2.4",
+   "report": true
+  },
+  "C12": {
+   "id": "Q2.C12",
+   "report": true
+  }
+ },
+ "clip": "roar",
+ "action": "roar",
+ "fps": 24,
+ "frame_range": [
+  1,
+  39
+ ],
+ "loop": true,
+ "root_motion": "locked",
+ "base": "goblin.reset_rig + goblin.ready_pose",
+ "key_frames": [
+  1,
+  7,
+  12
+ ],
+ "breakdowns": [
+  {
+   "frame": 3,
+   "source": {
+    "copy": 1
+   },
+   "purpose": "still: hold of f1 (reference f1-3 = ready; stops the f1-f3 Bezier overshoot)",
+   "ctrl_overrides": {},
+   "props_overrides": {}
+  },
+  {
+   "frame": 4,
+   "source": {
+    "blend": [
+     1,
+     7,
+     0.18
+    ]
+   },
+   "purpose": "wind-up 18 % (reference head top 110 -> 116 px); upper arm raise Z held at the f1 value (the 18 % blend opened visible shoulder/upper-arm creases, 6 pairs)",
+   "ctrl_overrides": {
+    "CTRL_upperarm_fk_l": {
+     "rot": [
+      -18.56,
+      19.5,
+      -43.5
+     ]
+    },
+    "CTRL_upperarm_fk_r": {
+     "rot": [
+      6.5,
+      -21.13,
+      40.0
+     ]
+    }
+   },
+   "props_overrides": {
+    "mouth_open": 0.0
+   }
+  },
+  {
+   "frame": 5,
+   "source": {
+    "blend": [
+     1,
+     7,
+     0.5
+    ]
+   },
+   "purpose": "wind-up 50 % (head top 126 px)",
+   "ctrl_overrides": {},
+   "props_overrides": {
+    "mouth_open": 0.0
+   }
+  },
+  {
+   "frame": 6,
+   "source": {
+    "blend": [
+     1,
+     7,
+     0.8
+    ]
+   },
+   "purpose": "wind-up 80 % (head top 134 px)",
+   "ctrl_overrides": {},
+   "props_overrides": {
+    "mouth_open": 0.0
+   }
+  },
+  {
+   "frame": 8,
+   "source": {
+    "blend": [
+     7,
+     12,
+     0.07
+    ]
+   },
+   "purpose": "wind-up held (7 % toward roar)",
+   "ctrl_overrides": {
+    "CTRL_foot_ik_l": {
+     "loc": [
+      0,
+      0,
+      0
+     ]
+    },
+    "CTRL_foot_ik_r": {
+     "loc": [
+      0,
+      0,
+      0
+     ]
+    }
+   },
+   "props_overrides": {
+    "mouth_open": 0.0,
+    "foot_roll_l": 0,
+    "foot_roll_r": 0,
+    "toe_twist_l": 0,
+    "toe_twist_r": 0.0
+   }
+  },
+  {
+   "frame": 9,
+   "source": {
+    "blend": [
+     7,
+     12,
+     0.35
+    ]
+   },
+   "purpose": "burst 35 %, mouth opening (reference dark-mouth pixels rise f9-10)",
+   "ctrl_overrides": {
+    "CTRL_foot_ik_l": {
+     "loc": [
+      7e-05,
+      -0.00027,
+      0.0
+     ]
+    },
+    "CTRL_foot_ik_r": {
+     "loc": [
+      0.0,
+      2e-05,
+      0.0
+     ]
+    }
+   },
+   "props_overrides": {
+    "mouth_open": 0.5,
+    "foot_roll_l": 2.4,
+    "foot_roll_r": 2.4,
+    "toe_twist_l": 0,
+    "toe_twist_r": 0.0
+   }
+  },
+  {
+   "frame": 10,
+   "source": {
+    "blend": [
+     7,
+     12,
+     0.75
+    ]
+   },
+   "purpose": "burst 75 %, mouth open",
+   "ctrl_overrides": {
+    "CTRL_foot_ik_l": {
+     "loc": [
+      9e-05,
+      -0.00031,
+      0.0
+     ]
+    },
+    "CTRL_foot_ik_r": {
+     "loc": [
+      0.0003,
+      0.00132,
+      0.0
+     ]
+    },
+    "CTRL_torso": {
+     "loc": [
+      0.0,
+      0.042,
+      0.04
+     ]
+    }
+   },
+   "props_overrides": {
+    "mouth_open": 1.0,
+    "foot_roll_l": 22.08,
+    "foot_roll_r": 22.08,
+    "toe_twist_l": 0,
+    "toe_twist_r": 0.0
+   }
+  },
+  {
+   "frame": 11,
+   "source": {
+    "blend": [
+     7,
+     12,
+     0.95
+    ]
+   },
+   "purpose": "burst 95 %",
+   "ctrl_overrides": {
+    "CTRL_foot_ik_l": {
+     "loc": [
+      0.00393,
+      0.00908,
+      0.0
+     ]
+    },
+    "CTRL_foot_ik_r": {
+     "loc": [
+      -0.00028,
+      0.01039,
+      0.0
+     ]
+    },
+    "CTRL_torso": {
+     "loc": [
+      0.0,
+      0.046,
+      0.04
+     ]
+    }
+   },
+   "props_overrides": {
+    "mouth_open": 1.0,
+    "foot_roll_l": 23.5,
+    "foot_roll_r": 23.5,
+    "toe_twist_l": 12,
+    "toe_twist_r": -12
+   }
+  },
+  {
+   "frame": 23,
+   "source": {
+    "copy": 12
+   },
+   "purpose": "roar held f12-f23 (reference near constant f11-23)",
+   "ctrl_overrides": {},
+   "props_overrides": {}
+  },
+  {
+   "frame": 25,
+   "source": {
+    "blend": [
+     12,
+     1,
+     0.1
+    ]
+   },
+   "purpose": "arms lower 10 % (reference fist y 190 px); splay 80 %",
+   "ctrl_overrides": {
+    "CTRL_foot_ik_l": {
+     "loc": [
+      0.0039,
+      0.00913,
+      0.0
+     ]
+    },
+    "CTRL_foot_ik_r": {
+     "loc": [
+      -0.00025,
+      0.01045,
+      0.0
+     ]
+    },
+    "CTRL_torso": {
+     "loc": [
+      0.0,
+      0.048,
+      0.04
+     ]
+    }
+   },
+   "props_overrides": {
+    "mouth_open": 1.0,
+    "foot_roll_l": 24,
+    "foot_roll_r": 24,
+    "toe_twist_l": 12,
+    "toe_twist_r": -12
+   }
+  },
+  {
+   "frame": 27,
+   "source": {
+    "blend": [
+     12,
+     1,
+     0.45
+    ]
+   },
+   "purpose": "arms lower 45 % (fist y 254 px), mouth still open; splay 50 %, heels still up (foot_roll 22.08 keeps the single ball contact while the toe twist changes)",
+   "ctrl_overrides": {
+    "CTRL_foot_ik_l": {
+     "loc": [
+      0.00276,
+      0.00538,
+      0.0
+     ]
+    },
+    "CTRL_foot_ik_r": {
+     "loc": [
+      -0.00032,
+      0.00688,
+      0.0
+     ]
+    },
+    "CTRL_torso": {
+     "loc": [
+      0.0,
+      0.047,
+      0.04
+     ]
+    }
+   },
+   "props_overrides": {
+    "mouth_open": 1.0,
+    "foot_roll_l": 22.08,
+    "foot_roll_r": 22.08,
+    "toe_twist_l": 7.5,
+    "toe_twist_r": -7.5
+   }
+  },
+  {
+   "frame": 28,
+   "source": {
+    "blend": [
+     12,
+     1,
+     0.65
+    ]
+   },
+   "purpose": "lower 65 % (fist y 278 px), mouth closing",
+   "ctrl_overrides": {
+    "CTRL_foot_ik_l": {
+     "loc": [
+      0.00021,
+      -0.00077,
+      0.0
+     ]
+    },
+    "CTRL_foot_ik_r": {
+     "loc": [
+      9e-05,
+      0.0004,
+      0.0
+     ]
+    },
+    "CTRL_torso": {
+     "loc": [
+      0.0,
+      0.023,
+      0.04
+     ]
+    }
+   },
+   "props_overrides": {
+    "mouth_open": 0.5,
+    "foot_roll_l": 12,
+    "foot_roll_r": 12,
+    "toe_twist_l": 0,
+    "toe_twist_r": 0.0
+   }
+  },
+  {
+   "frame": 29,
+   "source": {
+    "blend": [
+     12,
+     1,
+     0.85
+    ]
+   },
+   "purpose": "return 85 %, mouth closed",
+   "ctrl_overrides": {
+    "CTRL_foot_ik_l": {
+     "loc": [
+      0,
+      0,
+      0
+     ]
+    },
+    "CTRL_foot_ik_r": {
+     "loc": [
+      0,
+      0,
+      0
+     ]
+    }
+   },
+   "props_overrides": {
+    "mouth_open": 0.0,
+    "foot_roll_l": 0,
+    "foot_roll_r": 0,
+    "toe_twist_l": 0,
+    "toe_twist_r": 0.0
+   }
+  },
+  {
+   "frame": 30,
+   "source": {
+    "blend": [
+     12,
+     1,
+     0.95
+    ]
+   },
+   "purpose": "return 95 %",
+   "ctrl_overrides": {
+    "CTRL_foot_ik_l": {
+     "loc": [
+      0,
+      0,
+      0
+     ]
+    },
+    "CTRL_foot_ik_r": {
+     "loc": [
+      0,
+      0,
+      0
+     ]
+    }
+   },
+   "props_overrides": {
+    "mouth_open": 0.0,
+    "foot_roll_l": 0,
+    "foot_roll_r": 0,
+    "toe_twist_l": 0,
+    "toe_twist_r": 0.0
+   }
+  },
+  {
+   "frame": 31,
+   "source": {
+    "copy": 1
+   },
+   "purpose": "= f1 (ready), rest f31-39",
+   "ctrl_overrides": {},
+   "props_overrides": {}
+  },
+  {
+   "frame": 39,
+   "source": {
+    "copy": 1
+   },
+   "purpose": "loop: f39 = f1",
+   "ctrl_overrides": {},
+   "props_overrides": {}
+  }
+ ],
+ "interpolation": {
+  "ctrl": {
+   "type": "BEZIER",
+   "handles": "AUTO_CLAMPED"
+  },
+  "props": "CONSTANT",
+  "props_overrides": {
+   "mouth_open": "BEZIER",
+   "foot_roll_l": "BEZIER",
+   "foot_roll_r": "BEZIER",
+   "toe_twist_l": "BEZIER",
+   "toe_twist_r": "BEZIER"
+  }
+ },
+ "contact_ranges": [
+  {
+   "foot": "l",
+   "frames": [
+    1,
+    39
+   ],
+   "mode": "pivot"
+  },
+  {
+   "foot": "r",
+   "frames": [
+    1,
+    39
+   ],
+   "mode": "pivot"
+  }
+ ],
+ "sections": [
+  {
+   "name": "still",
+   "frames": [
+    1,
+    3
+   ]
+  },
+  {
+   "name": "windup",
+   "frames": [
+    3,
+    8
+   ]
+  },
+  {
+   "name": "burst",
+   "frames": [
+    8,
+    11
+   ]
+  },
+  {
+   "name": "hold",
+   "frames": [
+    11,
+    24
+   ]
+  },
+  {
+   "name": "lower",
+   "frames": [
+    24,
+    28
+   ]
+  },
+  {
+   "name": "return",
+   "frames": [
+    28,
+    31
+   ]
+  },
+  {
+   "name": "rest",
+   "frames": [
+    31,
+    39
+   ]
+  }
+ ],
+ "reference": {
+  "frames": "ref_roar/frames",
+  "pattern": "f_{:04d}.png",
+  "camera": "swing_cam.json"
+ },
+ "match_first_frame": {
+  "blend": "gob_r07_swing_anim.blend",
+  "action": "attack_swing",
+  "frame": 1
+ },
+ "sweep_overrides": {
+  "_reason": "T134 roar on the balls of the feet: foot_roll +24 lifts the ankles about 60 mm, so the COG can rise above the flat-foot +0.01 limit (manifest: '+0.01 = legs already straight at rest'); ik_ratio stays <= 0.97.",
+  "CTRL_torso": [
+   {
+    "channel": "loc",
+    "axis": "Y",
+    "min": -0.08,
+    "max": 0.08
+   }
+  ]
+ },
+ "poses": [
+  {
+   "frame": 1,
+   "name": "ready",
+   "intent": "= attack_swing f1 = idle f1 exactly (CTRL / PROPS copied from idle.json poses[frame 1], mouth_open 0): ready stance, club upright beside the right hip, free arm hanging. Loop pose (f39 = f1).",
+   "contact": [
+    "l",
+    "r"
+   ],
+   "ctrl_overrides": {
+    "CTRL_root": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_torso": {
+     "loc": [
+      0.0,
+      -0.015,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_pelvis": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_thigh_fk_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_calf_fk_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_foot_fk_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_thigh_fk_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_calf_fk_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_foot_fk_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_spine_01": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_chest": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_shoulder_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      10.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_upperarm_fk_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      -20.0,
+      19.5,
+      -43.5
+     ]
+    },
+    "CTRL_lowerarm_fk_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      41.5,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_hand_fk_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      1.5,
+      0.0,
+      1.5
+     ]
+    },
+    "CTRL_shoulder_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      -18.0,
+      0.0,
+      -6.0
+     ]
+    },
+    "CTRL_upperarm_fk_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      6.5,
+      -20.5,
+      40.0
+     ]
+    },
+    "CTRL_lowerarm_fk_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      60.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_hand_fk_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      49.1,
+      50.7,
+      15.4
+     ]
+    },
+    "CTRL_elbow_pole_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_elbow_pole_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_foot_ik_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_foot_ik_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_head": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_hand_ik_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_hand_ik_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_knee_pole_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_knee_pole_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_weapon": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    }
+   },
+   "props_overrides": {
+    "arm_ik_fk_l": 0.0,
+    "arm_ik_fk_r": 0.0,
+    "leg_ik_fk_l": 1.0,
+    "leg_ik_fk_r": 1.0,
+    "head_space": 0,
+    "hand_ik_space_l": 0,
+    "hand_ik_space_r": 0,
+    "weapon_space": 0,
+    "knee_pole_space_l": 0,
+    "knee_pole_space_r": 0,
+    "foot_roll_l": 0.0,
+    "foot_roll_r": 0.0,
+    "foot_bank_l": 0.0,
+    "foot_bank_r": 0.0,
+    "heel_twist_l": 0.0,
+    "heel_twist_r": 0.0,
+    "toe_twist_l": 0.0,
+    "toe_twist_r": 0.0,
+    "mouth_open": 0.0
+   },
+   "notes": {
+    "reference_frame": "ref_roar/frames/f_0001.png",
+    "source": "idle.json poses[frame 1] (= swing_keyposes.json f1)"
+   },
+   "ctrl": {
+    "CTRL_root": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_torso": {
+     "loc": [
+      0.0,
+      -0.015,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_pelvis": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_thigh_fk_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_calf_fk_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_foot_fk_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_thigh_fk_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_calf_fk_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_foot_fk_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_spine_01": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_chest": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_shoulder_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      10.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_upperarm_fk_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      -20.0,
+      19.5,
+      -43.5
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_lowerarm_fk_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      41.5,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_hand_fk_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      1.5,
+      0.0,
+      1.5
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_shoulder_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      -18.0,
+      0.0,
+      -6.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_upperarm_fk_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      6.5,
+      -20.5,
+      40.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_lowerarm_fk_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      60.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_hand_fk_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      49.1,
+      50.7,
+      15.4
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_elbow_pole_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_elbow_pole_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_foot_ik_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_foot_ik_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_head": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_hand_ik_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_hand_ik_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_knee_pole_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_knee_pole_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_weapon": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    }
+   },
+   "props": {
+    "arm_ik_fk_l": 0.0,
+    "arm_ik_fk_r": 0.0,
+    "leg_ik_fk_l": 1.0,
+    "leg_ik_fk_r": 1.0,
+    "head_space": 0,
+    "hand_ik_space_l": 0,
+    "hand_ik_space_r": 0,
+    "weapon_space": 0,
+    "knee_pole_space_l": 0,
+    "knee_pole_space_r": 0,
+    "foot_roll_l": 0.0,
+    "foot_roll_r": 0.0,
+    "foot_bank_l": 0.0,
+    "foot_bank_r": 0.0,
+    "heel_twist_l": 0.0,
+    "heel_twist_r": 0.0,
+    "toe_twist_l": 0.0,
+    "toe_twist_r": 0.0,
+    "mouth_open": 0.0
+   },
+   "def": {
+    "root": [
+     [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      -1.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "pelvis": [
+     [
+      1.0,
+      0.0,
+      -1e-07,
+      0.0
+     ],
+     [
+      -1e-07,
+      0.0,
+      -1.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0,
+      0.2890001
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "spine_01": [
+     [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      -1.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0,
+      0.5627501
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "spine_02": [
+     [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      -1.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0,
+      0.7508751
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "head": [
+     [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      -1.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0,
+      0.9390001
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "shoulder_l": [
+     [
+      -0.0279348,
+      0.987323,
+      -0.1562459,
+      0.151
+     ],
+     [
+      0.2024125,
+      -0.1474818,
+      -0.9681314,
+      0.027151
+     ],
+     [
+      -0.9789018,
+      -0.0586707,
+      -0.1957266,
+      0.915333
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "upperarm_l": [
+     [
+      -0.6159472,
+      0.781122,
+      -0.1022617,
+      0.300167
+     ],
+     [
+      0.545809,
+      0.3295365,
+      -0.7703884,
+      0.0048691
+     ],
+     [
+      -0.5680683,
+      -0.5303339,
+      -0.6293205,
+      0.9064689
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "upperarm_twist_l": [
+     [
+      -0.622834,
+      0.781122,
+      0.0438871,
+      0.300167
+     ],
+     [
+      0.3515414,
+      0.3295365,
+      -0.8762559,
+      0.0048691
+     ],
+     [
+      -0.698925,
+      -0.5303339,
+      -0.4798433,
+      0.9064689
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "lowerarm_l": [
+     [
+      -0.6159472,
+      0.4935143,
+      -0.6140462,
+      0.4416546
+     ],
+     [
+      0.545809,
+      -0.2947201,
+      -0.7843677,
+      0.0645592
+     ],
+     [
+      -0.5680683,
+      -0.8182809,
+      -0.0878325,
+      0.8104075
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "lowerarm_twist_l": [
+     [
+      -0.615842,
+      0.4935143,
+      -0.6141517,
+      0.4863506
+     ],
+     [
+      0.5459433,
+      -0.2947201,
+      -0.7842742,
+      0.0378674
+     ],
+     [
+      -0.5680533,
+      -0.8182809,
+      -0.0879298,
+      0.7362984
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "hand_l": [
+     [
+      -0.6028173,
+      0.4932203,
+      -0.6271724,
+      0.5310466
+     ],
+     [
+      0.5379074,
+      -0.3293332,
+      -0.7760125,
+      0.0111755
+     ],
+     [
+      -0.5892937,
+      -0.8051543,
+      -0.066779,
+      0.6621893
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "shoulder_r": [
+     [
+      0.0754462,
+      -0.941233,
+      -0.3292237,
+      -0.145
+     ],
+     [
+      -0.1776585,
+      0.312194,
+      -0.9332591,
+      0.0255854
+     ],
+     [
+      0.9811959,
+      0.1289003,
+      -0.1436642,
+      0.9154958
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "upperarm_r": [
+     [
+      -0.6303751,
+      -0.7747663,
+      -0.0486241,
+      -0.2815707
+     ],
+     [
+      -0.252759,
+      0.2640694,
+      -0.9307956,
+      0.0708841
+     ],
+     [
+      0.7339892,
+      -0.5744601,
+      -0.362292,
+      0.9341989
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "upperarm_twist_r": [
+     [
+      -0.614666,
+      -0.7747663,
+      -0.1480637,
+      -0.2815708
+     ],
+     [
+      -0.1018147,
+      0.2640694,
+      -0.9591148,
+      0.0708841
+     ],
+     [
+      0.782189,
+      -0.5744601,
+      -0.2411971,
+      0.9341989
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "lowerarm_r": [
+     [
+      -0.6303751,
+      -0.4030277,
+      0.6634724,
+      -0.4219266
+     ],
+     [
+      -0.2527591,
+      -0.7015383,
+      -0.666301,
+      0.1187226
+     ],
+     [
+      0.7339892,
+      -0.5877182,
+      0.3403632,
+      0.8301303
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "lowerarm_twist_r": [
+     [
+      -0.8654448,
+      -0.4030277,
+      0.2976134,
+      -0.4584326
+     ],
+     [
+      0.0833155,
+      -0.7015383,
+      -0.7077448,
+      0.0551776
+     ],
+     [
+      0.4940281,
+      -0.5877182,
+      0.6407211,
+      0.7768951
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "hand_r": [
+     [
+      -0.9661422,
+      -0.2452427,
+      0.0801568,
+      -0.4949386
+     ],
+     [
+      0.2432683,
+      -0.9693741,
+      -0.0336846,
+      -0.0083674
+     ],
+     [
+      0.0859631,
+      -0.0130445,
+      0.9962129,
+      0.7236599
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "weapon_socket_r": [
+     [
+      -0.9588623,
+      -0.1341404,
+      0.2502186,
+      -0.509522
+     ],
+     [
+      0.258671,
+      -0.0495523,
+      0.9646938,
+      -0.1146755
+     ],
+     [
+      -0.117006,
+      0.9897225,
+      0.0822119,
+      0.7201224
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "thigh_l": [
+     [
+      0.9842677,
+      0.1602581,
+      -0.0743908,
+      0.2008134
+     ],
+     [
+      0.1456449,
+      -0.4975846,
+      0.8551007,
+      0.0048064
+     ],
+     [
+      0.1000211,
+      -0.8524828,
+      -0.5130972,
+      0.2590001
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "calf_l": [
+     [
+      0.9842675,
+      0.0421445,
+      -0.1715822,
+      0.2129341
+     ],
+     [
+      0.1456449,
+      0.3562286,
+      0.9229783,
+      -0.0328273
+     ],
+     [
+      0.1000209,
+      -0.933448,
+      0.3444862,
+      0.1945243
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "foot_l": [
+     [
+      0.9063688,
+      0.4137197,
+      0.0856213,
+      0.2161221
+     ],
+     [
+      0.4118859,
+      -0.9104041,
+      0.0389092,
+      -0.0058812
+     ],
+     [
+      0.0940475,
+      1e-07,
+      -0.9955677,
+      0.1239159
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "thigh_r": [
+     [
+      0.9863055,
+      -0.158575,
+      0.0453354,
+      -0.2087383
+     ],
+     [
+      -0.1233874,
+      -0.5270607,
+      0.8408227,
+      0.0111869
+     ],
+     [
+      -0.109439,
+      -0.8349018,
+      -0.5394089,
+      0.2590001
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "calf_r": [
+     [
+      0.9863055,
+      -0.0643337,
+      0.1518639,
+      -0.2207785
+     ],
+     [
+      -0.1233875,
+      0.323168,
+      0.9382634,
+      -0.0288315
+     ],
+     [
+      -0.1094395,
+      -0.9441525,
+      0.3108045,
+      0.1956081
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "foot_r": [
+     [
+      0.9196082,
+      -0.3812042,
+      -0.0948922,
+      -0.2256638
+     ],
+     [
+      -0.3791907,
+      -0.9244912,
+      0.0391277,
+      -0.0042913
+     ],
+     [
+      -0.1026426,
+      1e-07,
+      -0.9947184,
+      0.1239127
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "measure": {
+    "club": {
+     "min_mm": 70.28,
+     "min_mm_surface": 70.28,
+     "where": "belt/pelvis",
+     "club_s_m": -0.22,
+     "found_by": "club_vertex",
+     "intersect_tri_pairs": 0,
+     "intersect_where": []
+    },
+    "self_isect": {
+     "pairs": 1,
+     "cover": 1,
+     "n_body_pairs": 1,
+     "n_rigid_pairs": 0,
+     "visible_pairs": 0,
+     "visible_cover": 0,
+     "visible_groups": {},
+     "pair_groups": {
+      "body/head|body/shoulder_r": 1
+     }
+    },
+    "foreign_overlaps_report": {},
+    "club_min_z_mm": 485.3,
+    "arms": {
+     "l": {
+      "shoulder_up": 0.0,
+      "shoulder_fwd": 10.0,
+      "upperarm_raise": -43.5,
+      "upperarm_fwd": -20.0,
+      "upperarm_twist": 19.5,
+      "elbow": 41.5,
+      "wrist_bend": 1.5,
+      "wrist_twist": 0.0,
+      "wrist_side": 1.5,
+      "upperarm_elev_deg": -32.0,
+      "upperarm_from_rest_deg": 36.4,
+      "wrist_bend_def": 2.1,
+      "wrist_twist_def": 0.0
+     },
+     "r": {
+      "shoulder_up": 6.0,
+      "shoulder_fwd": -18.0,
+      "upperarm_raise": -40.0,
+      "upperarm_fwd": 6.5,
+      "upperarm_twist": -20.5,
+      "elbow": 60.0,
+      "wrist_bend": 49.1,
+      "wrist_twist": 50.7,
+      "wrist_side": 15.4,
+      "upperarm_elev_deg": -35.1,
+      "upperarm_from_rest_deg": 37.0,
+      "wrist_bend_def": 38.1,
+      "wrist_twist_def": 55.0
+     }
+    },
+    "front": {
+     "lean_hip_eye_deg": 1.2,
+     "eye_px": [
+      228.9,
+      162.4
+     ],
+     "hips_px": [
+      225.0,
+      351.1
+     ],
+     "face_to_cam_deg": 5.0,
+     "face_yaw_deg": 0.0,
+     "face_pitch_deg": -0.0
+    },
+    "legs": {
+     "l": {
+      "reach_mm": 0.003,
+      "ik_ratio": 0.9014,
+      "shoe_min_z_mm": -0.56,
+      "hip_flex": 24.9,
+      "hip_abd": 0.6,
+      "hip_twist": -0.1,
+      "knee": 48.8,
+      "ankle_dorsi": 22.9
+     },
+     "r": {
+      "reach_mm": 0.003,
+      "ik_ratio": 0.9022,
+      "shoe_min_z_mm": -0.4,
+      "hip_flex": 25.0,
+      "hip_abd": 0.6,
+      "hip_twist": 0.1,
+      "knee": 48.6,
+      "ankle_dorsi": 22.7
+     }
+    },
+    "cog_m": -0.015,
+    "torso": {
+     "CTRL_torso": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "CTRL_pelvis": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "CTRL_spine_01": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "CTRL_chest": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "CTRL_head": [
+      0.0,
+      0.0,
+      0.0
+     ]
+    },
+    "outside_safe_range": [],
+    "amplitude": {
+     "head_rise_mm": 0.0,
+     "eye_rise_mm": 0.0,
+     "fist_rise_mm": 0.0,
+     "fist_out_mm": 0.0,
+     "fist_fwd_mm": 0.0,
+     "club_tip_move_mm": 0.0,
+     "club_max_vertex_move_mm": 0.0
+    }
+   }
+  },
+  {
+   "frame": 7,
+   "name": "windup",
+   "intent": "Wind-up / gather (reference f5-8, lowest f7: head top -111 mm, belt -102 mm squash, arms drawn in, club tilted out/down). COG limited while planted, so the lower body copies hit f8 (CTRL_torso loc Y -0.036 = 21 mm below ready, pelvis X 8 against knee/calf creases) and the crouch is shown with the upper body: forward curl spine_01 X 10 + chest X 12, head pitched down 16, shoulders hunched (left Z 20, right Z -24.5 = C2 boundary margin), left arm drawn in (upper arm -52 / X -12, elbow 55), right upper arm lowered to 50 (55 opened a visible armpit crease, cover >=2) and right hand FK 39.2 / 70.2 / 9.8 so the club tilts outward and down (front tilt about -14 deg vs -8 at f1; DEF wrist bend 30.1). Mouth closed (mouth_open 0). No scale.",
+   "contact": [
+    "l",
+    "r"
+   ],
+   "ctrl_overrides": {
+    "CTRL_torso": {
+     "loc": [
+      0.0,
+      -0.036,
+      0.0
+     ]
+    },
+    "CTRL_pelvis": {
+     "rot": [
+      8.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_spine_01": {
+     "rot": [
+      10.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_chest": {
+     "rot": [
+      12.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_head": {
+     "rot": [
+      16.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_shoulder_l": {
+     "rot": [
+      10.0,
+      0.0,
+      20.0
+     ]
+    },
+    "CTRL_upperarm_fk_l": {
+     "rot": [
+      -12.0,
+      19.5,
+      -52.0
+     ]
+    },
+    "CTRL_lowerarm_fk_l": {
+     "rot": [
+      55.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_hand_fk_l": {
+     "rot": [
+      1.5,
+      0.0,
+      1.5
+     ]
+    },
+    "CTRL_shoulder_r": {
+     "rot": [
+      -18.0,
+      0.0,
+      -24.5
+     ]
+    },
+    "CTRL_upperarm_fk_r": {
+     "rot": [
+      6.5,
+      -24.0,
+      50.0
+     ]
+    },
+    "CTRL_lowerarm_fk_r": {
+     "rot": [
+      60.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_hand_fk_r": {
+     "rot": [
+      39.2,
+      70.2,
+      9.8
+     ]
+    }
+   },
+   "props_overrides": {
+    "mouth_open": 0.0
+   },
+   "notes": {
+    "reference_frame": "ref_roar/frames/f_0007.png"
+   },
+   "ctrl": {
+    "CTRL_root": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_torso": {
+     "loc": [
+      0.0,
+      -0.036,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_pelvis": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      8.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_thigh_fk_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_calf_fk_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_foot_fk_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_thigh_fk_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_calf_fk_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_foot_fk_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_spine_01": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      10.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_chest": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      12.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_shoulder_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      10.0,
+      0.0,
+      20.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_upperarm_fk_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      -12.0,
+      19.5,
+      -52.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_lowerarm_fk_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      55.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_hand_fk_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      1.5,
+      0.0,
+      1.5
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_shoulder_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      -18.0,
+      0.0,
+      -24.5
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_upperarm_fk_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      6.5,
+      -24.0,
+      50.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_lowerarm_fk_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      60.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_hand_fk_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      39.2,
+      70.2,
+      9.8
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_elbow_pole_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_elbow_pole_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_foot_ik_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_foot_ik_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_head": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      16.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_hand_ik_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_hand_ik_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_knee_pole_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_knee_pole_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_weapon": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    }
+   },
+   "props": {
+    "arm_ik_fk_l": 0.0,
+    "arm_ik_fk_r": 0.0,
+    "leg_ik_fk_l": 1.0,
+    "leg_ik_fk_r": 1.0,
+    "head_space": 0,
+    "hand_ik_space_l": 0,
+    "hand_ik_space_r": 0,
+    "weapon_space": 0,
+    "knee_pole_space_l": 0,
+    "knee_pole_space_r": 0,
+    "foot_roll_l": 0.0,
+    "foot_roll_r": 0.0,
+    "foot_bank_l": 0.0,
+    "foot_bank_r": 0.0,
+    "heel_twist_l": 0.0,
+    "heel_twist_r": 0.0,
+    "toe_twist_l": 0.0,
+    "toe_twist_r": 0.0,
+    "mouth_open": 0.0
+   },
+   "def": {
+    "root": [
+     [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      -1.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "pelvis": [
+     [
+      1.0,
+      0.0,
+      -1e-07,
+      -0.0
+     ],
+     [
+      -1e-07,
+      -0.1391731,
+      -0.9902681,
+      0.0380986
+     ],
+     [
+      -0.0,
+      0.9902681,
+      -0.1391731,
+      0.2706642
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "spine_01": [
+     [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      -0.1736482,
+      -0.9848077,
+      -0.0
+     ],
+     [
+      0.0,
+      0.9848077,
+      -0.1736482,
+      0.5417501
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "spine_02": [
+     [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      -0.3746066,
+      -0.9271839,
+      -0.0326676
+     ],
+     [
+      0.0,
+      0.9271839,
+      -0.3746066,
+      0.727017
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "head": [
+     [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      -0.6156615,
+      -0.7880108,
+      -0.1031404
+     ],
+     [
+      0.0,
+      0.7880108,
+      -0.6156615,
+      0.9014435
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "shoulder_l": [
+     [
+      0.3155837,
+      0.9373734,
+      -0.1474384,
+      0.151
+     ],
+     [
+      0.5312454,
+      -0.3032807,
+      -0.7910748,
+      -0.0691006
+     ],
+     [
+      -0.7862476,
+      0.1713243,
+      -0.5936857,
+      0.8896707
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "upperarm_l": [
+     [
+      -0.4721047,
+      0.8725873,
+      -0.1253344,
+      0.2926205
+     ],
+     [
+      0.788,
+      0.3539851,
+      -0.5037367,
+      -0.114921
+     ],
+     [
+      -0.3951877,
+      -0.3365799,
+      -0.8547168,
+      0.9155548
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "upperarm_twist_l": [
+     [
+      -0.4880306,
+      0.8725873,
+      -0.0204364,
+      0.2926206
+     ],
+     [
+      0.6606388,
+      0.3539851,
+      -0.6620053,
+      -0.114921
+     ],
+     [
+      -0.5704233,
+      -0.3365799,
+      -0.7492206,
+      0.9155548
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "lowerarm_l": [
+     [
+      -0.4721047,
+      0.3666039,
+      -0.8016975,
+      0.4506755
+     ],
+     [
+      0.7879999,
+      -0.2321885,
+      -0.5702146,
+      -0.0508024
+     ],
+     [
+      -0.3951878,
+      -0.9009385,
+      -0.1792667,
+      0.8545888
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "lowerarm_twist_l": [
+     [
+      -0.4719673,
+      0.3666039,
+      -0.8017783,
+      0.4838776
+     ],
+     [
+      0.7880975,
+      -0.2321885,
+      -0.5700796,
+      -0.0718309
+     ],
+     [
+      -0.3951571,
+      -0.9009385,
+      -0.1793343,
+      0.7729936
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "hand_l": [
+     [
+      -0.4623462,
+      0.3577207,
+      -0.8113397,
+      0.5170798
+     ],
+     [
+      0.7816521,
+      -0.2675761,
+      -0.5634031,
+      -0.0928595
+     ],
+     [
+      -0.4186361,
+      -0.8946726,
+      -0.1559004,
+      0.6913985
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "shoulder_r": [
+     [
+      0.3878689,
+      -0.8694704,
+      -0.3059067,
+      -0.145
+     ],
+     [
+      -0.4979902,
+      0.0815957,
+      -0.8633354,
+      -0.0706131
+     ],
+     [
+      0.7756053,
+      0.4871995,
+      -0.4013393,
+      0.8892351
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "upperarm_r": [
+     [
+      -0.5077997,
+      -0.8609294,
+      -0.03066,
+      -0.2711582
+     ],
+     [
+      -0.5735434,
+      0.364419,
+      -0.7336531,
+      -0.0587738
+     ],
+     [
+      0.6427968,
+      -0.354964,
+      -0.6788322,
+      0.9599267
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "upperarm_twist_r": [
+     [
+      -0.493496,
+      -0.8609295,
+      -0.1235406,
+      -0.2711582
+     ],
+     [
+      -0.4288108,
+      0.364419,
+      -0.8266318,
+      -0.0587738
+     ],
+     [
+      0.7566923,
+      -0.354964,
+      -0.549015,
+      0.9599267
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "lowerarm_r": [
+     [
+      -0.5077997,
+      -0.4271533,
+      0.7481173,
+      -0.4271232
+     ],
+     [
+      -0.5735435,
+      -0.4803422,
+      -0.6635658,
+      0.0072439
+     ],
+     [
+      0.6427967,
+      -0.7660363,
+      -0.0010734,
+      0.8956218
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "lowerarm_twist_r": [
+     [
+      -0.8488022,
+      -0.4271533,
+      0.3115685,
+      -0.4658146
+     ],
+     [
+      -0.0789145,
+      -0.4803422,
+      -0.873524,
+      -0.0362653
+     ],
+     [
+      0.5227883,
+      -0.7660363,
+      0.3740068,
+      0.8262345
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "hand_r": [
+     [
+      -0.8980183,
+      -0.4398427,
+      -0.010072,
+      -0.5045058
+     ],
+     [
+      0.4051954,
+      -0.817927,
+      -0.4084266,
+      -0.0797743
+     ],
+     [
+      0.1714055,
+      -0.3708557,
+      0.9127358,
+      0.7568474
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "weapon_socket_r": [
+     [
+      -0.8711748,
+      -0.2217175,
+      0.4380813,
+      -0.5405703
+     ],
+     [
+      0.4908587,
+      -0.3725226,
+      0.7875822,
+      -0.1714656
+     ],
+     [
+      -0.0114275,
+      0.9011484,
+      0.4333607,
+      0.7142015
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "thigh_l": [
+     [
+      0.988288,
+      0.1508472,
+      -0.0230508,
+      0.2008134
+     ],
+     [
+      0.1371664,
+      -0.8119586,
+      0.5673693,
+      0.0470335
+     ],
+     [
+      0.0668698,
+      -0.5638865,
+      -0.8231404,
+      0.241625
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "calf_l": [
+     [
+      0.9882878,
+      0.0515576,
+      -0.1436247,
+      0.2122224
+     ],
+     [
+      0.1371665,
+      0.1122984,
+      0.9841615,
+      -0.0143772
+     ],
+     [
+      0.0668698,
+      -0.992336,
+      0.1039117,
+      0.1989767
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "foot_l": [
+     [
+      0.9063686,
+      0.4137197,
+      0.0856213,
+      0.2161223
+     ],
+     [
+      0.4118859,
+      -0.910404,
+      0.0389092,
+      -0.0058827
+     ],
+     [
+      0.0940475,
+      1e-07,
+      -0.9955676,
+      0.1239138
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "thigh_r": [
+     [
+      0.9896316,
+      -0.1435905,
+      -0.0033207,
+      -0.2087383
+     ],
+     [
+      -0.1158237,
+      -0.8115075,
+      0.5727478,
+      0.0533518
+     ],
+     [
+      -0.084936,
+      -0.5664247,
+      -0.8197244,
+      0.2425131
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "calf_r": [
+     [
+      0.9896316,
+      -0.0793163,
+      0.1197424,
+      -0.2196408
+     ],
+     [
+      -0.1158238,
+      0.0523037,
+      0.9918917,
+      -0.0082638
+     ],
+     [
+      -0.0849361,
+      -0.9954765,
+      0.0425747,
+      0.1995059
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "foot_r": [
+     [
+      0.9196081,
+      -0.3812041,
+      -0.0948922,
+      -0.2256638
+     ],
+     [
+      -0.3791907,
+      -0.924491,
+      0.0391277,
+      -0.0042921
+     ],
+     [
+      -0.1026426,
+      1e-07,
+      -0.9947184,
+      0.1239131
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "measure": {
+    "club": {
+     "min_mm": 81.0,
+     "min_mm_surface": 81.0,
+     "where": "belt/pelvis",
+     "club_s_m": -0.22,
+     "found_by": "club_vertex",
+     "intersect_tri_pairs": 0,
+     "intersect_where": []
+    },
+    "self_isect": {
+     "pairs": 12,
+     "cover": ">=2",
+     "n_body_pairs": 12,
+     "n_rigid_pairs": 0,
+     "visible_pairs": 2,
+     "visible_cover": 1,
+     "visible_groups": {
+      "body/upperarm_twist_r|body/upperarm_twist_r": 2
+     },
+     "pair_groups": {
+      "body/head|body/shoulder_r": 5,
+      "body/head|body/head": 3,
+      "body/head|body/shoulder_l": 2,
+      "body/upperarm_twist_r|body/upperarm_twist_r": 2
+     }
+    },
+    "foreign_overlaps_report": {},
+    "club_min_z_mm": 497.4,
+    "arms": {
+     "l": {
+      "shoulder_up": 20.0,
+      "shoulder_fwd": 10.0,
+      "upperarm_raise": -52.0,
+      "upperarm_fwd": -12.0,
+      "upperarm_twist": 19.5,
+      "elbow": 55.0,
+      "wrist_bend": 1.5,
+      "wrist_twist": 0.0,
+      "wrist_side": 1.5,
+      "upperarm_elev_deg": -26.4,
+      "upperarm_from_rest_deg": 27.3,
+      "wrist_bend_def": 2.1,
+      "wrist_twist_def": 0.0
+     },
+     "r": {
+      "shoulder_up": 24.5,
+      "shoulder_fwd": -18.0,
+      "upperarm_raise": -50.0,
+      "upperarm_fwd": 6.5,
+      "upperarm_twist": -24.0,
+      "elbow": 60.0,
+      "wrist_bend": 39.2,
+      "wrist_twist": 70.2,
+      "wrist_side": 9.8,
+      "upperarm_elev_deg": -27.8,
+      "upperarm_from_rest_deg": 28.4,
+      "wrist_bend_def": 30.1,
+      "wrist_twist_def": 71.4
+     }
+    },
+    "front": {
+     "lean_hip_eye_deg": 1.9,
+     "eye_px": [
+      228.9,
+      236.4
+     ],
+     "hips_px": [
+      225.0,
+      356.4
+     ],
+     "face_to_cam_deg": 43.0,
+     "face_yaw_deg": 0.0,
+     "face_pitch_deg": 38.0
+    },
+    "legs": {
+     "l": {
+      "reach_mm": 0.005,
+      "ik_ratio": 0.8591,
+      "shoe_min_z_mm": -0.56,
+      "hip_flex": 57.4,
+      "hip_abd": -2.5,
+      "hip_twist": -0.4,
+      "knee": 59.0,
+      "ankle_dorsi": 9.5
+     },
+     "r": {
+      "reach_mm": 0.003,
+      "ik_ratio": 0.8754,
+      "shoe_min_z_mm": -0.4,
+      "hip_flex": 55.5,
+      "hip_abd": -1.7,
+      "hip_twist": 0.6,
+      "knee": 55.3,
+      "ankle_dorsi": 7.7
+     }
+    },
+    "cog_m": -0.036,
+    "torso": {
+     "CTRL_torso": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "CTRL_pelvis": [
+      8.0,
+      0.0,
+      0.0
+     ],
+     "CTRL_spine_01": [
+      10.0,
+      0.0,
+      0.0
+     ],
+     "CTRL_chest": [
+      12.0,
+      0.0,
+      0.0
+     ],
+     "CTRL_head": [
+      16.0,
+      0.0,
+      0.0
+     ]
+    },
+    "outside_safe_range": [],
+    "amplitude": {
+     "head_rise_mm": -37.557,
+     "eye_rise_mm": -255.056,
+     "fist_rise_mm": 22.377,
+     "fist_out_mm": -24.234,
+     "fist_fwd_mm": 99.553,
+     "club_tip_move_mm": 313.25,
+     "club_max_vertex_move_mm": 324.565
+    }
+   }
+  },
+  {
+   "frame": 12,
+   "name": "roar",
+   "intent": "Roar peak (reference f10-26, peak from f11): burst up - body rises onto the balls of the feet (T134, user 2026-09-26: CTRL_torso loc Y +0.048 = 63 mm above ready (sweep_overrides widens loc Y to +0.08; the heel lift raises the ankles), loc Z +0.04 forward so the hips stay over the ankles that the heel lift moves forward (hip_flex under 60, no hip / knee crease), leg ik_ratio 0.955 / 0.961), chest lifted with a back bend spine_01 X -5 + chest X -6, head tilted up -16, mouth_open 1 (the shape key stretches the head up; open mouth unobstructed in the front view). Left arm flung up and out (shoulder Z 24.5, upper arm Z 7 / X -10, elbow 15; reference fist +570 mm up, +96 mm out). Right arm raises the club beside the head (shoulder X -10 / Z -24.5, upper arm 7.7 / 31.1 / 20, elbow 36.8, hand FK -16.5 / 42.1 / -12.1; club leans in toward the head about 19 deg like the reference, fist beside the head, upper arm raise well under 100). Feet (T134, reference f10-14 / feet_sheet.png): heels up on the balls (foot_roll_l / r +24 = heel up about the toe pivot, clamps l [-24, 26], r [-27, 29]; from +22 the single ball contact is shoe vertex l 3776 / r 3940) and splayed out about the toe (toe_twist_l +15 / toe_twist_r -15, clamps l [-16, 21], r [-20, 15]; heel_twist 0); CTRL_foot_ik_l loc (0.00456, 0.01155, 0) / _r (-0.00011, 0.01268, 0) keep that ball vertex at its ready-pose ground XY (pivot contact, no slide). No scale.",
+   "contact": [
+    "l",
+    "r"
+   ],
+   "ctrl_overrides": {
+    "CTRL_torso": {
+     "loc": [
+      0.0,
+      0.048,
+      0.04
+     ]
+    },
+    "CTRL_spine_01": {
+     "rot": [
+      -5.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_chest": {
+     "rot": [
+      -6.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_head": {
+     "rot": [
+      -16.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_shoulder_l": {
+     "rot": [
+      0.0,
+      0.0,
+      24.5
+     ]
+    },
+    "CTRL_upperarm_fk_l": {
+     "rot": [
+      -10.0,
+      19.5,
+      7.0
+     ]
+    },
+    "CTRL_lowerarm_fk_l": {
+     "rot": [
+      15.0,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_hand_fk_l": {
+     "rot": [
+      1.5,
+      0.0,
+      1.5
+     ]
+    },
+    "CTRL_shoulder_r": {
+     "rot": [
+      -10.0,
+      0.0,
+      -24.5
+     ]
+    },
+    "CTRL_upperarm_fk_r": {
+     "rot": [
+      7.7,
+      31.1,
+      20.0
+     ]
+    },
+    "CTRL_lowerarm_fk_r": {
+     "rot": [
+      36.8,
+      0.0,
+      0.0
+     ]
+    },
+    "CTRL_hand_fk_r": {
+     "rot": [
+      -16.5,
+      42.1,
+      -12.1
+     ]
+    },
+    "CTRL_foot_ik_l": {
+     "loc": [
+      0.00456,
+      0.01155,
+      0.0
+     ]
+    },
+    "CTRL_foot_ik_r": {
+     "loc": [
+      -0.00011,
+      0.01268,
+      0.0
+     ]
+    }
+   },
+   "props_overrides": {
+    "mouth_open": 1.0,
+    "foot_roll_l": 24,
+    "foot_roll_r": 24,
+    "toe_twist_l": 15,
+    "toe_twist_r": -15
+   },
+   "notes": {
+    "reference_frame": "ref_roar/frames/f_0012.png"
+   },
+   "ctrl": {
+    "CTRL_root": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_torso": {
+     "loc": [
+      0.0,
+      0.048,
+      0.04
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_pelvis": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_thigh_fk_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_calf_fk_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_foot_fk_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_thigh_fk_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_calf_fk_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_foot_fk_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_spine_01": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      -5.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_chest": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      -6.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_shoulder_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      24.5
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_upperarm_fk_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      -10.0,
+      19.5,
+      7.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_lowerarm_fk_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      15.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_hand_fk_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      1.5,
+      0.0,
+      1.5
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_shoulder_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      -10.0,
+      0.0,
+      -24.5
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_upperarm_fk_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      7.7,
+      31.1,
+      20.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_lowerarm_fk_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      36.8,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_hand_fk_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      -16.5,
+      42.1,
+      -12.1
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_elbow_pole_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_elbow_pole_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_foot_ik_l": {
+     "loc": [
+      0.00456,
+      0.01155,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_foot_ik_r": {
+     "loc": [
+      -0.00011,
+      0.01268,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_head": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      -16.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_hand_ik_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_hand_ik_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_knee_pole_l": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_knee_pole_r": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    "CTRL_weapon": {
+     "loc": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "rot": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "scale": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    }
+   },
+   "props": {
+    "arm_ik_fk_l": 0.0,
+    "arm_ik_fk_r": 0.0,
+    "leg_ik_fk_l": 1.0,
+    "leg_ik_fk_r": 1.0,
+    "head_space": 0,
+    "hand_ik_space_l": 0,
+    "hand_ik_space_r": 0,
+    "weapon_space": 0,
+    "knee_pole_space_l": 0,
+    "knee_pole_space_r": 0,
+    "foot_roll_l": 24.0,
+    "foot_roll_r": 24.0,
+    "foot_bank_l": 0.0,
+    "foot_bank_r": 0.0,
+    "heel_twist_l": 0.0,
+    "heel_twist_r": 0.0,
+    "toe_twist_l": 15.0,
+    "toe_twist_r": -15.0,
+    "mouth_open": 1.0
+   },
+   "def": {
+    "root": [
+     [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      -1.0,
+      0.0
+     ],
+     [
+      0.0,
+      1.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "pelvis": [
+     [
+      1.0,
+      0.0,
+      -1e-07,
+      0.0
+     ],
+     [
+      -1e-07,
+      0.0,
+      -1.0,
+      -0.04
+     ],
+     [
+      0.0,
+      1.0,
+      0.0,
+      0.352
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "spine_01": [
+     [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.0871557,
+      -0.9961947,
+      -0.04
+     ],
+     [
+      0.0,
+      0.9961947,
+      0.0871557,
+      0.6257501
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "spine_02": [
+     [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.190809,
+      -0.9816272,
+      -0.0236038
+     ],
+     [
+      0.0,
+      0.9816272,
+      0.190809,
+      0.8131592
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "head": [
+     [
+      1.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     [
+      0.0,
+      0.4539905,
+      -0.8910066,
+      0.0122921
+     ],
+     [
+      0.0,
+      0.8910066,
+      0.4539905,
+      0.9978278
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "shoulder_l": [
+     [
+      0.3890477,
+      0.9210499,
+      0.0175747,
+      0.151
+     ],
+     [
+      0.0182664,
+      0.0113611,
+      -0.9997687,
+      0.0344283
+     ],
+     [
+      -0.9210365,
+      0.3892787,
+      -0.0124042,
+      0.9694149
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "upperarm_l": [
+     [
+      0.4578403,
+      0.8183666,
+      0.347359,
+      0.2901543
+     ],
+     [
+      0.3542431,
+      0.1904293,
+      -0.9155592,
+      0.0361448
+     ],
+     [
+      -0.8154104,
+      0.5422293,
+      -0.2027145,
+      1.028228
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "upperarm_twist_l": [
+     [
+      0.5087077,
+      0.8183666,
+      0.2673807,
+      0.2901544
+     ],
+     [
+      0.1989371,
+      0.1904293,
+      -0.9613329,
+      0.0361448
+     ],
+     [
+      -0.8376398,
+      0.5422293,
+      -0.0659306,
+      1.0282282
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "lowerarm_l": [
+     [
+      0.4578403,
+      0.8845665,
+      0.0890192,
+      0.4383881
+     ],
+     [
+      0.354243,
+      -0.0896753,
+      -0.9308439,
+      0.070638
+     ],
+     [
+      -0.8154104,
+      0.4577122,
+      -0.3544084,
+      1.1264441
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "lowerarm_twist_l": [
+     [
+      0.457825,
+      0.8845665,
+      0.0890976,
+      0.5185005
+     ],
+     [
+      0.3544025,
+      -0.0896753,
+      -0.9307833,
+      0.0625163
+     ],
+     [
+      -0.8153496,
+      0.4577122,
+      -0.3545481,
+      1.1678977
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "hand_l": [
+     [
+      0.4808385,
+      0.8743099,
+      0.0661552,
+      0.5986129
+     ],
+     [
+      0.3517744,
+      -0.1232503,
+      -0.9279355,
+      0.0543947
+     ],
+     [
+      -0.8031494,
+      0.4694587,
+      -0.3668233,
+      1.2093512
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "shoulder_r": [
+     [
+      0.3878689,
+      -0.9035828,
+      -0.1819227,
+      -0.145
+     ],
+     [
+      0.0047752,
+      0.1993415,
+      -0.9799185,
+      0.0329226
+     ],
+     [
+      0.9217023,
+      0.3792113,
+      0.0816332,
+      0.9698734
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "upperarm_r": [
+     [
+      0.1519723,
+      -0.988337,
+      -0.0097176,
+      -0.2761078
+     ],
+     [
+      0.5719835,
+      0.0959611,
+      -0.8146328,
+      0.0618466
+     ],
+     [
+      0.8060643,
+      0.1182434,
+      0.5798958,
+      1.0248961
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "upperarm_twist_r": [
+     [
+      0.1432913,
+      -0.988337,
+      -0.0515521,
+      -0.2761078
+     ],
+     [
+      0.3231704,
+      0.0959611,
+      -0.9414631,
+      0.0618466
+     ],
+     [
+      0.9354299,
+      0.1182434,
+      0.3331515,
+      1.024896
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "lowerarm_r": [
+     [
+      0.1519723,
+      -0.7729685,
+      0.6159742,
+      -0.4551538
+     ],
+     [
+      0.5719834,
+      -0.439474,
+      -0.6926023,
+      0.0792308
+     ],
+     [
+      0.8060644,
+      0.4575835,
+      0.3753372,
+      1.046317
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "lowerarm_twist_r": [
+     [
+      -0.0865147,
+      -0.7729685,
+      0.6285181,
+      -0.5251688
+     ],
+     [
+      0.7875102,
+      -0.439474,
+      -0.4320771,
+      0.0394235
+     ],
+     [
+      0.6101993,
+      0.4575835,
+      0.6467414,
+      1.0877646
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "hand_r": [
+     [
+      -0.1824896,
+      -0.8830796,
+      0.4322822,
+      -0.595184
+     ],
+     [
+      0.9476603,
+      -0.2751336,
+      -0.161993,
+      -0.0003838
+     ],
+     [
+      0.2619882,
+      0.3800948,
+      0.8870685,
+      1.1292124
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "weapon_socket_r": [
+     [
+      -0.2536617,
+      0.325248,
+      0.9109747,
+      -0.6876634
+     ],
+     [
+      0.9646267,
+      0.0150538,
+      0.2632168,
+      -0.0409974
+     ],
+     [
+      0.0719004,
+      0.945509,
+      -0.3175597,
+      1.1656086
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "thigh_l": [
+     [
+      0.9862328,
+      0.0446711,
+      -0.1592129,
+      0.2008134
+     ],
+     [
+      0.1442174,
+      -0.7034305,
+      0.6959791,
+      -0.0351936
+     ],
+     [
+      -0.080905,
+      -0.7093589,
+      -0.7001888,
+      0.322
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "calf_l": [
+     [
+      0.9862326,
+      -0.0529786,
+      -0.1566446,
+      0.204192
+     ],
+     [
+      0.1442173,
+      -0.1879047,
+      0.9715418,
+      -0.088396
+     ],
+     [
+      -0.0809051,
+      -0.9807574,
+      -0.1776772,
+      0.2683492
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "foot_l": [
+     [
+      0.7950659,
+      0.5925792,
+      -0.1293033,
+      0.2001845
+     ],
+     [
+      0.5871234,
+      -0.6984578,
+      0.4091972,
+      -0.1026096
+     ],
+     [
+      0.1521688,
+      -0.4012559,
+      -0.9032376,
+      0.1941621
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "thigh_r": [
+     [
+      0.9880316,
+      -0.0517961,
+      0.145295,
+      -0.2087383
+     ],
+     [
+      -0.1379765,
+      -0.7178931,
+      0.6823432,
+      -0.0288131
+     ],
+     [
+      0.0689635,
+      -0.6942238,
+      -0.7164475,
+      0.322
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "calf_r": [
+     [
+      0.9880316,
+      0.0335866,
+      0.1505504,
+      -0.212671
+     ],
+     [
+      -0.1379766,
+      -0.2439211,
+      0.9599298,
+      -0.0833209
+     ],
+     [
+      0.0689632,
+      -0.9692134,
+      -0.2363672,
+      0.2692894
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "foot_r": [
+     [
+      0.816318,
+      -0.5675586,
+      0.1072476,
+      -0.2101206
+     ],
+     [
+      -0.5548725,
+      -0.7189821,
+      0.4185469,
+      -0.1018434
+     ],
+     [
+      -0.1604408,
+      -0.4011762,
+      -0.9018407,
+      0.1956909
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ]
+   },
+   "measure": {
+    "club": {
+     "min_mm": 223.68,
+     "min_mm_surface": 223.68,
+     "where": "body/upperarm_r",
+     "club_s_m": -0.113,
+     "found_by": "body_vertex",
+     "intersect_tri_pairs": 0,
+     "intersect_where": []
+    },
+    "self_isect": {
+     "pairs": 18,
+     "cover": ">=2",
+     "n_body_pairs": 18,
+     "n_rigid_pairs": 0,
+     "visible_pairs": 0,
+     "visible_cover": 0,
+     "visible_groups": {},
+     "pair_groups": {
+      "body/head|body/shoulder_r": 5,
+      "body/head|body/shoulder_l": 7,
+      "body/head|body/head": 4,
+      "body/calf_l|body/foot_l": 2
+     }
+    },
+    "foreign_overlaps_report": {},
+    "club_min_z_mm": 938.3,
+    "arms": {
+     "l": {
+      "shoulder_up": 24.5,
+      "shoulder_fwd": 0.0,
+      "upperarm_raise": 7.0,
+      "upperarm_fwd": -10.0,
+      "upperarm_twist": 19.5,
+      "elbow": 15.0,
+      "wrist_bend": 1.5,
+      "wrist_twist": 0.0,
+      "wrist_side": 1.5,
+      "upperarm_elev_deg": 34.7,
+      "upperarm_from_rest_deg": 35.9,
+      "wrist_bend_def": 2.1,
+      "wrist_twist_def": 0.0
+     },
+     "r": {
+      "shoulder_up": 24.5,
+      "shoulder_fwd": -10.0,
+      "upperarm_raise": -20.0,
+      "upperarm_fwd": 7.7,
+      "upperarm_twist": 31.1,
+      "elbow": 36.8,
+      "wrist_bend": -16.5,
+      "wrist_twist": 42.1,
+      "wrist_side": -12.1,
+      "upperarm_elev_deg": 7.7,
+      "upperarm_from_rest_deg": 9.1,
+      "wrist_bend_def": 12.2,
+      "wrist_twist_def": 43.4
+     }
+    },
+    "front": {
+     "lean_hip_eye_deg": 1.0,
+     "eye_px": [
+      228.9,
+      118.8
+     ],
+     "hips_px": [
+      225.0,
+      335.0
+     ],
+     "face_to_cam_deg": 22.0,
+     "face_yaw_deg": 0.0,
+     "face_pitch_deg": -27.0
+    },
+    "legs": {
+     "l": {
+      "reach_mm": 0.002,
+      "ik_ratio": 0.9554,
+      "shoe_min_z_mm": 0.22,
+      "hip_flex": 38.6,
+      "hip_abd": -9.8,
+      "hip_twist": -1.1,
+      "knee": 31.8,
+      "ankle_dorsi": -26.4
+     },
+     "r": {
+      "reach_mm": 0.005,
+      "ik_ratio": 0.9608,
+      "shoe_min_z_mm": 0.54,
+      "hip_flex": 38.2,
+      "hip_abd": -9.4,
+      "hip_twist": 2.3,
+      "knee": 29.7,
+      "ankle_dorsi": -28.5
+     }
+    },
+    "cog_m": 0.048,
+    "torso": {
+     "CTRL_torso": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "CTRL_pelvis": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "CTRL_spine_01": [
+      -5.0,
+      0.0,
+      0.0
+     ],
+     "CTRL_chest": [
+      -6.0,
+      0.0,
+      0.0
+     ],
+     "CTRL_head": [
+      -16.0,
+      0.0,
+      0.0
+     ]
+    },
+    "outside_safe_range": [],
+    "amplitude": {
+     "head_rise_mm": 58.828,
+     "eye_rise_mm": 147.339,
+     "fist_rise_mm": 646.849,
+     "fist_out_mm": 96.173,
+     "fist_fwd_mm": -59.495,
+     "club_tip_move_mm": 457.084,
+     "club_max_vertex_move_mm": 560.677
+    }
+   }
+  }
+ ],
+ "keyed_frames": {
+  "1": "key pose ready",
+  "3": "still: hold of f1 (reference f1-3 = ready; stops the f1-f3 Bezier overshoot)",
+  "4": "wind-up 18 % (reference head top 110 -> 116 px); upper arm raise Z held at the f1 value (the 18 % blend opened visible shoulder/upper-arm creases, 6 pairs)",
+  "5": "wind-up 50 % (head top 126 px)",
+  "6": "wind-up 80 % (head top 134 px)",
+  "7": "key pose windup",
+  "8": "wind-up held (7 % toward roar)",
+  "9": "burst 35 %, mouth opening (reference dark-mouth pixels rise f9-10)",
+  "10": "burst 75 %, mouth open",
+  "11": "burst 95 %",
+  "12": "key pose roar",
+  "23": "roar held f12-f23 (reference near constant f11-23)",
+  "25": "arms lower 10 % (reference fist y 190 px); splay 80 %",
+  "27": "arms lower 45 % (fist y 254 px), mouth still open; splay 50 %, heels still up (foot_roll 22.08 keeps the single ball contact while the toe twist changes)",
+  "28": "lower 65 % (fist y 278 px), mouth closing",
+  "29": "return 85 %, mouth closed",
+  "30": "return 95 %",
+  "31": "= f1 (ready), rest f31-39",
+  "39": "loop: f39 = f1"
+ },
+ "anim_measure": {
+  "keypose_def_action_vs_direct_max_abs": {
+   "1": 0.0,
+   "7": 0.0,
+   "12": 0.0
+  },
+  "loop_def_max_abs": 0.0,
+  "ctrl_root_max_abs": 0.0,
+  "def_scale_max_dev": 9.394206684554263e-06,
+  "flips": [],
+  "theta_range_deg": {
+   "arm_l": [
+    17.25,
+    57.25
+   ],
+   "arm_r": [
+    39.11,
+    62.31
+   ],
+   "leg_l": [
+    31.99,
+    62.14
+   ],
+   "leg_r": [
+    32.2,
+    59.07
+   ]
+  },
+  "max_adjacent_rot_per_section": {
+   "still": {
+    "max_deg": 0.0,
+    "bone": "weapon_socket_r",
+    "frames": [
+     2,
+     3
+    ]
+   },
+   "windup": {
+    "max_deg": 12.16,
+    "bone": "head",
+    "frames": [
+     4,
+     5
+    ]
+   },
+   "burst": {
+    "max_deg": 38.705,
+    "bone": "lowerarm_l",
+    "frames": [
+     9,
+     10
+    ]
+   },
+   "hold": {
+    "max_deg": 7.194,
+    "bone": "calf_r",
+    "frames": [
+     11,
+     12
+    ]
+   },
+   "lower": {
+    "max_deg": 22.949,
+    "bone": "calf_r",
+    "frames": [
+     27,
+     28
+    ]
+   },
+   "return": {
+    "max_deg": 16.979,
+    "bone": "hand_l",
+    "frames": [
+     28,
+     29
+    ]
+   },
+   "rest": {
+    "max_deg": 0.0,
+    "bone": "weapon_socket_r",
+    "frames": [
+     38,
+     39
+    ]
+   }
+  },
+  "contact": [
+   {
+    "foot": "l",
+    "frames": [
+     1,
+     39
+    ],
+    "max_move_mm": 120.6023,
+    "max_reach_mm": 0.007,
+    "shoe_min_z_mm": [
+     -0.56,
+     2.63
+    ]
+   },
+   {
+    "foot": "r",
+    "frames": [
+     1,
+     39
+    ],
+    "max_move_mm": 122.107,
+    "max_reach_mm": 0.005,
+    "shoe_min_z_mm": [
+     -0.4,
+     2.84
+    ]
+   }
+  ],
+  "sections": {
+   "still": {
+    "frames": [
+     1,
+     3
+    ],
+    "head_rise_mm": [
+     0.0,
+     0.0
+    ],
+    "eye_rise_mm": [
+     0.0,
+     0.0
+    ],
+    "fist_rise_mm": [
+     0.0,
+     0.0
+    ],
+    "fist_out_mm": [
+     0.0,
+     0.0
+    ],
+    "club_tip_move_mm_max": 0.0,
+    "club_max_vertex_move_mm_max": 0.0,
+    "min_clearance_mm": 70.28,
+    "min_clearance_frame": 1,
+    "max_visible_cover": 0,
+    "max_visible_pairs": 0,
+    "contact_max_move_mm": {
+     "l": 0.0,
+     "r": 0.0
+    },
+    "outside_safe_range": []
+   },
+   "windup": {
+    "frames": [
+     3,
+     8
+    ],
+    "head_rise_mm": [
+     -37.557,
+     0.0
+    ],
+    "eye_rise_mm": [
+     -255.056,
+     0.0
+    ],
+    "fist_rise_mm": [
+     0.0,
+     54.791
+    ],
+    "fist_out_mm": [
+     -24.234,
+     6.563
+    ],
+    "club_tip_move_mm_max": 313.25,
+    "club_max_vertex_move_mm_max": 324.565,
+    "min_clearance_mm": 70.28,
+    "min_clearance_frame": 3,
+    "max_visible_cover": 1,
+    "max_visible_pairs": 2,
+    "contact_max_move_mm": {
+     "l": 0.0028,
+     "r": 0.0021
+    },
+    "outside_safe_range": []
+   },
+   "burst": {
+    "frames": [
+     8,
+     11
+    ],
+    "head_rise_mm": [
+     -28.41,
+     57.983
+    ],
+    "eye_rise_mm": [
+     -216.594,
+     139.756
+    ],
+    "fist_rise_mm": [
+     54.791,
+     621.661
+    ],
+    "fist_out_mm": [
+     4.7,
+     136.851
+    ],
+    "club_tip_move_mm_max": 431.636,
+    "club_max_vertex_move_mm_max": 543.934,
+    "min_clearance_mm": 112.61,
+    "min_clearance_frame": 8,
+    "max_visible_cover": 0,
+    "max_visible_pairs": 0,
+    "contact_max_move_mm": {
+     "l": 112.154,
+     "r": 113.9346
+    },
+    "outside_safe_range": []
+   },
+   "hold": {
+    "frames": [
+     11,
+     24
+    ],
+    "head_rise_mm": [
+     57.983,
+     58.993
+    ],
+    "eye_rise_mm": [
+     139.756,
+     147.339
+    ],
+    "fist_rise_mm": [
+     621.661,
+     646.849
+    ],
+    "fist_out_mm": [
+     96.173,
+     108.304
+    ],
+    "club_tip_move_mm_max": 457.084,
+    "club_max_vertex_move_mm_max": 560.677,
+    "min_clearance_mm": 223.68,
+    "min_clearance_frame": 12,
+    "max_visible_cover": 0,
+    "max_visible_pairs": 0,
+    "contact_max_move_mm": {
+     "l": 120.6023,
+     "r": 122.107
+    },
+    "outside_safe_range": []
+   },
+   "lower": {
+    "frames": [
+     24,
+     28
+    ],
+    "head_rise_mm": [
+     37.488,
+     60.735
+    ],
+    "eye_rise_mm": [
+     76.5,
+     146.459
+    ],
+    "fist_rise_mm": [
+     217.689,
+     635.526
+    ],
+    "fist_out_mm": [
+     102.226,
+     151.487
+    ],
+    "club_tip_move_mm_max": 446.608,
+    "club_max_vertex_move_mm_max": 554.505,
+    "min_clearance_mm": 192.35,
+    "min_clearance_frame": 28,
+    "max_visible_cover": 0,
+    "max_visible_pairs": 0,
+    "contact_max_move_mm": {
+     "l": 117.8409,
+     "r": 119.4837
+    },
+    "outside_safe_range": []
+   },
+   "return": {
+    "frames": [
+     28,
+     31
+    ],
+    "head_rise_mm": [
+     0.0,
+     37.488
+    ],
+    "eye_rise_mm": [
+     0.0,
+     76.5
+    ],
+    "fist_rise_mm": [
+     0.0,
+     217.689
+    ],
+    "fist_out_mm": [
+     0.0,
+     121.506
+    ],
+    "club_tip_move_mm_max": 204.206,
+    "club_max_vertex_move_mm_max": 244.697,
+    "min_clearance_mm": 70.28,
+    "min_clearance_frame": 31,
+    "max_visible_cover": 0,
+    "max_visible_pairs": 0,
+    "contact_max_move_mm": {
+     "l": 47.5196,
+     "r": 48.769
+    },
+    "outside_safe_range": []
+   },
+   "rest": {
+    "frames": [
+     31,
+     39
+    ],
+    "head_rise_mm": [
+     0.0,
+     0.0
+    ],
+    "eye_rise_mm": [
+     0.0,
+     0.0
+    ],
+    "fist_rise_mm": [
+     0.0,
+     0.0
+    ],
+    "fist_out_mm": [
+     0.0,
+     0.0
+    ],
+    "club_tip_move_mm_max": 0.0,
+    "club_max_vertex_move_mm_max": 0.0,
+    "min_clearance_mm": 70.28,
+    "min_clearance_frame": 31,
+    "max_visible_cover": 0,
+    "max_visible_pairs": 0,
+    "contact_max_move_mm": {
+     "l": 0.0,
+     "r": 0.0
+    },
+    "outside_safe_range": []
+   }
+  },
+  "amplitude_peak": {
+   "head_rise_mm": {
+    "value": 60.735,
+    "frame": 27
+   },
+   "eye_rise_mm": {
+    "value": -255.056,
+    "frame": 7
+   },
+   "fist_rise_mm": {
+    "value": 646.849,
+    "frame": 12
+   },
+   "fist_out_mm": {
+    "value": 151.487,
+    "frame": 27
+   },
+   "fist_fwd_mm": {
+    "value": 120.686,
+    "frame": 9
+   },
+   "club_tip_move_mm": {
+    "value": 457.084,
+    "frame": 12
+   },
+   "club_max_vertex_move_mm": {
+    "value": 560.677,
+    "frame": 12
+   }
+  },
+  "match_first_frame": {
+   "blend": "gob_r07_swing_anim.blend",
+   "action": "attack_swing",
+   "frame": 1,
+   "def_max_abs": 0.0,
+   "def_worst_bone": "weapon_socket_r",
+   "ctrl_max_abs": 0.0,
+   "ctrl_worst": "CTRL_weapon",
+   "props_differ": {}
+  },
+  "_doc": "written by s12_clip_anim.py (self measurement, raw values)"
+ }
+}

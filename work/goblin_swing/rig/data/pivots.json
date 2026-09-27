@@ -1,0 +1,277 @@
+{
+ "pivots": {
+  "shoulder_root_l": {
+   "co": [
+    0.15100000000000013,
+    0.02715095353280153,
+    0.9303328738366712
+   ],
+   "axis": [
+    0.9994552436659414,
+    0.022872994991199307,
+    -0.023791637370859046
+   ],
+   "radius": 0.05052530025991138,
+   "method": "shoulder bone head (d-23 section 2 user decision 2026-09-23): point on the arm tube axis line extended into the torso at x = 0.5 * shoulder.x = +0.1510"
+  },
+  "shoulder_root_r": {
+   "co": [
+    -0.14500000000000013,
+    0.0255854399082386,
+    0.9304956947360737
+   ],
+   "axis": [
+    -0.9993266736392855,
+    0.027044937516189513,
+    -0.024794570127079488
+   ],
+   "radius": 0.05048796865991503,
+   "method": "shoulder bone head (d-23 section 2 user decision 2026-09-23): point on the arm tube axis line extended into the torso at x = 0.5 * shoulder.x = -0.1450"
+  },
+  "shoulder_l": {
+   "co": [
+    0.3020000000000002,
+    0.03060665829352967,
+    0.9267383784695525
+   ],
+   "axis": [
+    0.9994552436659414,
+    0.022872994991199307,
+    -0.023791637370859046
+   ],
+   "radius": 0.05052530025991138,
+   "method": "arm-torso junction (d-23 section 2 user decision 2026-09-23): x-slices (step 2 mm) tracked inward from seed x=+0.430; innermost slice where the arm section is still a separate closed loop (next slice merges with torso); point on tube axis line at that x; slice fit r=51.5 mm (first slice with r <= 1.1*r_arm: x=+0.3020, r=51.5 mm; no fillet)"
+  },
+  "shoulder_r": {
+   "co": [
+    -0.2900000000000002,
+    0.02950959808723161,
+    0.9268980596851312
+   ],
+   "axis": [
+    -0.9993266736392855,
+    0.027044937516189513,
+    -0.024794570127079488
+   ],
+   "radius": 0.05048796865991503,
+   "method": "arm-torso junction (d-23 section 2 user decision 2026-09-23): x-slices (step 2 mm) tracked inward from seed x=-0.440; innermost slice where the arm section is still a separate closed loop (next slice merges with torso); point on tube axis line at that x; slice fit r=52.0 mm (first slice with r <= 1.1*r_arm: x=-0.2900, r=52.0 mm; no fillet)"
+  },
+  "elbow_l": {
+   "co": [
+    0.4830000000000003,
+    0.03474892691400512,
+    0.9224297449500262
+   ],
+   "axis": [
+    0.9994552436659414,
+    0.022872994991199307,
+    -0.023791637370859046
+   ],
+   "radius": 0.05052530025991138,
+   "method": "50% of shoulder -> wrist (d-23 section 8 default); point on tube axis line"
+  },
+  "elbow_r": {
+   "co": [
+    -0.4710000000000003,
+    0.034408030021009096,
+    0.9224072186905062
+   ],
+   "axis": [
+    -0.9993266736392855,
+    0.027044937516189513,
+    -0.024794570127079488
+   ],
+   "radius": 0.05048796865991503,
+   "method": "50% of shoulder -> wrist (d-23 section 8 default); point on tube axis line"
+  },
+  "wrist_l": {
+   "co": [
+    0.6640000000000005,
+    0.038891195534480574,
+    0.9181211114304998
+   ],
+   "axis": [
+    0.9994552436659414,
+    0.022872994991199307,
+    -0.023791637370859046
+   ],
+   "radius": 0.05052530025991138,
+   "method": "first slice outward from tube middle with circle-fit r > 1.1*r_arm; slice fit r=56.2 mm; point on tube axis line"
+  },
+  "wrist_r": {
+   "co": [
+    -0.6520000000000005,
+    0.03930646195478658,
+    0.9179163776958814
+   ],
+   "axis": [
+    -0.9993266736392855,
+    0.027044937516189513,
+    -0.024794570127079488
+   ],
+   "radius": 0.05048796865991503,
+   "method": "first slice outward from tube middle with circle-fit r > 1.1*r_arm; slice fit r=58.6 mm; point on tube axis line"
+  },
+  "hip_l": {
+   "co": [
+    0.20081334884595375,
+    0.00480644835093522,
+    0.27400000000000013
+   ],
+   "axis": [
+    0.10461501185992614,
+    -0.07311153053776864,
+    -0.9918217598923571
+   ],
+   "radius": 0.05709315570115192,
+   "method": "z-slices (step 2 mm) tracked upward from seed z=0.130; last slice before the leg section merges with the torso section; point on tube axis line; slice fit r=57.1 mm"
+  },
+  "hip_r": {
+   "co": [
+    -0.20873829174594188,
+    0.011186861642610594,
+    0.27400000000000013
+   ],
+   "axis": [
+    -0.11416999842063935,
+    -0.1042714879289216,
+    -0.9879740220601552
+   ],
+   "radius": 0.05720117960305469,
+   "method": "z-slices (step 2 mm) tracked upward from seed z=0.130; last slice before the leg section merges with the torso section; point on tube axis line; slice fit r=57.3 mm"
+  },
+  "knee_l": {
+   "co": [
+    0.2087241713412638,
+    -0.0007221304845682129,
+    0.19900000000000007
+   ],
+   "axis": [
+    0.10461501185992614,
+    -0.07311153053776864,
+    -0.9918217598923571
+   ],
+   "radius": 0.05709315570115192,
+   "method": "50% of hip -> ankle (d-23 section 8 default); point on tube axis line"
+  },
+  "knee_r": {
+   "co": [
+    -0.21740527052306866,
+    0.003271307771708343,
+    0.19900000000000007
+   ],
+   "axis": [
+    -0.11416999842063935,
+    -0.1042714879289216,
+    -0.9879740220601552
+   ],
+   "radius": 0.05720117960305469,
+   "method": "50% of hip -> ankle (d-23 section 8 default); point on tube axis line"
+  },
+  "ankle_l": {
+   "co": [
+    0.21663499383657386,
+    -0.006250709320071644,
+    0.12400000000000003
+   ],
+   "axis": [
+    0.10461501185992614,
+    -0.07311153053776864,
+    -0.9918217598923571
+   ],
+   "radius": 0.05709315570115192,
+   "method": "first slice downward from tube middle with circle-fit r > 1.1*r_leg; slice fit r=68.3 mm; point on tube axis line"
+  },
+  "ankle_r": {
+   "co": [
+    -0.22607224930019545,
+    -0.004644246099193904,
+    0.12400000000000003
+   ],
+   "axis": [
+    -0.11416999842063935,
+    -0.1042714879289216,
+    -0.9879740220601552
+   ],
+   "radius": 0.05720117960305469,
+   "method": "first slice downward from tube middle with circle-fit r > 1.1*r_leg; slice fit r=68.1 mm; point on tube axis line"
+  },
+  "pelvis": {
+   "co": [
+    0.0,
+    0.0,
+    0.30400000000000016
+   ],
+   "method": "torso axis x=y=0; z = mean(hip_l.z, hip_r.z) + 0.03 m"
+  },
+  "spine_01": {
+   "co": [
+    0.0,
+    0.0,
+    0.5777499999999987
+   ],
+   "method": "belt top: largest negative step of torso area-radius profile (z-slices 2.5 mm, central loop containing (0,0), step minus local median step) = -6.9 mm between z 0.5765/0.5790; belt bottom (largest positive step +7.7 mm) at z 0.4303"
+  },
+  "spine_02": {
+   "co": [
+    0.0,
+    0.0,
+    0.7658749999999946
+   ],
+   "method": "z = (spine_01.z + head.z) / 2 (d-23 section 2 user decision 2026-09-23). Reference only: max half width (max|x|) of central torso loop, excluding arm band z[0.869,0.982] and belt band z[0.4303,0.5777], is at z 0.5790 (hw=386.0 mm); including belt at z 0.5740 (hw=393.5 mm)"
+  },
+  "head": {
+   "co": [
+    0.0,
+    0.0,
+    0.9539999999999906
+   ],
+   "method": "head box / torso crease: z of minimum front-back radius (median |p| of central-loop points with |x| <= |y|) above spine_02 = 177.9 mm (slope kink of the profile)"
+  },
+  "grip_r": {
+   "co": [
+    -0.7582746619663301,
+    0.04328853743633437,
+    0.9032046703101598
+   ],
+   "axis": [
+    -0.07592157196500346,
+    -0.9967854010348689,
+    0.025588653620668082
+   ],
+   "method": "palm sphere: RANSAC sphere (4-point fits, r 40-200 mm, inlier |d-r| < 1 mm, refit on inliers) of SRC_hi verts with x < wrist_r.x (10460 verts, 2830 inliers) -> center (-0.7333,+0.0416,+0.9121) r=100.8 mm rms=0.53 mm; projected on SRC_club_hi PCA major axis (6935 verts, both pieces); axis points to the larger-radius end (club head); sphere-to-axis distance 26.5 mm"
+  },
+  "foot_tip_l": {
+   "co": [
+    0.31532642245292664,
+    -0.22418434917926788,
+    0.0
+   ],
+   "method": "shoe verts (z < ankle z 0.124, x sign side): min-y vertex (z 0.040) projected to z=0"
+  },
+  "foot_tip_r": {
+   "co": [
+    -0.3157598376274109,
+    -0.22279177606105804,
+    0.0
+   ],
+   "method": "shoe verts (z < ankle z 0.124, x sign side): min-y vertex (z 0.039) projected to z=0"
+  },
+  "heel_l": {
+   "co": [
+    0.22386761009693146,
+    0.11661867797374725,
+    0.0
+   ],
+   "method": "shoe verts (z < ankle z 0.124, x sign side): max-y vertex (z 0.038) projected to z=0"
+  },
+  "heel_r": {
+   "co": [
+    -0.2381959855556488,
+    0.115239217877388,
+    0.0
+   ],
+   "method": "shoe verts (z < ankle z 0.124, x sign side): max-y vertex (z 0.038) projected to z=0"
+  }
+ }
+}
