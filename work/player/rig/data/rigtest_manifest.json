@@ -1,0 +1,384 @@
+{
+ "_doc": {
+  "clip": "Action 'rigtest' on PL_rig (source pl_r04_ctrl.blend, script p25_rigtest.py, adapted from goblin s07a). Keys only on CTRL_* pose bones and PROPS; every key frame keys the full control state.",
+  "frames": "frame_start / frame_end inclusive; segments share their boundary frame.",
+  "foot_lock": "a side is listed when that leg is IK and its foot IK control, roll props and CTRL_root are constant for the whole segment (DEF foot must stay fixed).",
+  "events": "operator calls (switch / snap: last key at frame-1 old space / mode, operator at frame).",
+  "root": "CTRL_root moves only in segment 'root' and is identity afterwards (root locked).",
+  "render_frames": "frames captured in Unity (front + three_quarter, springs on); chosen inside in-place segments (cog, arm_fk, ready pose, leg_fk, locomotion step, after the yaw swings)."
+ },
+ "action": "rigtest",
+ "armature": "PL_rig",
+ "slot": "OBPL_rig",
+ "fps": 24,
+ "frame_start": 1,
+ "frame_end": 676,
+ "segments": [
+  {
+   "name": "root",
+   "start": 1,
+   "end": 31,
+   "covers": [
+    "root"
+   ],
+   "foot_lock": []
+  },
+  {
+   "name": "cog",
+   "start": 31,
+   "end": 85,
+   "covers": [
+    "cog"
+   ],
+   "foot_lock": [
+    "l",
+    "r"
+   ]
+  },
+  {
+   "name": "pelvis",
+   "start": 85,
+   "end": 157,
+   "covers": [
+    "pelvis"
+   ],
+   "foot_lock": [
+    "l",
+    "r"
+   ]
+  },
+  {
+   "name": "arm_fk",
+   "start": 157,
+   "end": 211,
+   "covers": [
+    "arm_fk_l",
+    "arm_fk_r"
+   ],
+   "foot_lock": [
+    "l",
+    "r"
+   ]
+  },
+  {
+   "name": "arm_ik_fk",
+   "start": 211,
+   "end": 289,
+   "covers": [
+    "arm_ik_l",
+    "arm_ik_r",
+    "ikfk_blend_l",
+    "ikfk_blend_r",
+    "snap_arm_l",
+    "snap_arm_r"
+   ],
+   "foot_lock": [
+    "l",
+    "r"
+   ]
+  },
+  {
+   "name": "head_space",
+   "start": 289,
+   "end": 337,
+   "covers": [
+    "head_space"
+   ],
+   "foot_lock": [
+    "l",
+    "r"
+   ]
+  },
+  {
+   "name": "hand_ik_space_l_weapon",
+   "start": 337,
+   "end": 405,
+   "covers": [
+    "hand_ik_space_l_weapon",
+    "weapon_r_offset",
+    "snap_arm_l"
+   ],
+   "foot_lock": [
+    "l",
+    "r"
+   ]
+  },
+  {
+   "name": "weapon_spaces",
+   "start": 405,
+   "end": 457,
+   "covers": [
+    "weapon_r_world",
+    "weapon_l_torso",
+    "weapon_return"
+   ],
+   "foot_lock": [
+    "l",
+    "r"
+   ]
+  },
+  {
+   "name": "foot_roll_bank_l",
+   "start": 457,
+   "end": 501,
+   "covers": [
+    "ready_pose",
+    "foot_roll_l",
+    "foot_bank_l"
+   ],
+   "foot_lock": []
+  },
+  {
+   "name": "foot_roll_bank_r",
+   "start": 501,
+   "end": 545,
+   "covers": [
+    "foot_roll_r",
+    "foot_bank_r"
+   ],
+   "foot_lock": []
+  },
+  {
+   "name": "leg_fk",
+   "start": 545,
+   "end": 571,
+   "covers": [
+    "leg_fk_l",
+    "leg_fk_r",
+    "snap_leg_l",
+    "snap_leg_r"
+   ],
+   "foot_lock": []
+  },
+  {
+   "name": "locomotion",
+   "start": 571,
+   "end": 664,
+   "covers": [
+    "locomotion",
+    "skirt_excitation"
+   ],
+   "foot_lock": []
+  },
+  {
+   "name": "rest",
+   "start": 664,
+   "end": 676,
+   "covers": [
+    "rest"
+   ],
+   "foot_lock": []
+  }
+ ],
+ "events": [
+  {
+   "frame": 242,
+   "kind": "snap",
+   "op": "player.snap_ikfk",
+   "args": {
+    "chain": "arm_l",
+    "direction": "TO_FK"
+   },
+   "segment": "arm_ik_fk"
+  },
+  {
+   "frame": 242,
+   "kind": "snap",
+   "op": "player.snap_ikfk",
+   "args": {
+    "chain": "arm_r",
+    "direction": "TO_FK"
+   },
+   "segment": "arm_ik_fk"
+  },
+  {
+   "frame": 257,
+   "kind": "snap",
+   "op": "player.snap_ikfk",
+   "args": {
+    "chain": "arm_l",
+    "direction": "TO_IK"
+   },
+   "segment": "arm_ik_fk"
+  },
+  {
+   "frame": 257,
+   "kind": "snap",
+   "op": "player.snap_ikfk",
+   "args": {
+    "chain": "arm_r",
+    "direction": "TO_IK"
+   },
+   "segment": "arm_ik_fk"
+  },
+  {
+   "frame": 302,
+   "kind": "switch",
+   "op": "player.switch_space",
+   "args": {
+    "prop": "head_space",
+    "value": 1
+   },
+   "segment": "head_space"
+  },
+  {
+   "frame": 323,
+   "kind": "switch",
+   "op": "player.switch_space",
+   "args": {
+    "prop": "head_space",
+    "value": 0
+   },
+   "segment": "head_space"
+  },
+  {
+   "frame": 338,
+   "kind": "snap",
+   "op": "player.snap_ikfk",
+   "args": {
+    "chain": "arm_l",
+    "direction": "TO_IK"
+   },
+   "segment": "hand_ik_space_l_weapon"
+  },
+  {
+   "frame": 353,
+   "kind": "switch",
+   "op": "player.switch_space",
+   "args": {
+    "prop": "hand_ik_space_l",
+    "value": 3
+   },
+   "segment": "hand_ik_space_l_weapon"
+  },
+  {
+   "frame": 390,
+   "kind": "switch",
+   "op": "player.switch_space",
+   "args": {
+    "prop": "hand_ik_space_l",
+    "value": 0
+   },
+   "segment": "hand_ik_space_l_weapon"
+  },
+  {
+   "frame": 405,
+   "kind": "snap",
+   "op": "player.snap_ikfk",
+   "args": {
+    "chain": "arm_l",
+    "direction": "TO_FK"
+   },
+   "segment": "hand_ik_space_l_weapon"
+  },
+  {
+   "frame": 406,
+   "kind": "switch",
+   "op": "player.switch_space",
+   "args": {
+    "prop": "weapon_space_r",
+    "value": 2
+   },
+   "segment": "weapon_spaces"
+  },
+  {
+   "frame": 406,
+   "kind": "switch",
+   "op": "player.switch_space",
+   "args": {
+    "prop": "weapon_space_l",
+    "value": 1
+   },
+   "segment": "weapon_spaces"
+  },
+  {
+   "frame": 443,
+   "kind": "switch",
+   "op": "player.switch_space",
+   "args": {
+    "prop": "weapon_space_r",
+    "value": 0
+   },
+   "segment": "weapon_spaces"
+  },
+  {
+   "frame": 443,
+   "kind": "switch",
+   "op": "player.switch_space",
+   "args": {
+    "prop": "weapon_space_l",
+    "value": 0
+   },
+   "segment": "weapon_spaces"
+  },
+  {
+   "frame": 465,
+   "kind": "ready_pose",
+   "op": "player.ready_pose",
+   "args": {},
+   "segment": "foot_roll_bank_l"
+  },
+  {
+   "frame": 546,
+   "kind": "snap",
+   "op": "player.snap_ikfk",
+   "args": {
+    "chain": "leg_l",
+    "direction": "TO_FK"
+   },
+   "segment": "leg_fk"
+  },
+  {
+   "frame": 546,
+   "kind": "snap",
+   "op": "player.snap_ikfk",
+   "args": {
+    "chain": "leg_r",
+    "direction": "TO_FK"
+   },
+   "segment": "leg_fk"
+  },
+  {
+   "frame": 571,
+   "kind": "snap",
+   "op": "player.snap_ikfk",
+   "args": {
+    "chain": "leg_l",
+    "direction": "TO_IK"
+   },
+   "segment": "leg_fk"
+  },
+  {
+   "frame": 571,
+   "kind": "snap",
+   "op": "player.snap_ikfk",
+   "args": {
+    "chain": "leg_r",
+    "direction": "TO_IK"
+   },
+   "segment": "leg_fk"
+  },
+  {
+   "frame": 670,
+   "kind": "reset_rig",
+   "op": "player.reset_rig",
+   "args": {},
+   "segment": "rest"
+  },
+  {
+   "frame": 676,
+   "kind": "reset_rig",
+   "op": "player.reset_rig",
+   "args": {},
+   "segment": "rest"
+  }
+ ],
+ "render_frames": [
+  49,
+  163,
+  465,
+  554,
+  585,
+  630
+ ]
+}

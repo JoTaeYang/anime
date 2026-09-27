@@ -1,0 +1,1350 @@
+{
+ "task": "T210",
+ "gate": "P1",
+ "generated_by": "work/player/rig/scripts/p10_crude_rig.py",
+ "source": "C:\\Users\\whxod\\Downloads\\Meshy_AI_Clay_Explorer_0926122001_generate.fbx",
+ "source_sha256": "6c47539a4c72a95c70cd744f6fcbbeb6d7a3f147550c5f86cbcb9e4ccfeb7869",
+ "blend": "work/player/rig/pl_p1_crude.blend",
+ "armature_object": "Player",
+ "mesh_object": "Player_mesh",
+ "action": "p1test",
+ "fps": 24,
+ "frame_start": 1,
+ "frame_end": 72,
+ "segments": [
+  {
+   "name": "arms",
+   "start": 1,
+   "end": 16,
+   "motion": "Arm_L/R raise 80 deg about world Y (A-pose -> ~34 deg above horizontal) + forearm 20 deg, peak frame 8, back to rest at 16"
+  },
+  {
+   "name": "hips",
+   "start": 16,
+   "end": 36,
+   "motion": "f21 Thigh_L flex 60 + Calf_L 40, Thigh_R extension 50; f26 mirrored; f31 abduction 40 both; rest at 36 (P0b contact: flex 40.5-41.3, ext 36, abd 24.8-25.8)"
+  },
+  {
+   "name": "walk",
+   "start": 36,
+   "end": 56,
+   "motion": "rough step: f40 contact L fwd 30 / R back 20, f44 passing R (knee 45), f48 contact R fwd, f52 passing L, arms counter-swing 20, pelvis bob -15/+10 mm; rest at 56"
+  },
+  {
+   "name": "turn",
+   "start": 56,
+   "end": 72,
+   "motion": "Pelvis yaw +70 at f59, -70 at f63, 0 at f66, hold 66-72 (spring settle)"
+  }
+ ],
+ "render_frames": [
+  1,
+  8,
+  21,
+  31,
+  48,
+  61
+ ],
+ "cameras": {
+  "front": {
+   "blender": {
+    "location": [
+     0.0,
+     -3.0,
+     0.55
+    ],
+    "target": [
+     0.0,
+     0.0,
+     0.55
+    ],
+    "ortho_scale": 1.3
+   },
+   "unity": {
+    "position": [
+     -0.0,
+     0.550000011920929,
+     3.0
+    ],
+    "forward": [
+     -0.0,
+     0.0,
+     -1.0
+    ],
+    "up": [
+     0.0,
+     1.0,
+     0.0
+    ],
+    "orthographicSize": 0.65,
+    "nearClipPlane": 0.01,
+    "farClipPlane": 10.0
+   },
+   "azimuth_deg_from_front_toward_left": 0.0
+  },
+  "three_quarter": {
+   "blender": {
+    "location": [
+     2.12132,
+     -2.12132,
+     0.55
+    ],
+    "target": [
+     0.0,
+     0.0,
+     0.55
+    ],
+    "ortho_scale": 1.3
+   },
+   "unity": {
+    "position": [
+     -2.1213202476501465,
+     0.550000011920929,
+     2.1213202476501465
+    ],
+    "forward": [
+     0.7071068286895752,
+     0.0,
+     -0.7071068286895752
+    ],
+    "up": [
+     0.0,
+     1.0,
+     0.0
+    ],
+    "orthographicSize": 0.65,
+    "nearClipPlane": 0.01,
+    "farClipPlane": 10.0
+   },
+   "azimuth_deg_from_front_toward_left": 45.0
+  }
+ },
+ "axis_mapping_blender_to_unity": "unity.x = -blender.x, unity.y = blender.z, unity.z = -blender.y",
+ "bones": [
+  {
+   "name": "Root",
+   "parent": null,
+   "head": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "tail": [
+    0.0,
+    0.0,
+    0.1
+   ],
+   "roll_hint_z": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "use_deform": false,
+   "use_connect": false,
+   "source": "origin (ground, root locked)"
+  },
+  {
+   "name": "Pelvis",
+   "parent": "Root",
+   "head": [
+    0.0,
+    0.0223,
+    0.4246
+   ],
+   "tail": [
+    0.0,
+    0.0209,
+    0.516967
+   ],
+   "roll_hint_z": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "P0b pelvis (x=0) -> 1/3 pelvis..neck_base"
+  },
+  {
+   "name": "Spine_01",
+   "parent": "Pelvis",
+   "head": [
+    0.0,
+    0.0209,
+    0.516967
+   ],
+   "tail": [
+    0.0,
+    0.0195,
+    0.609333
+   ],
+   "roll_hint_z": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "1/3 -> 2/3 pelvis..neck_base"
+  },
+  {
+   "name": "Spine_02",
+   "parent": "Spine_01",
+   "head": [
+    0.0,
+    0.0195,
+    0.609333
+   ],
+   "tail": [
+    0.0,
+    0.0181,
+    0.7017
+   ],
+   "roll_hint_z": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "2/3 -> P0b neck_base"
+  },
+  {
+   "name": "Neck",
+   "parent": "Spine_02",
+   "head": [
+    0.0,
+    0.0181,
+    0.7017
+   ],
+   "tail": [
+    0.0,
+    0.0134,
+    0.7144
+   ],
+   "roll_hint_z": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "P0b neck_base -> head_base"
+  },
+  {
+   "name": "Head",
+   "parent": "Neck",
+   "head": [
+    0.0,
+    0.0134,
+    0.7144
+   ],
+   "tail": [
+    0.0,
+    0.0126,
+    0.9104
+   ],
+   "roll_hint_z": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "P0b head_base -> head_center"
+  },
+  {
+   "name": "HeadEquipmentSocket",
+   "parent": "Head",
+   "head": [
+    0.0,
+    0.0126,
+    1.1
+   ],
+   "tail": [
+    0.0,
+    0.0126,
+    1.15
+   ],
+   "roll_hint_z": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "use_deform": false,
+   "use_connect": false,
+   "source": "head top (head bb max z)"
+  },
+  {
+   "name": "Clavicle_L",
+   "parent": "Spine_02",
+   "head": [
+    0.03,
+    0.0225,
+    0.6847
+   ],
+   "tail": [
+    0.10505,
+    0.0316,
+    0.7129
+   ],
+   "roll_hint_z": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "spine top (x +-0.03, z neck_base-0.017) -> shoulder"
+  },
+  {
+   "name": "Arm_L",
+   "parent": "Clavicle_L",
+   "head": [
+    0.10505,
+    0.0316,
+    0.7129
+   ],
+   "tail": [
+    0.22055,
+    0.0304,
+    0.5939
+   ],
+   "roll_hint_z": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "P0b shoulder -> elbow (sym)"
+  },
+  {
+   "name": "Forearm_L",
+   "parent": "Arm_L",
+   "head": [
+    0.22055,
+    0.0304,
+    0.5939
+   ],
+   "tail": [
+    0.336,
+    0.02925,
+    0.47495
+   ],
+   "roll_hint_z": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "P0b elbow -> wrist (sym)"
+  },
+  {
+   "name": "Hand_L",
+   "parent": "Forearm_L",
+   "head": [
+    0.336,
+    0.02925,
+    0.47495
+   ],
+   "tail": [
+    0.3822,
+    0.02755,
+    0.4144
+   ],
+   "roll_hint_z": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "P0b wrist (inside fist) -> fist centre"
+  },
+  {
+   "name": "WeaponSocket_L",
+   "parent": "Hand_L",
+   "head": [
+    0.3822,
+    0.02755,
+    0.4144
+   ],
+   "tail": [
+    0.412522,
+    0.026434,
+    0.374659
+   ],
+   "roll_hint_z": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "use_deform": false,
+   "use_connect": false,
+   "source": "fist centre, along the hand"
+  },
+  {
+   "name": "Clavicle_R",
+   "parent": "Spine_02",
+   "head": [
+    -0.03,
+    0.0225,
+    0.6847
+   ],
+   "tail": [
+    -0.10505,
+    0.0316,
+    0.7129
+   ],
+   "roll_hint_z": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "spine top (x +-0.03, z neck_base-0.017) -> shoulder"
+  },
+  {
+   "name": "Arm_R",
+   "parent": "Clavicle_R",
+   "head": [
+    -0.10505,
+    0.0316,
+    0.7129
+   ],
+   "tail": [
+    -0.22055,
+    0.0304,
+    0.5939
+   ],
+   "roll_hint_z": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "P0b shoulder -> elbow (sym)"
+  },
+  {
+   "name": "Forearm_R",
+   "parent": "Arm_R",
+   "head": [
+    -0.22055,
+    0.0304,
+    0.5939
+   ],
+   "tail": [
+    -0.336,
+    0.02925,
+    0.47495
+   ],
+   "roll_hint_z": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "P0b elbow -> wrist (sym)"
+  },
+  {
+   "name": "Hand_R",
+   "parent": "Forearm_R",
+   "head": [
+    -0.336,
+    0.02925,
+    0.47495
+   ],
+   "tail": [
+    -0.3822,
+    0.02755,
+    0.4144
+   ],
+   "roll_hint_z": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "P0b wrist (inside fist) -> fist centre"
+  },
+  {
+   "name": "WeaponSocket_R",
+   "parent": "Hand_R",
+   "head": [
+    -0.3822,
+    0.02755,
+    0.4144
+   ],
+   "tail": [
+    -0.412522,
+    0.026434,
+    0.374659
+   ],
+   "roll_hint_z": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "use_deform": false,
+   "use_connect": false,
+   "source": "fist centre, along the hand"
+  },
+  {
+   "name": "BackSocket",
+   "parent": "Spine_02",
+   "head": [
+    0.0,
+    0.148614,
+    0.64
+   ],
+   "tail": [
+    0.0,
+    0.198614,
+    0.64
+   ],
+   "roll_hint_z": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "use_deform": false,
+   "use_connect": false,
+   "source": "tunic outer back surface at z 0.64 (centre line)"
+  },
+  {
+   "name": "BackWeaponSocket",
+   "parent": "Spine_02",
+   "head": [
+    0.0,
+    0.165611,
+    0.58
+   ],
+   "tail": [
+    0.0,
+    0.215611,
+    0.58
+   ],
+   "roll_hint_z": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "use_deform": false,
+   "use_connect": false,
+   "source": "tunic outer back surface at z 0.58 (centre line)"
+  },
+  {
+   "name": "Thigh_L",
+   "parent": "Pelvis",
+   "head": [
+    0.0854,
+    0.0223,
+    0.4246
+   ],
+   "tail": [
+    0.10465,
+    0.02385,
+    0.266
+   ],
+   "roll_hint_z": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "P0b hip -> knee (sym)"
+  },
+  {
+   "name": "Calf_L",
+   "parent": "Thigh_L",
+   "head": [
+    0.10465,
+    0.02385,
+    0.266
+   ],
+   "tail": [
+    0.12395,
+    0.02545,
+    0.10735
+   ],
+   "roll_hint_z": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "P0b knee -> ankle (sym)"
+  },
+  {
+   "name": "Foot_L",
+   "parent": "Calf_L",
+   "head": [
+    0.12395,
+    0.02545,
+    0.10735
+   ],
+   "tail": [
+    0.12395,
+    -0.09455,
+    0.03
+   ],
+   "roll_hint_z": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "P0b ankle -> 0.12 toward the toe at z 0.03"
+  },
+  {
+   "name": "Thigh_R",
+   "parent": "Pelvis",
+   "head": [
+    -0.0854,
+    0.0223,
+    0.4246
+   ],
+   "tail": [
+    -0.10465,
+    0.02385,
+    0.266
+   ],
+   "roll_hint_z": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "P0b hip -> knee (sym)"
+  },
+  {
+   "name": "Calf_R",
+   "parent": "Thigh_R",
+   "head": [
+    -0.10465,
+    0.02385,
+    0.266
+   ],
+   "tail": [
+    -0.12395,
+    0.02545,
+    0.10735
+   ],
+   "roll_hint_z": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "P0b knee -> ankle (sym)"
+  },
+  {
+   "name": "Foot_R",
+   "parent": "Calf_R",
+   "head": [
+    -0.12395,
+    0.02545,
+    0.10735
+   ],
+   "tail": [
+    -0.12395,
+    -0.09455,
+    0.03
+   ],
+   "roll_hint_z": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "P0b ankle -> 0.12 toward the toe at z 0.03"
+  },
+  {
+   "name": "Skirt_F_01",
+   "parent": "Pelvis",
+   "head": [
+    -0.0002,
+    -0.164098,
+    0.4082
+   ],
+   "tail": [
+    -0.0002,
+    -0.170701,
+    0.3488
+   ],
+   "roll_hint_z": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "tunic outer surface at belt bottom z 0.4082 azimuth 0 -> midpoint"
+  },
+  {
+   "name": "Skirt_F_02",
+   "parent": "Skirt_F_01",
+   "head": [
+    -0.0002,
+    -0.170701,
+    0.3488
+   ],
+   "tail": [
+    -0.0002,
+    -0.177304,
+    0.2894
+   ],
+   "roll_hint_z": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "midpoint -> tunic outer surface at hem z 0.2894"
+  },
+  {
+   "name": "Skirt_FL_01",
+   "parent": "Pelvis",
+   "head": [
+    0.134859,
+    -0.122559,
+    0.4082
+   ],
+   "tail": [
+    0.140238,
+    -0.127938,
+    0.3488
+   ],
+   "roll_hint_z": [
+    0.7071,
+    -0.7071,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "tunic outer surface at belt bottom z 0.4082 azimuth 45 -> midpoint"
+  },
+  {
+   "name": "Skirt_FL_02",
+   "parent": "Skirt_FL_01",
+   "head": [
+    0.140238,
+    -0.127938,
+    0.3488
+   ],
+   "tail": [
+    0.145617,
+    -0.133317,
+    0.2894
+   ],
+   "roll_hint_z": [
+    0.7071,
+    -0.7071,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "midpoint -> tunic outer surface at hem z 0.2894"
+  },
+  {
+   "name": "Skirt_L_01",
+   "parent": "Pelvis",
+   "head": [
+    0.204097,
+    0.0125,
+    0.4082
+   ],
+   "tail": [
+    0.212636,
+    0.0125,
+    0.3488
+   ],
+   "roll_hint_z": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "tunic outer surface at belt bottom z 0.4082 azimuth 90 -> midpoint"
+  },
+  {
+   "name": "Skirt_L_02",
+   "parent": "Skirt_L_01",
+   "head": [
+    0.212636,
+    0.0125,
+    0.3488
+   ],
+   "tail": [
+    0.221174,
+    0.0125,
+    0.2894
+   ],
+   "roll_hint_z": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "midpoint -> tunic outer surface at hem z 0.2894"
+  },
+  {
+   "name": "Skirt_BL_01",
+   "parent": "Pelvis",
+   "head": [
+    0.134811,
+    0.147511,
+    0.4082
+   ],
+   "tail": [
+    0.140512,
+    0.153212,
+    0.3488
+   ],
+   "roll_hint_z": [
+    0.7071,
+    0.7071,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "tunic outer surface at belt bottom z 0.4082 azimuth 135 -> midpoint"
+  },
+  {
+   "name": "Skirt_BL_02",
+   "parent": "Skirt_BL_01",
+   "head": [
+    0.140512,
+    0.153212,
+    0.3488
+   ],
+   "tail": [
+    0.146214,
+    0.158914,
+    0.2894
+   ],
+   "roll_hint_z": [
+    0.7071,
+    0.7071,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "midpoint -> tunic outer surface at hem z 0.2894"
+  },
+  {
+   "name": "Skirt_B_01",
+   "parent": "Pelvis",
+   "head": [
+    -0.0002,
+    0.188699,
+    0.4082
+   ],
+   "tail": [
+    -0.0002,
+    0.195568,
+    0.3488
+   ],
+   "roll_hint_z": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "tunic outer surface at belt bottom z 0.4082 azimuth 180 -> midpoint"
+  },
+  {
+   "name": "Skirt_B_02",
+   "parent": "Skirt_B_01",
+   "head": [
+    -0.0002,
+    0.195568,
+    0.3488
+   ],
+   "tail": [
+    -0.0002,
+    0.202437,
+    0.2894
+   ],
+   "roll_hint_z": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "midpoint -> tunic outer surface at hem z 0.2894"
+  },
+  {
+   "name": "Skirt_BR_01",
+   "parent": "Pelvis",
+   "head": [
+    -0.136732,
+    0.149032,
+    0.4082
+   ],
+   "tail": [
+    -0.141453,
+    0.153753,
+    0.3488
+   ],
+   "roll_hint_z": [
+    -0.7071,
+    0.7071,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "tunic outer surface at belt bottom z 0.4082 azimuth 225 -> midpoint"
+  },
+  {
+   "name": "Skirt_BR_02",
+   "parent": "Skirt_BR_01",
+   "head": [
+    -0.141453,
+    0.153753,
+    0.3488
+   ],
+   "tail": [
+    -0.146174,
+    0.158474,
+    0.2894
+   ],
+   "roll_hint_z": [
+    -0.7071,
+    0.7071,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "midpoint -> tunic outer surface at hem z 0.2894"
+  },
+  {
+   "name": "Skirt_R_01",
+   "parent": "Pelvis",
+   "head": [
+    -0.204082,
+    0.0125,
+    0.4082
+   ],
+   "tail": [
+    -0.21279,
+    0.0125,
+    0.3488
+   ],
+   "roll_hint_z": [
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "tunic outer surface at belt bottom z 0.4082 azimuth 270 -> midpoint"
+  },
+  {
+   "name": "Skirt_R_02",
+   "parent": "Skirt_R_01",
+   "head": [
+    -0.21279,
+    0.0125,
+    0.3488
+   ],
+   "tail": [
+    -0.221499,
+    0.0125,
+    0.2894
+   ],
+   "roll_hint_z": [
+    -1.0,
+    0.0,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "midpoint -> tunic outer surface at hem z 0.2894"
+  },
+  {
+   "name": "Skirt_FR_01",
+   "parent": "Pelvis",
+   "head": [
+    -0.135332,
+    -0.122632,
+    0.4082
+   ],
+   "tail": [
+    -0.140671,
+    -0.127972,
+    0.3488
+   ],
+   "roll_hint_z": [
+    -0.7071,
+    -0.7071,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "tunic outer surface at belt bottom z 0.4082 azimuth 315 -> midpoint"
+  },
+  {
+   "name": "Skirt_FR_02",
+   "parent": "Skirt_FR_01",
+   "head": [
+    -0.140671,
+    -0.127972,
+    0.3488
+   ],
+   "tail": [
+    -0.146011,
+    -0.133311,
+    0.2894
+   ],
+   "roll_hint_z": [
+    -0.7071,
+    -0.7071,
+    0.0
+   ],
+   "use_deform": true,
+   "use_connect": false,
+   "source": "midpoint -> tunic outer surface at hem z 0.2894"
+  }
+ ],
+ "skirt_chains": [
+  [
+   "Skirt_F_01",
+   "Skirt_F_02"
+  ],
+  [
+   "Skirt_FL_01",
+   "Skirt_FL_02"
+  ],
+  [
+   "Skirt_L_01",
+   "Skirt_L_02"
+  ],
+  [
+   "Skirt_BL_01",
+   "Skirt_BL_02"
+  ],
+  [
+   "Skirt_B_01",
+   "Skirt_B_02"
+  ],
+  [
+   "Skirt_BR_01",
+   "Skirt_BR_02"
+  ],
+  [
+   "Skirt_R_01",
+   "Skirt_R_02"
+  ],
+  [
+   "Skirt_FR_01",
+   "Skirt_FR_02"
+  ]
+ ],
+ "materials": {
+  "M_arm_l": {
+   "part": "arm_l",
+   "color": [
+    0.75,
+    0.45,
+    0.85
+   ]
+  },
+  "M_arm_r": {
+   "part": "arm_r",
+   "color": [
+    0.95,
+    0.55,
+    0.7
+   ]
+  },
+  "M_belt": {
+   "part": "belt",
+   "color": [
+    0.45,
+    0.28,
+    0.12
+   ]
+  },
+  "M_cuff_l": {
+   "part": "cuff_l",
+   "color": [
+    0.85,
+    0.65,
+    0.4
+   ]
+  },
+  "M_cuff_r": {
+   "part": "cuff_r",
+   "color": [
+    0.65,
+    0.5,
+    0.3
+   ]
+  },
+  "M_eye_l": {
+   "part": "eye_l",
+   "color": [
+    0.1,
+    0.1,
+    0.12
+   ]
+  },
+  "M_eye_r": {
+   "part": "eye_r",
+   "color": [
+    0.25,
+    0.25,
+    0.3
+   ]
+  },
+  "M_fist_l": {
+   "part": "fist_l",
+   "color": [
+    0.95,
+    0.35,
+    0.35
+   ]
+  },
+  "M_fist_r": {
+   "part": "fist_r",
+   "color": [
+    0.7,
+    0.2,
+    0.3
+   ]
+  },
+  "M_head": {
+   "part": "head",
+   "color": [
+    0.93,
+    0.8,
+    0.62
+   ]
+  },
+  "M_leg_l": {
+   "part": "leg_l",
+   "color": [
+    0.4,
+    0.4,
+    0.85
+   ]
+  },
+  "M_leg_r": {
+   "part": "leg_r",
+   "color": [
+    0.6,
+    0.3,
+    0.55
+   ]
+  },
+  "M_pouch": {
+   "part": "pouch",
+   "color": [
+    0.95,
+    0.85,
+    0.2
+   ]
+  },
+  "M_scarf": {
+   "part": "scarf",
+   "color": [
+    0.85,
+    0.2,
+    0.18
+   ]
+  },
+  "M_scarf_tail": {
+   "part": "scarf_tail",
+   "color": [
+    1.0,
+    0.55,
+    0.2
+   ]
+  },
+  "M_shoe_l": {
+   "part": "shoe_l",
+   "color": [
+    0.35,
+    0.65,
+    0.3
+   ]
+  },
+  "M_shoe_r": {
+   "part": "shoe_r",
+   "color": [
+    0.2,
+    0.45,
+    0.25
+   ]
+  },
+  "M_sleeve_l": {
+   "part": "sleeve_l",
+   "color": [
+    0.2,
+    0.75,
+    0.7
+   ]
+  },
+  "M_sleeve_r": {
+   "part": "sleeve_r",
+   "color": [
+    0.55,
+    0.85,
+    0.35
+   ]
+  },
+  "M_tunic": {
+   "part": "tunic",
+   "color": [
+    0.3,
+    0.55,
+    0.85
+   ]
+  }
+ },
+ "leg_parts": [
+  "leg_l",
+  "leg_r"
+ ],
+ "skirt_part": "tunic",
+ "skin": [
+  {
+   "part": "arm_l",
+   "assignment": "auto: Arm_L 13, Forearm_L 25, Hand_L 14 (dominant-bone vertex counts)",
+   "method": "bone heat ['FINISHED'] restricted to ['Arm_L', 'Forearm_L', 'Hand_L']; 0 unweighted verts -> nearest segment",
+   "verts": 52
+  },
+  {
+   "part": "arm_r",
+   "assignment": "auto: Arm_R 13, Forearm_R 25, Hand_R 13 (dominant-bone vertex counts)",
+   "method": "bone heat ['FINISHED'] restricted to ['Arm_R', 'Forearm_R', 'Hand_R']; 0 unweighted verts -> nearest segment",
+   "verts": 51
+  },
+  {
+   "part": "belt",
+   "assignment": "Pelvis 100 %",
+   "method": "rigid",
+   "verts": 98
+  },
+  {
+   "part": "cuff_l",
+   "assignment": "Foot_L 100 %",
+   "method": "rigid",
+   "verts": 53
+  },
+  {
+   "part": "cuff_r",
+   "assignment": "Foot_R 100 %",
+   "method": "rigid",
+   "verts": 51
+  },
+  {
+   "part": "eye_l",
+   "assignment": "Head 100 %",
+   "method": "rigid",
+   "verts": 117
+  },
+  {
+   "part": "eye_r",
+   "assignment": "Head 100 %",
+   "method": "rigid",
+   "verts": 117
+  },
+  {
+   "part": "fist_l",
+   "assignment": "Hand_L 100 %",
+   "method": "rigid",
+   "verts": 138
+  },
+  {
+   "part": "fist_r",
+   "assignment": "Hand_R 100 %",
+   "method": "rigid",
+   "verts": 139
+  },
+  {
+   "part": "head",
+   "assignment": "Head 100 %",
+   "method": "rigid",
+   "verts": 367
+  },
+  {
+   "part": "leg_l",
+   "assignment": "auto: Calf_L 13, Foot_L 13, Thigh_L 13 (dominant-bone vertex counts)",
+   "method": "bone heat ['FINISHED'] restricted to ['Thigh_L', 'Calf_L', 'Foot_L']; 0 unweighted verts -> nearest segment",
+   "verts": 39
+  },
+  {
+   "part": "leg_r",
+   "assignment": "auto: Calf_R 16, Foot_R 10, Thigh_R 13 (dominant-bone vertex counts)",
+   "method": "bone heat ['FINISHED'] restricted to ['Thigh_R', 'Calf_R', 'Foot_R']; 0 unweighted verts -> nearest segment",
+   "verts": 39
+  },
+  {
+   "part": "pouch",
+   "assignment": "Pelvis 100 %",
+   "method": "rigid",
+   "verts": 49
+  },
+  {
+   "part": "scarf",
+   "assignment": "Spine_02 100 %",
+   "method": "rigid",
+   "verts": 214
+  },
+  {
+   "part": "scarf_tail",
+   "assignment": "Spine_02 100 %",
+   "method": "rigid",
+   "verts": 53
+  },
+  {
+   "part": "shoe_l",
+   "assignment": "Foot_L 100 %",
+   "method": "rigid",
+   "verts": 111
+  },
+  {
+   "part": "shoe_r",
+   "assignment": "Foot_R 100 %",
+   "method": "rigid",
+   "verts": 112
+  },
+  {
+   "part": "sleeve_l",
+   "assignment": "Arm_L 100 %",
+   "method": "rigid",
+   "verts": 89
+  },
+  {
+   "part": "sleeve_r",
+   "assignment": "Arm_R 100 %",
+   "method": "rigid",
+   "verts": 91
+  },
+  {
+   "part": "tunic",
+   "assignment": "height/azimuth: Pelvis 170, Skirt_BL_02 19, Skirt_BR_02 22, Skirt_B_02 16, Skirt_FL_02 15, Skirt_FR_02 18, Skirt_F_02 15, Skirt_L_02 22, Skirt_R_02 21, Spine_01 146, Spine_02 146 (verts with weight > 0)",
+   "method": "Spine_01/02 above belt top, Pelvis in belt band, skirt chains below belt bottom (azimuth blend between neighbours, height blend 01->02, Pelvis near the belt and at the cap centre)",
+   "verts": 243
+  }
+ ]
+}

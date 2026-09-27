@@ -1,0 +1,1065 @@
+{
+ "_doc": "T320 Sword_Attack_01 key poses (spec work/player/d-05-player-sword-attack-01.md; SA1-1 = key poses only, in-betweens later). Redesigned within the P2c sweeps from player-sword3.mp4 (not copied); no sweep_overrides. f1 and f33..f49 = the Sword_Idle f1 pose (the same control values; match_pose for checker C9). Key frames (30 fps from d-05 section 0): f7 anticipation start (COG down / right, chest turns right), f12 wind-up peak (sword high right, body leans right, left foot kicked back 0.10 m and up 0.08 m, left arm out), f14 strike (arm extended, blade horizontal across the front, left foot landed 0.08 m wide / 0.03 m forward), f16 follow-through (arm crossed, blade to the character's left, torso twisted left, wide stance, COG down 27 mm), f23 end of the hold, f28 recovery, f33 back to idle (held to f49). f13 breakdown (arm out to the right side, blade trailing back-right, as ref f12; without it the arm path f12 -> f14 crossed the head: C8 6 pairs / C7 fist-head 29 pairs at f13). f15 breakdown (fist kept 0.295 m in front at the centre line while crossing; the interpolated f15 had the fist through the tunic, C7 fist_vs_torso_r 42 pairs). Right arm FK values from a fist-position / blade-direction solve (T320 scratch probe). Left foot: planted 1-7, lifted 8-13, planted wide 14-23, a small step back (f26 lift 30 mm) and planted 30-49. | T322 round 2 (user: stronger wind-up and strike; main's reference comparison d-05 section 3): f12 = right arm raised high out to the side (upper arm Z -122.5), sword above the shoulder pointing up / slightly back, lean right (torso Z 8, chest Z 10, COG 30 mm right), left foot kicked back 0.15 m / out 0.06 m / up 0.13 m with the toe down (foot IK rot X -30); f13 = arm coming down at the side; f14 = arm still extended to the right, blade trailing back (strike start); f15 = mid-sweep, blade pointing forward; f16 onward unchanged (follow-through). No sweep_overrides. | T323 SA1-2 in-betweens: f11 anticipation settle (95 % of f12, slow-in with a short hold at the peak); strike f14 -> f15 -> f16 unchanged (minimal in-betweens); f18 follow-through overshoot (arm Y -72.5, chest Y -25) settling to f23; f25 / f26 recovery arc (sword comes down low across the front with the fist kept 0.27 m in front; the first f26 alone put the fist through the tunic at f25, C7 24 pairs); head keys lag the torso by 1 frame (8 / 13-17 / 29), left arm lags by 1 frame (13-17, 26, 29). | T324 recovery rework (f24-f32 only): the right arm is keyed on every frame f24..f32 from one designed sword trajectory (f23 hold -> low in front -> low right with the blade down / out (ref f23) -> blade out and rising -> idle f33) with a tip-speed profile that peaks at f27 and decays frame by frame into f33; FK per frame solved toward the path with a channel-space pull toward known arm solutions (wrist twist spread over upper arm Y and hand Y, no branch jump). Replaces the arm keys f25 / f26 / f28; body keys unchanged. Upper arm Y is also keyed at f19-f22 with the pre-T324 evaluated values, so the f18 -> f23 hold is unchanged (the new f24 key would otherwise reshape the auto handle at f23). | T326 SA1-2 round 3 (user: the right arm went through the torso; d-05 section 5 plan): (1) sign fix: CTRL_chest / spine_01 / torso rot Y+ twists to the character's LEFT (measured on the chest frame; the earlier notes had it reversed, so the round-2 follow-through was twisted right); follow-through f16-f23 now chest +30 / spine +18..21 / hips +8..9 (chest + spine 48-51 deg left), head countering -10..-20; (2) right arm solved in the chest frame with the fist 0.32-0.34 m ahead of the right shoulder line (less adduction, nearly straight elbow), right clavicle depressed (shoulder_r Z +10) through the follow-through, left arm lowered (Z -15) after f16; wind-up f11-f13 arm raised 20 deg above horizontal and further out (fist x -0.58) instead of beside the head; f7 anticipation arm near idle; recovery f24-f32 re-solved from the new f23 (low front with the fist 0.35 m in front). Arm-vs-body inside-volume excess over the idle baseline is now <= 2 vertices on every frame; the rigid sleeves still cross the scarf / tunic / head when the arm is raised (rig limit, reported).",
+ "clip": "Sword_Attack_01",
+ "fps": 30,
+ "frame_range": [
+  1,
+  49
+ ],
+ "loop": false,
+ "root_motion": "locked",
+ "base": "player.reset_rig + player.ready_pose",
+ "key_frames": [
+  1,
+  7,
+  12,
+  14,
+  16,
+  23,
+  28,
+  33
+ ],
+ "weapon": {
+  "R": "placeholder_sword"
+ },
+ "match_pose": {
+  "clip": "Sword_Idle",
+  "frame": 1,
+  "at": [
+   "first",
+   "last"
+  ]
+ },
+ "events": [
+  {
+   "name": "hit_start",
+   "frame": 14
+  },
+  {
+   "name": "hit_end",
+   "frame": 16
+  }
+ ],
+ "keys": {
+  "CTRL_torso": {
+   "1": {
+    "loc": {
+     "X": 0,
+     "Y": -0.008
+    },
+    "rot": {
+     "Y": 0,
+     "Z": 0
+    }
+   },
+   "7": {
+    "loc": {
+     "X": -0.012,
+     "Y": -0.014
+    },
+    "rot": {
+     "Y": 0,
+     "Z": 0
+    }
+   },
+   "11": {
+    "loc": {
+     "X": -0.0291,
+     "Y": -0.0197
+    },
+    "rot": {
+     "Y": 0.0,
+     "Z": 7.6
+    }
+   },
+   "12": {
+    "loc": {
+     "X": -0.03,
+     "Y": -0.02
+    },
+    "rot": {
+     "Y": 0,
+     "Z": 8
+    }
+   },
+   "13": {
+    "loc": {
+     "X": -0.02,
+     "Y": -0.024
+    },
+    "rot": {
+     "Y": 0,
+     "Z": 6
+    }
+   },
+   "14": {
+    "loc": {
+     "X": 0.0,
+     "Y": -0.03
+    },
+    "rot": {
+     "Y": 0,
+     "Z": 3
+    }
+   },
+   "15": {
+    "loc": {
+     "X": 0.012,
+     "Y": -0.033
+    },
+    "rot": {
+     "Y": 3,
+     "Z": 0
+    }
+   },
+   "16": {
+    "loc": {
+     "X": 0.02,
+     "Y": -0.035
+    },
+    "rot": {
+     "Y": 8,
+     "Z": 0
+    }
+   },
+   "18": {
+    "loc": {
+     "X": 0.02,
+     "Y": -0.037
+    },
+    "rot": {
+     "Y": 9,
+     "Z": 0
+    }
+   },
+   "23": {
+    "loc": {
+     "X": 0.02,
+     "Y": -0.038
+    },
+    "rot": {
+     "Y": 8,
+     "Z": 0
+    }
+   },
+   "26": {
+    "loc": {
+     "X": 0.008,
+     "Y": -0.027
+    },
+    "rot": {
+     "Y": 2,
+     "Z": 0
+    }
+   },
+   "28": {
+    "loc": {
+     "X": -0.005,
+     "Y": -0.015
+    },
+    "rot": {
+     "Y": 0,
+     "Z": 0
+    }
+   },
+   "33": {
+    "loc": {
+     "X": 0,
+     "Y": -0.008
+    },
+    "rot": {
+     "Y": 0,
+     "Z": 0
+    }
+   }
+  },
+  "CTRL_spine_01": {
+   "1": {
+    "rot": {
+     "Y": 0
+    }
+   },
+   "7": {
+    "rot": {
+     "Y": 0
+    }
+   },
+   "11": {
+    "rot": {
+     "Y": 4.75
+    }
+   },
+   "12": {
+    "rot": {
+     "Y": 5
+    }
+   },
+   "13": {
+    "rot": {
+     "Y": 3
+    }
+   },
+   "14": {
+    "rot": {
+     "Y": 0
+    }
+   },
+   "15": {
+    "rot": {
+     "Y": 8
+    }
+   },
+   "16": {
+    "rot": {
+     "Y": 18
+    }
+   },
+   "18": {
+    "rot": {
+     "Y": 21
+    }
+   },
+   "23": {
+    "rot": {
+     "Y": 18
+    }
+   },
+   "26": {
+    "rot": {
+     "Y": 6
+    }
+   },
+   "28": {
+    "rot": {
+     "Y": 0
+    }
+   },
+   "33": {
+    "rot": {
+     "Y": 0
+    }
+   }
+  },
+  "CTRL_chest": {
+   "1": {
+    "rot": {
+     "Y": 0,
+     "Z": 0
+    }
+   },
+   "7": {
+    "rot": {
+     "Y": 5,
+     "Z": 0
+    }
+   },
+   "11": {
+    "rot": {
+     "Y": 14.5,
+     "Z": 9.5
+    }
+   },
+   "12": {
+    "rot": {
+     "Y": 15,
+     "Z": 10
+    }
+   },
+   "13": {
+    "rot": {
+     "Y": 12,
+     "Z": 7
+    }
+   },
+   "14": {
+    "rot": {
+     "Y": 6,
+     "Z": 3
+    }
+   },
+   "15": {
+    "rot": {
+     "Y": 18,
+     "Z": 0
+    }
+   },
+   "16": {
+    "rot": {
+     "Y": 30,
+     "Z": 0
+    }
+   },
+   "18": {
+    "rot": {
+     "Y": 30,
+     "Z": 0
+    }
+   },
+   "23": {
+    "rot": {
+     "Y": 30,
+     "Z": 0
+    }
+   },
+   "26": {
+    "rot": {
+     "Y": 14,
+     "Z": 0
+    }
+   },
+   "28": {
+    "rot": {
+     "Y": -3,
+     "Z": 0
+    }
+   },
+   "33": {
+    "rot": {
+     "Y": 0,
+     "Z": 0
+    }
+   }
+  },
+  "CTRL_head": {
+   "1": {
+    "rot": {
+     "Y": 0
+    }
+   },
+   "7": {
+    "rot": {
+     "Y": 0
+    }
+   },
+   "8": {
+    "rot": {
+     "Y": 0
+    }
+   },
+   "13": {
+    "rot": {
+     "Y": -10
+    }
+   },
+   "14": {
+    "rot": {
+     "Y": -8
+    }
+   },
+   "15": {
+    "rot": {
+     "Y": 0
+    }
+   },
+   "16": {
+    "rot": {
+     "Y": -10
+    }
+   },
+   "17": {
+    "rot": {
+     "Y": -20
+    }
+   },
+   "23": {
+    "rot": {
+     "Y": -20
+    }
+   },
+   "29": {
+    "rot": {
+     "Y": 0
+    }
+   },
+   "33": {
+    "rot": {
+     "Y": 0
+    }
+   }
+  },
+  "CTRL_upperarm_fk_r": {
+   "1": {
+    "rot": [
+     -15.0,
+     45.0,
+     10.0
+    ]
+   },
+   "7": {
+    "rot": [
+     -15.0,
+     50.0,
+     4.0
+    ]
+   },
+   "11": {
+    "rot": [
+     -39.7,
+     45.25,
+     -104.3
+    ]
+   },
+   "12": {
+    "rot": [
+     -41.0,
+     45.0,
+     -110.0
+    ]
+   },
+   "13": {
+    "rot": [
+     -38.5,
+     62.5,
+     -100.0
+    ]
+   },
+   "14": {
+    "rot": [
+     -25.0,
+     90.0,
+     -75.0
+    ]
+   },
+   "15": {
+    "rot": [
+     82.0,
+     3.5,
+     27.5
+    ]
+   },
+   "16": {
+    "rot": [
+     80.0,
+     -16.5,
+     -14.5
+    ]
+   },
+   "18": {
+    "rot": [
+     80.0,
+     -19.0,
+     -15.5
+    ]
+   },
+   "23": {
+    "rot": [
+     80.0,
+     -18.0,
+     -19.0
+    ]
+   },
+   "24": {
+    "rot": [
+     76.44,
+     -19.48,
+     -17.1
+    ]
+   },
+   "25": {
+    "rot": [
+     60.09,
+     -13.05,
+     -6.71
+    ]
+   },
+   "26": {
+    "rot": [
+     51.44,
+     -10.79,
+     -5.1
+    ]
+   },
+   "27": {
+    "rot": [
+     51.41,
+     30.89,
+     28.5
+    ]
+   },
+   "28": {
+    "rot": [
+     34.83,
+     62.8,
+     33.5
+    ]
+   },
+   "29": {
+    "rot": [
+     5.06,
+     39.54,
+     7.45
+    ]
+   },
+   "30": {
+    "rot": [
+     -6.11,
+     27.87,
+     4.8
+    ]
+   },
+   "31": {
+    "rot": [
+     -13.03,
+     31.85,
+     5.09
+    ]
+   },
+   "32": {
+    "rot": [
+     -14.56,
+     41.8,
+     8.65
+    ]
+   },
+   "33": {
+    "rot": [
+     -15.0,
+     45.0,
+     10.0
+    ]
+   }
+  },
+  "CTRL_lowerarm_fk_r": {
+   "1": {
+    "rot": [
+     65.0,
+     0.0,
+     0.0
+    ]
+   },
+   "7": {
+    "rot": [
+     65.0,
+     0.0,
+     0.0
+    ]
+   },
+   "11": {
+    "rot": [
+     11.325,
+     0.0,
+     0.0
+    ]
+   },
+   "12": {
+    "rot": [
+     8.5,
+     0.0,
+     0.0
+    ]
+   },
+   "13": {
+    "rot": [
+     7.5,
+     0.0,
+     0.0
+    ]
+   },
+   "14": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "15": {
+    "rot": [
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "16": {
+    "rot": [
+     7.5,
+     0.0,
+     0.0
+    ]
+   },
+   "18": {
+    "rot": [
+     12.5,
+     0.0,
+     0.0
+    ]
+   },
+   "23": {
+    "rot": [
+     8.0,
+     0.0,
+     0.0
+    ]
+   },
+   "24": {
+    "rot": [
+     9.94,
+     0.0,
+     0.0
+    ]
+   },
+   "25": {
+    "rot": [
+     14.59,
+     0.0,
+     0.0
+    ]
+   },
+   "26": {
+    "rot": [
+     10.85,
+     0.0,
+     0.0
+    ]
+   },
+   "27": {
+    "rot": [
+     0,
+     0.0,
+     0.0
+    ]
+   },
+   "28": {
+    "rot": [
+     4.55,
+     0.0,
+     0.0
+    ]
+   },
+   "29": {
+    "rot": [
+     32.54,
+     0.0,
+     0.0
+    ]
+   },
+   "30": {
+    "rot": [
+     50.0,
+     0.0,
+     0.0
+    ]
+   },
+   "31": {
+    "rot": [
+     59.39,
+     0.0,
+     0.0
+    ]
+   },
+   "32": {
+    "rot": [
+     63.79,
+     0.0,
+     0.0
+    ]
+   },
+   "33": {
+    "rot": [
+     65.0,
+     0.0,
+     0.0
+    ]
+   }
+  },
+  "CTRL_hand_fk_r": {
+   "1": {
+    "rot": [
+     5.0,
+     30.0,
+     0.0
+    ]
+   },
+   "7": {
+    "rot": [
+     0.0,
+     30.0,
+     0.0
+    ]
+   },
+   "11": {
+    "rot": [
+     -28.5,
+     44.25,
+     0.0
+    ]
+   },
+   "12": {
+    "rot": [
+     -30.0,
+     45.0,
+     0.0
+    ]
+   },
+   "13": {
+    "rot": [
+     -41.0,
+     62.5,
+     -9.0
+    ]
+   },
+   "14": {
+    "rot": [
+     -11.5,
+     83.0,
+     -3.5
+    ]
+   },
+   "15": {
+    "rot": [
+     -60.0,
+     -53.5,
+     -30.0
+    ]
+   },
+   "16": {
+    "rot": [
+     -60.0,
+     -46.5,
+     -30.0
+    ]
+   },
+   "18": {
+    "rot": [
+     -60.0,
+     -48.0,
+     -30.0
+    ]
+   },
+   "23": {
+    "rot": [
+     -60.0,
+     -41.5,
+     -30.0
+    ]
+   },
+   "24": {
+    "rot": [
+     -55.66,
+     -50.18,
+     -25.25
+    ]
+   },
+   "25": {
+    "rot": [
+     -44.99,
+     -76.73,
+     -12.02
+    ]
+   },
+   "26": {
+    "rot": [
+     -43.2,
+     -84.36,
+     4.1
+    ]
+   },
+   "27": {
+    "rot": [
+     -60,
+     33.61,
+     19.31
+    ]
+   },
+   "28": {
+    "rot": [
+     -58.37,
+     81.5,
+     18.23
+    ]
+   },
+   "29": {
+    "rot": [
+     -35.92,
+     78.25,
+     11.77
+    ]
+   },
+   "30": {
+    "rot": [
+     -14.54,
+     70.19,
+     1.52
+    ]
+   },
+   "31": {
+    "rot": [
+     -4.06,
+     54.11,
+     -0.68
+    ]
+   },
+   "32": {
+    "rot": [
+     0.9,
+     37.12,
+     -0.02
+    ]
+   },
+   "33": {
+    "rot": [
+     5.0,
+     30.0,
+     0.0
+    ]
+   }
+  },
+  "CTRL_upperarm_fk_l": {
+   "1": {
+    "rot": {
+     "X": 0,
+     "Z": -15
+    }
+   },
+   "7": {
+    "rot": {
+     "X": 0,
+     "Z": -15
+    }
+   },
+   "12": {
+    "rot": {
+     "X": 0,
+     "Z": 45
+    }
+   },
+   "13": {
+    "rot": {
+     "X": 0,
+     "Z": 45
+    }
+   },
+   "14": {
+    "rot": {
+     "X": 0,
+     "Z": 40
+    }
+   },
+   "15": {
+    "rot": {
+     "X": 0,
+     "Z": 20
+    }
+   },
+   "16": {
+    "rot": {
+     "X": 0,
+     "Z": -5
+    }
+   },
+   "17": {
+    "rot": {
+     "X": 0,
+     "Z": -15
+    }
+   },
+   "23": {
+    "rot": {
+     "X": 0,
+     "Z": -15
+    }
+   },
+   "29": {
+    "rot": {
+     "X": 0,
+     "Z": -15
+    }
+   },
+   "33": {
+    "rot": {
+     "X": 0,
+     "Z": -15
+    }
+   }
+  },
+  "CTRL_foot_ik_l": {
+   "1": {
+    "loc": {
+     "X": 0,
+     "Y": 0,
+     "Z": 0
+    },
+    "rot": {
+     "X": 0
+    }
+   },
+   "7": {
+    "loc": {
+     "X": 0,
+     "Y": 0,
+     "Z": 0
+    },
+    "rot": {
+     "X": 0
+    }
+   },
+   "11": {
+    "loc": {
+     "X": -0.057,
+     "Y": -0.1425,
+     "Z": 0.1235
+    },
+    "rot": {
+     "X": -28.5
+    }
+   },
+   "12": {
+    "loc": {
+     "X": -0.06,
+     "Y": -0.15,
+     "Z": 0.13
+    },
+    "rot": {
+     "X": -30
+    }
+   },
+   "13": {
+    "loc": {
+     "X": -0.07,
+     "Y": -0.06,
+     "Z": 0.06
+    },
+    "rot": {
+     "X": -15
+    }
+   },
+   "14": {
+    "loc": {
+     "X": -0.08,
+     "Y": 0.03,
+     "Z": 0
+    },
+    "rot": {
+     "X": 0
+    }
+   },
+   "23": {
+    "loc": {
+     "X": -0.08,
+     "Y": 0.03,
+     "Z": 0
+    },
+    "rot": {
+     "X": 0
+    }
+   },
+   "26": {
+    "loc": {
+     "X": -0.04,
+     "Y": 0.015,
+     "Z": 0.03
+    },
+    "rot": {
+     "X": 0
+    }
+   },
+   "30": {
+    "loc": {
+     "X": 0,
+     "Y": 0,
+     "Z": 0
+    },
+    "rot": {
+     "X": 0
+    }
+   }
+  },
+  "CTRL_shoulder_r": {
+   "1": {
+    "rot": {
+     "Z": 0
+    }
+   },
+   "14": {
+    "rot": {
+     "Z": 0
+    }
+   },
+   "15": {
+    "rot": {
+     "Z": 10
+    }
+   },
+   "16": {
+    "rot": {
+     "Z": 10
+    }
+   },
+   "23": {
+    "rot": {
+     "Z": 10
+    }
+   },
+   "26": {
+    "rot": {
+     "Z": 5
+    }
+   },
+   "28": {
+    "rot": {
+     "Z": 0
+    }
+   },
+   "33": {
+    "rot": {
+     "Z": 0
+    }
+   }
+  }
+ },
+ "props": {
+  "skirt_follow": {
+   "1": 0.5
+  }
+ },
+ "interpolation": {
+  "ctrl": {
+   "type": "BEZIER",
+   "handles": "AUTO_CLAMPED"
+  },
+  "props": "CONSTANT",
+  "props_overrides": {
+   "skirt_follow": "BEZIER"
+  }
+ },
+ "contacts": {
+  "planted": [
+   {
+    "foot": "r",
+    "frames": [
+     1,
+     49
+    ]
+   },
+   {
+    "foot": "l",
+    "frames": [
+     1,
+     7
+    ]
+   },
+   {
+    "foot": "l",
+    "frames": [
+     14,
+     23
+    ]
+   },
+   {
+    "foot": "l",
+    "frames": [
+     30,
+     49
+    ]
+   }
+  ],
+  "ground_ranges": [
+   [
+    1,
+    49
+   ]
+  ]
+ },
+ "sheet": {
+  "every_n": 3
+ }
+}

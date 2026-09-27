@@ -1,0 +1,238 @@
+{
+ "mesh": "PL_mesh",
+ "attribute": "part_id (FACE, INT)",
+ "part_id": {
+  "head": 0,
+  "eye_l": 1,
+  "eye_r": 2,
+  "scarf": 3,
+  "scarf_tail": 4,
+  "tunic": 5,
+  "belt": 6,
+  "pouch": 7,
+  "sleeve_l": 8,
+  "sleeve_r": 9,
+  "arm_l": 10,
+  "arm_r": 11,
+  "fist_l": 12,
+  "fist_r": 13,
+  "leg_l": 14,
+  "leg_r": 15,
+  "cuff_l": 16,
+  "cuff_r": 17,
+  "shoe_l": 18,
+  "shoe_r": 19
+ },
+ "slots": {
+  "Player_Head": [
+   "head",
+   "eye_l",
+   "eye_r"
+  ],
+  "Armor_Default": [
+   "scarf",
+   "scarf_tail",
+   "tunic",
+   "belt",
+   "pouch",
+   "sleeve_l",
+   "sleeve_r",
+   "arm_l",
+   "arm_r",
+   "fist_l",
+   "fist_r",
+   "leg_l",
+   "leg_r",
+   "cuff_l",
+   "cuff_r",
+   "shoe_l",
+   "shoe_r"
+  ]
+ },
+ "rigid": [
+  "head",
+  "eye_l",
+  "eye_r",
+  "scarf",
+  "scarf_tail",
+  "belt",
+  "pouch",
+  "sleeve_l",
+  "sleeve_r",
+  "fist_l",
+  "fist_r",
+  "cuff_l",
+  "cuff_r",
+  "shoe_l",
+  "shoe_r"
+ ],
+ "rebuilt": [
+  "tunic",
+  "arm_l",
+  "arm_r",
+  "leg_l",
+  "leg_r"
+ ],
+ "materials": {
+  "M_head": {
+   "material_index": 0,
+   "color": [
+    0.93,
+    0.8,
+    0.62
+   ]
+  },
+  "M_eye_l": {
+   "material_index": 1,
+   "color": [
+    0.1,
+    0.1,
+    0.12
+   ]
+  },
+  "M_eye_r": {
+   "material_index": 2,
+   "color": [
+    0.25,
+    0.25,
+    0.3
+   ]
+  },
+  "M_scarf": {
+   "material_index": 3,
+   "color": [
+    0.85,
+    0.2,
+    0.18
+   ]
+  },
+  "M_scarf_tail": {
+   "material_index": 4,
+   "color": [
+    1.0,
+    0.55,
+    0.2
+   ]
+  },
+  "M_tunic": {
+   "material_index": 5,
+   "color": [
+    0.3,
+    0.55,
+    0.85
+   ]
+  },
+  "M_belt": {
+   "material_index": 6,
+   "color": [
+    0.45,
+    0.28,
+    0.12
+   ]
+  },
+  "M_pouch": {
+   "material_index": 7,
+   "color": [
+    0.95,
+    0.85,
+    0.2
+   ]
+  },
+  "M_sleeve_l": {
+   "material_index": 8,
+   "color": [
+    0.2,
+    0.75,
+    0.7
+   ]
+  },
+  "M_sleeve_r": {
+   "material_index": 9,
+   "color": [
+    0.55,
+    0.85,
+    0.35
+   ]
+  },
+  "M_arm_l": {
+   "material_index": 10,
+   "color": [
+    0.75,
+    0.45,
+    0.85
+   ]
+  },
+  "M_arm_r": {
+   "material_index": 11,
+   "color": [
+    0.95,
+    0.55,
+    0.7
+   ]
+  },
+  "M_fist_l": {
+   "material_index": 12,
+   "color": [
+    0.95,
+    0.35,
+    0.35
+   ]
+  },
+  "M_fist_r": {
+   "material_index": 13,
+   "color": [
+    0.7,
+    0.2,
+    0.3
+   ]
+  },
+  "M_leg_l": {
+   "material_index": 14,
+   "color": [
+    0.4,
+    0.4,
+    0.85
+   ]
+  },
+  "M_leg_r": {
+   "material_index": 15,
+   "color": [
+    0.6,
+    0.3,
+    0.55
+   ]
+  },
+  "M_cuff_l": {
+   "material_index": 16,
+   "color": [
+    0.85,
+    0.65,
+    0.4
+   ]
+  },
+  "M_cuff_r": {
+   "material_index": 17,
+   "color": [
+    0.65,
+    0.5,
+    0.3
+   ]
+  },
+  "M_shoe_l": {
+   "material_index": 18,
+   "color": [
+    0.35,
+    0.65,
+    0.3
+   ]
+  },
+  "M_shoe_r": {
+   "material_index": 19,
+   "color": [
+    0.2,
+    0.45,
+    0.25
+   ]
+  }
+ }
+}

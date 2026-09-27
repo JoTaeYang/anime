@@ -12,6 +12,9 @@ public class SpringBoneChain : MonoBehaviour
     public float gravity = 1.0f;       // 하방 가속 (m/s^2)
     public float maxAngleDeg = 40f;    // 레스트 방향 대비 최대 흔들림 각
     public SpringCollider[] colliders; // 밀어낼 구체들 (없으면 빈 배열)
+    // true: 매 틱 애니메이션이 쓴 로컬 회전을 기준 자세로 쓴다 (클립이 체인 본을 매 프레임 키로 가질 때만;
+    // 플레이어 치마의 허벅지 따라가기가 여기에 해당). false(기본): Init 시점 레스트로 복귀 — Phase 2a 동작.
+    public bool followAnimation = false;
 
     Quaternion[] restLocal;   // 레스트 로컬 회전 (Init 시점)
     Vector3[] restDirLocal;   // 본 로컬 공간에서 끝점 방향
@@ -53,7 +56,7 @@ public class SpringBoneChain : MonoBehaviour
         for (int i = 0; i < bones.Length; i++)
         {
             var b = bones[i];
-            b.localRotation = restLocal[i];               // 부모 애니메이션 위에 레스트로 복귀
+            if (!followAnimation) b.localRotation = restLocal[i];   // 부모 애니메이션 위에 레스트로 복귀
             Vector3 restDirW = b.TransformDirection(restDirLocal[i]);
             Vector3 target = b.position + restDirW * len[i];
 

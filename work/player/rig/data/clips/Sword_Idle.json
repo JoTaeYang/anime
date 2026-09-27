@@ -1,0 +1,270 @@
+{
+ "_doc": "T310 Sword_Idle key poses (spec work/player/d-04-player-sword-idle.md; SI1 = key poses only, in-betweens later). Redesigned within the P2c sweeps from the reference player-idle.mp4 (not copied). f1 rest / exhale, f43 inhale peak, f72 return + settle, f91 = f1 via the loop closing keys. Right arm FK held (upper arm twisted out Y 45 so the forearm points out-forward, elbow ~105-110 deg: the player's 0.166 m arm segments put a 90 deg fist at z ~0.56 m, well above the belt at ~0.42 m; the fist centre sits at z ~0.51 m), wrist set so the placeholder blade (contract: socket +Z) points up and ~13 deg outward. Left arm lowered 15 deg (relaxed). Breath: COG up 7 mm (CTRL_torso loc Y -0.008 -> -0.001; knees straighten at about 0.0, so the rise stays below it), chest up (chest X -3, spine_01 X -1), shoulder shrug 6 deg; at f43 the upper arms lower 5 deg against the shrug (R Z 10 -> 15, L Z -15 -> -20) so the fists rise with the shoulders without swinging out (T310 probe: without it the right fist rose 48 mm and moved 16 mm outward). | T312 SI2 timing (key poses f1 / f43 / f72 kept): breath channels ease through the auto-clamped extremes at f43 (inhale peak) and f72 (settle); f72 -> f91 drifts torso loc Y -0.009 -> -0.008 and chest X 0.5 -> 0 (never frozen). Seam: breakdowns at f7 and f85 give the f1 and f91 endpoint handles the same slope (torso 3.17e-5 m/frame, chest -0.0158 deg/frame; channels with f72 = f1 get a flat f7 key so both seam slopes are 0). Overlap: the upper-arm keys (shrug compensation) move 3 frames earlier (f40 / f69 instead of f43 / f72), so the world-space fists and the sword peak after the torso; head counters the chest tilt (X +1 at f46, lag 3).",
+ "clip": "Sword_Idle",
+ "fps": 30,
+ "frame_range": [
+  1,
+  91
+ ],
+ "loop": true,
+ "root_motion": "in_place_cycle",
+ "base": "player.reset_rig + player.ready_pose",
+ "key_frames": [
+  1,
+  43,
+  72
+ ],
+ "weapon": {
+  "R": "placeholder_sword"
+ },
+ "keys": {
+  "CTRL_torso": {
+   "1": {
+    "loc": {
+     "Y": -0.008
+    }
+   },
+   "7": {
+    "loc": {
+     "Y": -0.00781
+    }
+   },
+   "43": {
+    "loc": {
+     "Y": -0.001
+    }
+   },
+   "72": {
+    "loc": {
+     "Y": -0.009
+    }
+   },
+   "85": {
+    "loc": {
+     "Y": -0.00819
+    }
+   }
+  },
+  "CTRL_spine_01": {
+   "1": {
+    "rot": {
+     "X": 0.0
+    }
+   },
+   "7": {
+    "rot": {
+     "X": 0.0
+    }
+   },
+   "43": {
+    "rot": {
+     "X": -1.0
+    }
+   },
+   "72": {
+    "rot": {
+     "X": 0.0
+    }
+   }
+  },
+  "CTRL_chest": {
+   "1": {
+    "rot": {
+     "X": 0.0
+    }
+   },
+   "7": {
+    "rot": {
+     "X": -0.095
+    }
+   },
+   "43": {
+    "rot": {
+     "X": -3.0
+    }
+   },
+   "72": {
+    "rot": {
+     "X": 0.5
+    }
+   },
+   "85": {
+    "rot": {
+     "X": 0.095
+    }
+   }
+  },
+  "CTRL_head": {
+   "1": {
+    "rot": {
+     "X": 0.0
+    }
+   },
+   "7": {
+    "rot": {
+     "X": 0.0
+    }
+   },
+   "46": {
+    "rot": {
+     "X": 1.0
+    }
+   },
+   "75": {
+    "rot": {
+     "X": 0.0
+    }
+   }
+  },
+  "CTRL_shoulder_l": {
+   "1": {
+    "rot": {
+     "Z": 0.0
+    }
+   },
+   "7": {
+    "rot": {
+     "Z": 0.0
+    }
+   },
+   "43": {
+    "rot": {
+     "Z": 6.0
+    }
+   },
+   "72": {
+    "rot": {
+     "Z": 0.0
+    }
+   }
+  },
+  "CTRL_shoulder_r": {
+   "1": {
+    "rot": {
+     "Z": 0.0
+    }
+   },
+   "7": {
+    "rot": {
+     "Z": 0.0
+    }
+   },
+   "43": {
+    "rot": {
+     "Z": -6.0
+    }
+   },
+   "72": {
+    "rot": {
+     "Z": 0.0
+    }
+   }
+  },
+  "CTRL_upperarm_fk_r": {
+   "1": {
+    "rot": [
+     -15.0,
+     45.0,
+     10.0
+    ]
+   },
+   "7": {
+    "rot": {
+     "Z": 10.0
+    }
+   },
+   "40": {
+    "rot": {
+     "Z": 15.0
+    }
+   },
+   "69": {
+    "rot": {
+     "Z": 10.0
+    }
+   }
+  },
+  "CTRL_lowerarm_fk_r": {
+   "1": {
+    "rot": [
+     65.0,
+     0.0,
+     0.0
+    ]
+   }
+  },
+  "CTRL_hand_fk_r": {
+   "1": {
+    "rot": [
+     5.0,
+     30.0,
+     0.0
+    ]
+   }
+  },
+  "CTRL_upperarm_fk_l": {
+   "1": {
+    "rot": {
+     "Z": -15.0
+    }
+   },
+   "7": {
+    "rot": {
+     "Z": -15.0
+    }
+   },
+   "40": {
+    "rot": {
+     "Z": -20.0
+    }
+   },
+   "69": {
+    "rot": {
+     "Z": -15.0
+    }
+   }
+  }
+ },
+ "props": {
+  "skirt_follow": {
+   "1": 0.5
+  }
+ },
+ "interpolation": {
+  "ctrl": {
+   "type": "BEZIER",
+   "handles": "AUTO_CLAMPED"
+  },
+  "props": "CONSTANT",
+  "props_overrides": {
+   "skirt_follow": "BEZIER"
+  }
+ },
+ "contacts": {
+  "planted": [
+   {
+    "foot": "l",
+    "frames": [
+     1,
+     91
+    ]
+   },
+   {
+    "foot": "r",
+    "frames": [
+     1,
+     91
+    ]
+   }
+  ],
+  "ground_ranges": [
+   [
+    1,
+    91
+   ]
+  ]
+ },
+ "sheet": {
+  "every_n": 6
+ }
+}
