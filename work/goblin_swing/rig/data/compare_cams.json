@@ -1,0 +1,350 @@
+{
+ "_doc": "G9 compare cameras (data/g9_contract.md). One fixed orthographic camera per view framing the union of goblin_mesh + goblin_club over the render frames. Blender: camera looks along its local -Z, up = local +Y. Unity: position = M @ blender location, forward = M @ view_dir, up = M @ up, rotation = Quaternion.LookRotation(forward, up) as [x, y, z, w], orthographicSize = ortho_scale / 2, square aspect. M = export_preset axis_mapping.blender_to_unity. Unity time t = (frame - 1) / 24 s.",
+ "generated_by": "scripts/s09_blender_ref.py",
+ "source_blend": "export/stage_rigtest.blend",
+ "axis_mapping_blender_to_unity": [
+  [
+   -1.0,
+   0.0,
+   0.0
+  ],
+  [
+   0.0,
+   0.0,
+   1.0
+  ],
+  [
+   0.0,
+   -1.0,
+   0.0
+  ]
+ ],
+ "resolution": [
+  1024,
+  1024
+ ],
+ "res_h": 1024,
+ "aspect": 1.0,
+ "background_rgb": [
+  1.0,
+  1.0,
+  1.0
+ ],
+ "background_alpha": 0.0,
+ "frames": [
+  58,
+  184,
+  431
+ ],
+ "frame_notes": {
+  "58": "cog mid: COG down / tilted, knees bent (thigh 64 / 42 deg)",
+  "184": "arm_fk mid: both arms raised forward, club in front of the body (clearest pose)",
+  "431": "weapon_world mid: club moved in the world, right arm moved away"
+ },
+ "time_s": {
+  "58": 2.375,
+  "184": 7.625,
+  "431": 17.916666666666668
+ },
+ "png": {
+  "blender": "rig/inspect/G9/blender_<cam>_<frame>.png",
+  "unity": "rig/inspect/G9/unity_<cam>_<frame>.png",
+  "blender_lit": "rig/inspect/G9/blender_lit_<cam>_<frame>.png",
+  "unity_lit": "rig/inspect/G9/unity_lit_<cam>_<frame>.png",
+  "frame_format": "integer, no padding (e.g. unity_front_184.png)"
+ },
+ "cameras": {
+  "front": {
+   "type": "orthographic",
+   "blender": {
+    "matrix_world": [
+     [
+      1.0,
+      0.0,
+      0.0,
+      -0.03780980780720711
+     ],
+     [
+      0.0,
+      0.0,
+      -1.0,
+      -2.814948797225952
+     ],
+     [
+      0.0,
+      1.0,
+      0.0,
+      0.6937130093574524
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "location": [
+     -0.03780980780720711,
+     -2.814948797225952,
+     0.6937130093574524
+    ],
+    "view_dir": [
+     0.0,
+     1.0,
+     0.0
+    ],
+    "up": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "right": [
+     1.0,
+     0.0,
+     0.0
+    ],
+    "ortho_scale": 1.9303754634124115,
+    "sensor_fit": "VERTICAL",
+    "clip_start": 0.01,
+    "clip_end": 13.233506843361232
+   },
+   "unity": {
+    "position": [
+     0.03780980780720711,
+     0.6937130093574524,
+     2.814948797225952
+    ],
+    "rotation": [
+     0.0,
+     1.0,
+     0.0,
+     0.0
+    ],
+    "forward": [
+     0.0,
+     0.0,
+     -1.0
+    ],
+    "up": [
+     0.0,
+     1.0,
+     0.0
+    ],
+    "right": [
+     -1.0,
+     0.0,
+     0.0
+    ],
+    "orthographic": true,
+    "orthographicSize": 0.9651877317062058,
+    "aspect": 1.0,
+    "nearClipPlane": 0.01,
+    "farClipPlane": 13.233506843361232,
+    "rotation_det": 1.0
+   }
+  },
+  "three_quarter": {
+   "type": "orthographic",
+   "blender": {
+    "matrix_world": [
+     [
+      0.7071068286895752,
+      0.1830126941204071,
+      -0.6830127239227295,
+      -2.2428762912750244
+     ],
+     [
+      -0.7071068286895752,
+      0.1830126941204071,
+      -0.6830127239227295,
+      -2.006054401397705
+     ],
+     [
+      0.0,
+      0.9659258127212524,
+      0.258819043636322,
+      1.4693145751953125
+     ],
+     [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+     ]
+    ],
+    "location": [
+     -2.2428762912750244,
+     -2.006054401397705,
+     1.4693145751953125
+    ],
+    "view_dir": [
+     0.6830127239227295,
+     0.6830127239227295,
+     -0.258819043636322
+    ],
+    "up": [
+     0.1830126941204071,
+     0.1830126941204071,
+     0.9659258127212524
+    ],
+    "right": [
+     0.7071068286895752,
+     -0.7071068286895752,
+     0.0
+    ],
+    "ortho_scale": 1.6743576911063005,
+    "sensor_fit": "VERTICAL",
+    "clip_start": 0.01,
+    "clip_end": 13.763854331963723
+   },
+   "unity": {
+    "position": [
+     2.2428762912750244,
+     1.4693145751953125,
+     2.006054401397705
+    ],
+    "rotation": [
+     0.049950215965509415,
+     -0.9159756302833557,
+     0.12059048563241959,
+     0.3794095516204834
+    ],
+    "forward": [
+     -0.6830127239227295,
+     -0.258819043636322,
+     -0.6830127239227295
+    ],
+    "up": [
+     -0.1830126941204071,
+     0.9659258127212524,
+     -0.1830126941204071
+    ],
+    "right": [
+     -0.7071068286895752,
+     0.0,
+     0.7071068286895752
+    ],
+    "orthographic": true,
+    "orthographicSize": 0.8371788455531503,
+    "aspect": 1.0,
+    "nearClipPlane": 0.01,
+    "farClipPlane": 13.763854331963723,
+    "rotation_det": 0.9999999403953552
+   }
+  }
+ },
+ "lit_light": {
+  "type": "directional",
+  "per_camera": {
+   "front": {
+    "source": "goblin_report extra.render_lit.per_camera.front.to_light (Unity world) -> M^T",
+    "blender_to_light": [
+     -0.4330126941204071,
+     -0.7499999403953552,
+     0.5
+    ],
+    "blender_ray_dir": [
+     0.4330126941204071,
+     0.7499999403953552,
+     -0.5
+    ],
+    "unity_forward": [
+     -0.4330126941204071,
+     -0.5,
+     -0.7499999403953552
+    ],
+    "unity_to_light": [
+     0.4330126941204071,
+     0.5,
+     0.7499999403953552
+    ],
+    "unity_rotation": [
+     0.06698731333017349,
+     -0.9330127239227295,
+     0.2500000298023224,
+     0.2500000298023224
+    ]
+   },
+   "three_quarter": {
+    "source": "goblin_report extra.render_lit.per_camera.three_quarter.to_light (Unity world) -> M^T",
+    "blender_to_light": [
+     -0.7269394397735596,
+     -0.11456692218780518,
+     0.6770772337913513
+    ],
+    "blender_ray_dir": [
+     0.7269394397735596,
+     0.11456692218780518,
+     -0.6770772337913513
+    ],
+    "unity_forward": [
+     -0.7269394397735596,
+     -0.6770772337913513,
+     -0.11456692218780518
+    ],
+    "unity_to_light": [
+     0.7269394397735596,
+     0.6770772337913513,
+     0.11456692218780518
+    ],
+    "unity_rotation": [
+     0.236100971698761,
+     -0.7081947922706604,
+     0.27622509002685547,
+     0.6053231954574585
+    ]
+   }
+  },
+  "blender": {
+   "engine": "BLENDER_EEVEE",
+   "sun_strength": 3.141592653589793,
+   "shadow": false,
+   "world_ambient_rgb": [
+    0.3,
+    0.3,
+    0.3
+   ],
+   "material": {
+    "base_color": [
+     0.8,
+     0.8,
+     0.8
+    ],
+    "roughness": 0.8
+   },
+   "normals": "mesh custom normals (goblin_mesh), evaluated deformed mesh",
+   "background": "film_transparent, composited over white",
+   "samples": 16,
+   "view_transform": "Raw",
+   "color_space_note": "Unity project Gamma color space -> Blender Raw view transform (no sRGB encode)"
+  },
+  "unity": {
+   "intensity": 1.0,
+   "color": [
+    1.0,
+    1.0,
+    1.0
+   ],
+   "shadows": "None",
+   "ambient_rgb": [
+    0.3,
+    0.3,
+    0.3
+   ],
+   "material": {
+    "shader": "Standard",
+    "albedo": [
+     0.8,
+     0.8,
+     0.8
+    ],
+    "smoothness": 0.19999999999999996
+   },
+   "background_rgb": [
+    1.0,
+    1.0,
+    1.0
+   ]
+  }
+ }
+}

@@ -1,0 +1,262 @@
+{
+ "belt_bone": "pelvis",
+ "belt_option": "A",
+ "rigid": {
+  "head": "head",
+  "hand_l": "hand_l",
+  "hand_r": "hand_r",
+  "shoe_l": "foot_l",
+  "shoe_r": "foot_r",
+  "belt": "pelvis"
+ },
+ "twist": {
+  "upperarm_twist_l": {
+   "source": "upperarm_l",
+   "constraint": "TRANSFORM",
+   "from_rotation_mode": "SWING_TWIST_Y",
+   "axis": "Y",
+   "ratio": 0.5,
+   "sign": -1,
+   "target_space": "LOCAL",
+   "owner_space": "LOCAL",
+   "mix_mode_rot": "REPLACE",
+   "effect": "counter-twist: twist bone rotates -ratio * upperarm swing-twist Y twist relative to upperarm (world twist = (1 - ratio) * upperarm twist); swing ignored"
+  },
+  "lowerarm_twist_l": {
+   "source": "hand_l",
+   "constraint": "TRANSFORM",
+   "from_rotation_mode": "SWING_TWIST_Y",
+   "axis": "Y",
+   "ratio": 0.5,
+   "sign": 1,
+   "target_space": "LOCAL",
+   "owner_space": "LOCAL",
+   "mix_mode_rot": "REPLACE",
+   "effect": "twist bone rotates +ratio * hand swing-twist Y twist relative to lowerarm; swing ignored"
+  },
+  "upperarm_twist_r": {
+   "source": "upperarm_r",
+   "constraint": "TRANSFORM",
+   "from_rotation_mode": "SWING_TWIST_Y",
+   "axis": "Y",
+   "ratio": 0.5,
+   "sign": -1,
+   "target_space": "LOCAL",
+   "owner_space": "LOCAL",
+   "mix_mode_rot": "REPLACE",
+   "effect": "counter-twist: twist bone rotates -ratio * upperarm swing-twist Y twist relative to upperarm (world twist = (1 - ratio) * upperarm twist); swing ignored"
+  },
+  "lowerarm_twist_r": {
+   "source": "hand_r",
+   "constraint": "TRANSFORM",
+   "from_rotation_mode": "SWING_TWIST_Y",
+   "axis": "Y",
+   "ratio": 0.5,
+   "sign": 1,
+   "target_space": "LOCAL",
+   "owner_space": "LOCAL",
+   "mix_mode_rot": "REPLACE",
+   "effect": "twist bone rotates +ratio * hand swing-twist Y twist relative to lowerarm; swing ignored"
+  }
+ },
+ "twist_selftest_deg": {
+  "upperarm_twist_l_twist90": -45.0,
+  "upperarm_twist_l_swing90_leak": 0.0,
+  "lowerarm_twist_l_twist90": 45.0,
+  "lowerarm_twist_l_swing60_leak": 0.0,
+  "upperarm_twist_r_twist90": -45.0,
+  "upperarm_twist_r_swing90_leak": 0.0,
+  "lowerarm_twist_r_twist90": 45.0,
+  "lowerarm_twist_r_swing60_leak": 0.0
+ },
+ "weights": {
+  "method": "body = bone-heat automatic weights; limb tubes (topological regions) replaced by per-joint axial profiles (hinge elbow/knee also by angle to the bend-inner side), wrist/ankle _1.._end tube = hand/foot 100 %, twist split along upper/lower arm, torso thigh limited to the hip profile, belt band -> pelvis, head dome -> head, rigid parts 100 %, limit 4, normalize",
+  "params": {
+   "ELBOW": {
+    "s": [
+     -0.045,
+     -0.03,
+     -0.02,
+     -0.01,
+     0.0,
+     0.01,
+     0.02,
+     0.03,
+     0.045
+    ],
+    "ci": [
+     -1.0,
+     -0.866,
+     -0.5,
+     0.0,
+     0.5,
+     0.866,
+     1.0
+    ],
+    "grid": [
+     [
+      0,
+      0,
+      0,
+      0,
+      0.5,
+      1,
+      1,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      0,
+      0,
+      0.458,
+      1,
+      1,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      0,
+      0,
+      0.394,
+      1,
+      1,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      0,
+      0,
+      0.352,
+      0.896,
+      1,
+      1,
+      1
+     ],
+     [
+      0,
+      0,
+      0,
+      0.242,
+      0.47,
+      0.705,
+      0.896,
+      0.995,
+      1
+     ],
+     [
+      0,
+      0,
+      0.134,
+      0.331,
+      0.494,
+      0.659,
+      0.807,
+      0.923,
+      1
+     ],
+     [
+      0,
+      0.104,
+      0.176,
+      0.352,
+      0.49,
+      0.668,
+      0.784,
+      0.896,
+      1
+     ]
+    ]
+   },
+   "WRIST": {
+    "s": [
+     -0.07,
+     -0.001
+    ],
+    "w": [
+     0.0,
+     1.0
+    ]
+   },
+   "KNEE": {
+    "c": [
+     0.0,
+     -0.005,
+     0.0
+    ],
+    "h": [
+     0.05,
+     0.0225,
+     0.005
+    ]
+   },
+   "ANKLE": {
+    "s": [
+     -0.023,
+     -0.001
+    ],
+    "w": [
+     0.0,
+     1.0
+    ]
+   },
+   "HIP": {
+    "s": [
+     -0.04,
+     -0.03,
+     -0.02,
+     -0.01,
+     0.0,
+     0.02,
+     0.04
+    ],
+    "w": [
+     0.0,
+     0.0,
+     0.22,
+     0.3,
+     0.44,
+     0.9,
+     1.0
+    ]
+   },
+   "ARM_PROX_FADE": {
+    "c": 0.04,
+    "h": 0.03
+   },
+   "UA_TWIST_SPLIT": {
+    "c": 0.45,
+    "h": 0.3
+   },
+   "LA_TWIST_SPLIT": {
+    "c": 0.55,
+    "h": 0.3
+   },
+   "BELT_FADE": 0.03,
+   "RIGID_EPS": 0.001
+  },
+  "INNER_DIR": {
+   "elbow": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "knee": [
+    0.0,
+    1.0,
+    0.0
+   ]
+  },
+  "MAX_INF": 4,
+  "EPS_W": 0.0001,
+  "zero_weight_bones": [
+   "root",
+   "weapon_socket_r"
+  ]
+ }
+}

@@ -1,0 +1,1673 @@
+{
+ "_doc": {
+  "s06a_owner": "Entries with \"owner\": \"s06a\" are written by s06a_ctrl_torso_head.py (T24) and replaced on its rerun; T25-T27 add their own entries/sections (controls, spaces, ikfk, clamps) with their own owner tag and leave other owners' entries as they are.",
+  "sweep": "controls.<CTRL>.sweep = usable animation range per channel: channel rot = Euler degrees in the control's rotation_mode, loc = metres; axis = bone-local channel axis.",
+  "torso_axes": "CTRL_root/torso/spine_01/chest/head point +Z with roll 0: local X = world +X (rot X+ = bend forward), local Y = world +Z (rot Y = twist/yaw, loc Y = up), local Z = world -Y (rot Z+ = lean to the character right, loc Z+ = forward). CTRL_pelvis differs (T24c), see pelvis_pivot.",
+  "cog": "CTRL_torso (COG) head = DEF pelvis head (0, 0, 0.304), tail +0.2 m Z, roll 0: just above the hip joints (z 0.274) so torso lean/turn pivots at the hips and keeps the short legs in place; same axes as the spine controls.",
+  "head_space": "MCH_CTRL_head_space (no parent, parent of CTRL_head) has 2 constraints in this order: space_chest_follow = ARMATURE -> CTRL_chest, constant influence 1 (full chest follow, no driver); space_world_rot = COPY_ROTATION WORLD/WORLD REPLACE from MCH_world (parentless, locked, never-animated bone at the armature origin, same rest orientation as head, so it does not follow CTRL_root), influence = driver PROPS[\"head_space\"] == 1. chest (0): full follow of CTRL_chest; world (1): location follows CTRL_chest, rotation fixed to world. Switching = T28 snap operator (world matrix kept); influence is driven only by PROPS[\"head_space\"].",
+  "props": "PROPS pose bone (parent CTRL_root) holds every contract property; ik_fk 0 = FK, 1 = IK; foot_* in degrees; mouth_open 0..1 (HR2).",
+  "s06b_arms": "Arms (s06b, T25), per side from its own DEF rest (no mirroring). CTRL_shoulder_x (parent CTRL_chest) is shared by FK and IK and always drives DEF shoulder_x. FK CTRL_upperarm/lowerarm/hand_fk_x and MCH IK chain MCH_upperarm/lowerarm/hand_ik_x copy DEF rest, roll and use_connect, so the G4 roll convention and the rom_poses sign convention hold for the FK controls (upperarm X+ = forward, raise = upperarm_l Z+ / upperarm_r Z-, lowerarm X+ = elbow flexion, hand X+ = hand toward -Y, Y = twist). DEF upperarm/lowerarm/hand: fk_copy (influence 1) then ik_copy (influence = arm_ik_fk_x; 0 = FK, 1 = IK). IK: no stretch (use_stretch False, ik_stretch 0).",
+  "s06b_pole": "CTRL_elbow_pole_x: DEF lowerarm_x head + 0.30 m along +Y (preferred elbow bend side, G4.9), bone points +Z, roll 0; parent CTRL_torso so the pole follows COG moves/turns but not spine/chest bends (the elbow plane stays stable while the chest animates). pole_angle computed from the rest chain (IK at identity = DEF rest, self-checked).",
+  "s06b_ik_modes": "controls.<CTRL>.mode = PROPS value the control is swept in (FK controls: arm_ik_fk_x = 0, IK hand / pole: arm_ik_fk_x = 1). CTRL_shoulder_x has no mode (active in both).",
+  "s06c_legs": "Legs (s06c, T26), per side from its own DEF rest and pivots (no mirroring). FK CTRL_thigh/calf/foot_fk_x (thigh parent CTRL_pelvis) and MCH IK chain MCH_thigh/calf/foot_ik_x copy DEF rest, roll and use_connect, so the rom_poses sign convention holds for the FK controls (thigh X- = hip flexion, abduction thigh_l Z- / thigh_r Z+, calf X+ = knee flexion, foot X- = toes up). DEF thigh/calf/foot: fk_copy (influence 1) then ik_copy (influence = leg_ik_fk_x; 0 = FK, 1 = IK, default 1). IK: no stretch.",
+  "s06c_foot_ik": "CTRL_foot_ik_x (parent CTRL_root): head = ankle (DEF foot head), points world -Y, local Z = world +Z, so loc X = world -X, loc Y = forward, loc Z = up (z 0 = foot on the ground at rest) and rot X+ = toes up about the ankle; world-aligned axes keep ground-plane animation intuitive, the ankle pivot matches the anatomical joint and ground contact is handled by the foot roll pivots.",
+  "s06c_roll": "Foot roll MCH chain under CTRL_foot_ik_x: MCH_roll_heel_x > MCH_roll_toe_x > MCH_roll_bank_in_x / MCH_roll_bank_out_x (pivot heads from the T26c contact search, see s06c_pivots) > MCH_roll_foot_x (rest = DEF foot) = IK target (head) and foot rotation. Pivot axes: Y = heel->toe horizontal, Z = up. foot_roll - = toes up on the heel, + = heel up on the toe; foot_bank + = onto the outer edge, - = onto the inner edge; heel_twist / toe_twist + = counter-clockwise seen from above. Degrees; driver expressions clamp to clamps[prop].",
+  "s06c_pole": "CTRL_knee_pole_x: DEF calf head + 0.30 m along -Y (preferred knee bend side, G4.9), bone points +Z, roll 0, child of MCH_CTRL_knee_pole_x_space. knee_pole_space: foot = CTRL_foot_ik_x, world = CTRL_root (chosen over MCH_world so root motion in walk/run carries the pole with the feet, which are also in root space; the pole then only ignores foot turns).",
+  "s06c_clamps": "clamps.<prop> = [min, max] degrees, written by s06c (T26b/T26d): planted range at the stance CTRL_torso loc Y (= world Z) = -15 mm (knees bent), leg IK, all other controls identity, foot IK control at rest. Each property alone swept in 1 deg steps over its starting range (roll [-45, 60], bank [-30, 30], twist [-45, 45]); planted = IK reach error |MCH_calf_ik tail - MCH_roll_foot head| <= 1 mm AND lowest shoe vertex z >= -1 mm (no penetration) AND <= +3 mm (no floating; T26d, low-poly rounded shoe) AND, for foot_roll / foot_bank only, cumulative contact slip S <= 5 mm (T26e): walking from 0 toward each end one 1 deg step at a time, the contact set C_k of step k = shoe vertices with z <= (lowest z at step k + 1 mm); the increment = mean horizontal (XY) displacement of the C_k vertices from step k to step k+1; S(v) = sum of the increments from 0 to v (a rolling contact stays put, only sliding contact accumulates, and a change of the lowest vertex does not make S jump). Twist: S reported only (a twist rotates in place), clamp from reach + z. Pivot positions are those of the T26d search (unchanged in T26e). The clamp is the continuous planted range around 0. Stances 0 and -30 mm are reference only (clamps_reference). Same range in the PROPS UI min/max and the driver clamps.",
+  "s06c_pivots": "T26d pivot placement (T26c high pivots, z 64-290 mm, slid the contact along the ground by about height x angle, so the pivots are kept near the contact plane): grid search per side and pivot, height h 0..20 mm and horizontal t across the rotation axis (fwd for heel / toe over the whole shoe length, outward for bank over the whole shoe width; the position along the axis does not change the rotation), 1 mm steps. The rigid shoe (its own vertices) is rotated about the pivot axis (lat for roll, fwd for bank) exactly as the drivers do for each property value in 1 deg steps; a value counts as planted when the lowest shoe vertex stays in [-1, +3] mm (0.02 mm margin), the slip of the lowest material point stays <= 5 mm (0.05 mm margin) and the rotated ankle stays within leg length + 0.5 mm of the hip at the -15 mm stance. Chosen = longest continuous planted range from 0 in the target direction (capped at the start range), then smallest max slip, then smallest offset, so each pivot sits at the sole contact edge / arc reached by that roll or bank direction. Twist pivots are the same heel / toe bones (vertical axis through the new head). l: heel (+0.2319, +0.0867, +0.0130) (T26 (+0.2239, +0.1166, +0.0000), geometric planted range 29 deg, max slip 4.66 mm), toe (+0.3052, -0.1865, +0.0070) (T26 (+0.3153, -0.2242, +0.0000), geometric planted range 26 deg, max slip 1.46 mm), bank_in (+0.1514, +0.0008, +0.0040) (T26 (+0.1224, -0.0069, +0.0000), geometric planted range 15 deg, max slip 0.27 mm), bank_out (+0.4040, -0.1275, +0.0050) (T26 (+0.4117, -0.1254, +0.0000), geometric planted range 30 deg, max slip 0.91 mm); r: heel (-0.2447, +0.0870, +0.0120) (T26 (-0.2382, +0.1152, +0.0000), geometric planted range 33 deg, max slip 4.75 mm), toe (-0.3086, -0.1916, +0.0080) (T26 (-0.3158, -0.2228, +0.0000), geometric planted range 29 deg, max slip 2.32 mm), bank_in (-0.1761, -0.0367, +0.0030) (T26 (-0.1449, -0.0438, +0.0000), geometric planted range 13 deg, max slip 0.18 mm), bank_out (-0.3873, -0.0839, +0.0150) (T26 (-0.4175, -0.0770, +0.0000), geometric planted range 18 deg, max slip 3.60 mm)",
+  "s06d_weapon": "CTRL_weapon (s06d, T27): rest = DEF weapon_socket_r rest (head = grip_r, local Y = club axis), child of MCH_CTRL_weapon_space (no parent) whose Armature constraints space_hand_r -> DEF hand_r (actual IK/FK hand; the right hand IK has no weapon space, so no cycle), space_hand_l -> CTRL_hand_fk_l (spec 5), space_torso -> CTRL_torso, space_world -> MCH_world (same target as the head and hand IK world spaces) have influence = driver PROPS[\"weapon_space\"] == k. DEF weapon_socket_r keeps parent hand_r and copies CTRL_weapon WORLD/WORLD (weapon socket offset animation after bake); GOB_club stays bone-parented to weapon_socket_r. controls.CTRL_weapon.side = R (the right hand's weapon; R colour).",
+  "s06d_ui_conditions": "For the T28 UI / switch operator: weapon_space = hand_l follows CTRL_hand_fk_l, so it only makes sense with the left arm in FK (arm_ik_fk_l = 0); combining it with hand_ik_space_l = weapon (left hand IK following CTRL_weapon) is meaningless (the weapon would follow the left FK hand while the IK hand follows the weapon).",
+  "s06a_sweep_ranges": "T28b: CTRL_torso loc up/down (local Y) -0.08..+0.01 m (hips 0.274 -> 0.194 m keep 70 mm above the ankles 0.124 m so the 150 mm legs bend but never fold through; +0.01 = legs already straight at rest), side (X) and forward/back (Z) +-0.08 m, rot +-45; CTRL_pelvis loc +-0.03 m (relative hip shift inside the COG, rot +-30 unchanged); CTRL_root unchanged.",
+  "s06b_sweep_ranges": "T28b: CTRL_hand_ik_x local Y runs along the arm (rest arm already at full reach, shoulder -> wrist about 362 mm): loc Y -0.25..0 m (elbow bends, target stays >= 110 mm from the shoulder, no fold-through; + would only pull a straight arm); local X / Z (up-down, forward-back) +-0.3 m swing the arm up to about 40 deg; rot +-60; poles +-0.2 m unchanged.",
+  "s06c_sweep_ranges": "T28b: CTRL_foot_ik_x loc up (local Z) 0..+0.08 m (ankle 0.124 -> 0.204 m stays 70 mm below the hip 0.274 m, so the 150 mm leg bends without folding through; jump tuck / step lift), forward/back (local Y) +-0.12 m, side (local X) +-0.08 m, rot +-45; poles +-0.2 m unchanged.",
+  "pelvis_pivot": "T24c (spec 5, user decision): CTRL_pelvis head = DEF pelvis tail = waist (0, 0, 0.5777, top of the belt = DEF spine_01 head), tail = DEF pelvis head (points down, world -Z), local X = world +X, local Z = world +Y. rot X+ = same world rotation sense as a spine forward bend (hips swing back); rot Y+ = turn about world -Z (opposite sense to the spine Y twist); rot Z+ = turn about world +Y (opposite sense to the spine Z lean); loc X = world +X, loc Y = down, loc Z = back. Child MCH_pelvis (rest = DEF pelvis) drives DEF pelvis (Copy Transforms WORLD/WORLD); the thigh FK / IK controls stay children of CTRL_pelvis (the same rigid frame), so the waist stays put and the hips and legs swing.",
+  "mouth_open": "HR2 (rig/data/hr2_contract.md): PROPS float mouth_open [0, 1], default 0 (0 = closed, 1 = roar). Driver on GOB_mesh.data.shape_keys.key_blocks[\"mouth_open\"].value: type AVERAGE, one SINGLE_PROP variable mouth_open = GOB_rig pose.bones[\"PROPS\"][\"mouth_open\"], no F-curve modifiers. goblin.reset_rig / goblin.ready_pose set it to 0. The export stage (s07b) keys the evaluated value on goblin_mesh's Key instead of the driver."
+ },
+ "controls": {
+  "CTRL_root": {
+   "owner": "s06a",
+   "side": "C",
+   "part": "torso",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "loc",
+     "axis": "X",
+     "min": -1.0,
+     "max": 1.0
+    },
+    {
+     "channel": "loc",
+     "axis": "Y",
+     "min": -1.0,
+     "max": 1.0
+    },
+    {
+     "channel": "loc",
+     "axis": "Z",
+     "min": -1.0,
+     "max": 1.0
+    },
+    {
+     "channel": "rot",
+     "axis": "Y",
+     "min": -180,
+     "max": 180
+    }
+   ]
+  },
+  "CTRL_torso": {
+   "owner": "s06a",
+   "side": "C",
+   "part": "torso",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "loc",
+     "axis": "X",
+     "min": -0.08,
+     "max": 0.08
+    },
+    {
+     "channel": "loc",
+     "axis": "Y",
+     "min": -0.08,
+     "max": 0.01
+    },
+    {
+     "channel": "loc",
+     "axis": "Z",
+     "min": -0.08,
+     "max": 0.08
+    },
+    {
+     "channel": "rot",
+     "axis": "X",
+     "min": -45,
+     "max": 45
+    },
+    {
+     "channel": "rot",
+     "axis": "Y",
+     "min": -45,
+     "max": 45
+    },
+    {
+     "channel": "rot",
+     "axis": "Z",
+     "min": -45,
+     "max": 45
+    }
+   ]
+  },
+  "CTRL_pelvis": {
+   "owner": "s06a",
+   "side": "C",
+   "part": "torso",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "loc",
+     "axis": "X",
+     "min": -0.03,
+     "max": 0.03
+    },
+    {
+     "channel": "loc",
+     "axis": "Y",
+     "min": -0.03,
+     "max": 0.03
+    },
+    {
+     "channel": "loc",
+     "axis": "Z",
+     "min": -0.03,
+     "max": 0.03
+    },
+    {
+     "channel": "rot",
+     "axis": "X",
+     "min": -30,
+     "max": 30
+    },
+    {
+     "channel": "rot",
+     "axis": "Y",
+     "min": -30,
+     "max": 30
+    },
+    {
+     "channel": "rot",
+     "axis": "Z",
+     "min": -30,
+     "max": 30
+    }
+   ]
+  },
+  "CTRL_spine_01": {
+   "owner": "s06a",
+   "side": "C",
+   "part": "torso",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "rot",
+     "axis": "X",
+     "min": -30,
+     "max": 30
+    },
+    {
+     "channel": "rot",
+     "axis": "Y",
+     "min": -30,
+     "max": 30
+    },
+    {
+     "channel": "rot",
+     "axis": "Z",
+     "min": -30,
+     "max": 30
+    }
+   ]
+  },
+  "CTRL_chest": {
+   "owner": "s06a",
+   "side": "C",
+   "part": "torso",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "rot",
+     "axis": "X",
+     "min": -30,
+     "max": 30
+    },
+    {
+     "channel": "rot",
+     "axis": "Y",
+     "min": -30,
+     "max": 30
+    },
+    {
+     "channel": "rot",
+     "axis": "Z",
+     "min": -30,
+     "max": 30
+    }
+   ]
+  },
+  "CTRL_head": {
+   "owner": "s06a",
+   "side": "C",
+   "part": "head",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "rot",
+     "axis": "X",
+     "min": -45,
+     "max": 45
+    },
+    {
+     "channel": "rot",
+     "axis": "Y",
+     "min": -45,
+     "max": 45
+    },
+    {
+     "channel": "rot",
+     "axis": "Z",
+     "min": -45,
+     "max": 45
+    }
+   ]
+  },
+  "CTRL_shoulder_l": {
+   "owner": "s06b",
+   "side": "L",
+   "part": "arm",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "rot",
+     "axis": "X",
+     "min": -30,
+     "max": 30
+    },
+    {
+     "channel": "rot",
+     "axis": "Z",
+     "min": -30,
+     "max": 30
+    }
+   ]
+  },
+  "CTRL_upperarm_fk_l": {
+   "owner": "s06b",
+   "side": "L",
+   "part": "arm",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "rot",
+     "axis": "X",
+     "min": -90,
+     "max": 90
+    },
+    {
+     "channel": "rot",
+     "axis": "Y",
+     "min": -90,
+     "max": 90
+    },
+    {
+     "channel": "rot",
+     "axis": "Z",
+     "min": -90,
+     "max": 170
+    }
+   ],
+   "mode": {
+    "arm_ik_fk_l": 0
+   }
+  },
+  "CTRL_lowerarm_fk_l": {
+   "owner": "s06b",
+   "side": "L",
+   "part": "arm",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "rot",
+     "axis": "X",
+     "min": 0,
+     "max": 140
+    }
+   ],
+   "mode": {
+    "arm_ik_fk_l": 0
+   }
+  },
+  "CTRL_hand_fk_l": {
+   "owner": "s06b",
+   "side": "L",
+   "part": "arm",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "rot",
+     "axis": "X",
+     "min": -60,
+     "max": 60
+    },
+    {
+     "channel": "rot",
+     "axis": "Y",
+     "min": -90,
+     "max": 90
+    },
+    {
+     "channel": "rot",
+     "axis": "Z",
+     "min": -30,
+     "max": 30
+    }
+   ],
+   "mode": {
+    "arm_ik_fk_l": 0
+   }
+  },
+  "CTRL_hand_ik_l": {
+   "owner": "s06b",
+   "side": "L",
+   "part": "arm",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "loc",
+     "axis": "X",
+     "min": -0.3,
+     "max": 0.3
+    },
+    {
+     "channel": "loc",
+     "axis": "Y",
+     "min": -0.25,
+     "max": 0.0
+    },
+    {
+     "channel": "loc",
+     "axis": "Z",
+     "min": -0.3,
+     "max": 0.3
+    },
+    {
+     "channel": "rot",
+     "axis": "X",
+     "min": -60,
+     "max": 60
+    },
+    {
+     "channel": "rot",
+     "axis": "Y",
+     "min": -60,
+     "max": 60
+    },
+    {
+     "channel": "rot",
+     "axis": "Z",
+     "min": -60,
+     "max": 60
+    }
+   ],
+   "mode": {
+    "arm_ik_fk_l": 1
+   }
+  },
+  "CTRL_elbow_pole_l": {
+   "owner": "s06b",
+   "side": "L",
+   "part": "arm",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "loc",
+     "axis": "X",
+     "min": -0.2,
+     "max": 0.2
+    },
+    {
+     "channel": "loc",
+     "axis": "Y",
+     "min": -0.2,
+     "max": 0.2
+    },
+    {
+     "channel": "loc",
+     "axis": "Z",
+     "min": -0.2,
+     "max": 0.2
+    }
+   ],
+   "mode": {
+    "arm_ik_fk_l": 1
+   }
+  },
+  "CTRL_shoulder_r": {
+   "owner": "s06b",
+   "side": "R",
+   "part": "arm",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "rot",
+     "axis": "X",
+     "min": -30,
+     "max": 30
+    },
+    {
+     "channel": "rot",
+     "axis": "Z",
+     "min": -30,
+     "max": 30
+    }
+   ]
+  },
+  "CTRL_upperarm_fk_r": {
+   "owner": "s06b",
+   "side": "R",
+   "part": "arm",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "rot",
+     "axis": "X",
+     "min": -90,
+     "max": 90
+    },
+    {
+     "channel": "rot",
+     "axis": "Y",
+     "min": -90,
+     "max": 90
+    },
+    {
+     "channel": "rot",
+     "axis": "Z",
+     "min": -170,
+     "max": 90
+    }
+   ],
+   "mode": {
+    "arm_ik_fk_r": 0
+   }
+  },
+  "CTRL_lowerarm_fk_r": {
+   "owner": "s06b",
+   "side": "R",
+   "part": "arm",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "rot",
+     "axis": "X",
+     "min": 0,
+     "max": 140
+    }
+   ],
+   "mode": {
+    "arm_ik_fk_r": 0
+   }
+  },
+  "CTRL_hand_fk_r": {
+   "owner": "s06b",
+   "side": "R",
+   "part": "arm",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "rot",
+     "axis": "X",
+     "min": -60,
+     "max": 60
+    },
+    {
+     "channel": "rot",
+     "axis": "Y",
+     "min": -90,
+     "max": 90
+    },
+    {
+     "channel": "rot",
+     "axis": "Z",
+     "min": -30,
+     "max": 30
+    }
+   ],
+   "mode": {
+    "arm_ik_fk_r": 0
+   }
+  },
+  "CTRL_hand_ik_r": {
+   "owner": "s06b",
+   "side": "R",
+   "part": "arm",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "loc",
+     "axis": "X",
+     "min": -0.3,
+     "max": 0.3
+    },
+    {
+     "channel": "loc",
+     "axis": "Y",
+     "min": -0.25,
+     "max": 0.0
+    },
+    {
+     "channel": "loc",
+     "axis": "Z",
+     "min": -0.3,
+     "max": 0.3
+    },
+    {
+     "channel": "rot",
+     "axis": "X",
+     "min": -60,
+     "max": 60
+    },
+    {
+     "channel": "rot",
+     "axis": "Y",
+     "min": -60,
+     "max": 60
+    },
+    {
+     "channel": "rot",
+     "axis": "Z",
+     "min": -60,
+     "max": 60
+    }
+   ],
+   "mode": {
+    "arm_ik_fk_r": 1
+   }
+  },
+  "CTRL_elbow_pole_r": {
+   "owner": "s06b",
+   "side": "R",
+   "part": "arm",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "loc",
+     "axis": "X",
+     "min": -0.2,
+     "max": 0.2
+    },
+    {
+     "channel": "loc",
+     "axis": "Y",
+     "min": -0.2,
+     "max": 0.2
+    },
+    {
+     "channel": "loc",
+     "axis": "Z",
+     "min": -0.2,
+     "max": 0.2
+    }
+   ],
+   "mode": {
+    "arm_ik_fk_r": 1
+   }
+  },
+  "CTRL_thigh_fk_l": {
+   "owner": "s06c",
+   "side": "L",
+   "part": "leg",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "rot",
+     "axis": "X",
+     "min": -90,
+     "max": 60
+    },
+    {
+     "channel": "rot",
+     "axis": "Y",
+     "min": -45,
+     "max": 45
+    },
+    {
+     "channel": "rot",
+     "axis": "Z",
+     "min": -45,
+     "max": 15
+    }
+   ],
+   "mode": {
+    "leg_ik_fk_l": 0
+   }
+  },
+  "CTRL_calf_fk_l": {
+   "owner": "s06c",
+   "side": "L",
+   "part": "leg",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "rot",
+     "axis": "X",
+     "min": 0,
+     "max": 130
+    }
+   ],
+   "mode": {
+    "leg_ik_fk_l": 0
+   }
+  },
+  "CTRL_foot_fk_l": {
+   "owner": "s06c",
+   "side": "L",
+   "part": "leg",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "rot",
+     "axis": "X",
+     "min": -30,
+     "max": 30
+    },
+    {
+     "channel": "rot",
+     "axis": "Z",
+     "min": -30,
+     "max": 30
+    }
+   ],
+   "mode": {
+    "leg_ik_fk_l": 0
+   }
+  },
+  "CTRL_foot_ik_l": {
+   "owner": "s06c",
+   "side": "L",
+   "part": "leg",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "loc",
+     "axis": "X",
+     "min": -0.08,
+     "max": 0.08
+    },
+    {
+     "channel": "loc",
+     "axis": "Y",
+     "min": -0.12,
+     "max": 0.12
+    },
+    {
+     "channel": "loc",
+     "axis": "Z",
+     "min": 0.0,
+     "max": 0.08
+    },
+    {
+     "channel": "rot",
+     "axis": "X",
+     "min": -45,
+     "max": 45
+    },
+    {
+     "channel": "rot",
+     "axis": "Y",
+     "min": -45,
+     "max": 45
+    },
+    {
+     "channel": "rot",
+     "axis": "Z",
+     "min": -45,
+     "max": 45
+    }
+   ],
+   "mode": {
+    "leg_ik_fk_l": 1
+   }
+  },
+  "CTRL_knee_pole_l": {
+   "owner": "s06c",
+   "side": "L",
+   "part": "leg",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "loc",
+     "axis": "X",
+     "min": -0.2,
+     "max": 0.2
+    },
+    {
+     "channel": "loc",
+     "axis": "Y",
+     "min": -0.2,
+     "max": 0.2
+    },
+    {
+     "channel": "loc",
+     "axis": "Z",
+     "min": -0.2,
+     "max": 0.2
+    }
+   ],
+   "mode": {
+    "leg_ik_fk_l": 1
+   }
+  },
+  "CTRL_thigh_fk_r": {
+   "owner": "s06c",
+   "side": "R",
+   "part": "leg",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "rot",
+     "axis": "X",
+     "min": -90,
+     "max": 60
+    },
+    {
+     "channel": "rot",
+     "axis": "Y",
+     "min": -45,
+     "max": 45
+    },
+    {
+     "channel": "rot",
+     "axis": "Z",
+     "min": -15,
+     "max": 45
+    }
+   ],
+   "mode": {
+    "leg_ik_fk_r": 0
+   }
+  },
+  "CTRL_calf_fk_r": {
+   "owner": "s06c",
+   "side": "R",
+   "part": "leg",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "rot",
+     "axis": "X",
+     "min": 0,
+     "max": 130
+    }
+   ],
+   "mode": {
+    "leg_ik_fk_r": 0
+   }
+  },
+  "CTRL_foot_fk_r": {
+   "owner": "s06c",
+   "side": "R",
+   "part": "leg",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "rot",
+     "axis": "X",
+     "min": -30,
+     "max": 30
+    },
+    {
+     "channel": "rot",
+     "axis": "Z",
+     "min": -30,
+     "max": 30
+    }
+   ],
+   "mode": {
+    "leg_ik_fk_r": 0
+   }
+  },
+  "CTRL_foot_ik_r": {
+   "owner": "s06c",
+   "side": "R",
+   "part": "leg",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "loc",
+     "axis": "X",
+     "min": -0.08,
+     "max": 0.08
+    },
+    {
+     "channel": "loc",
+     "axis": "Y",
+     "min": -0.12,
+     "max": 0.12
+    },
+    {
+     "channel": "loc",
+     "axis": "Z",
+     "min": 0.0,
+     "max": 0.08
+    },
+    {
+     "channel": "rot",
+     "axis": "X",
+     "min": -45,
+     "max": 45
+    },
+    {
+     "channel": "rot",
+     "axis": "Y",
+     "min": -45,
+     "max": 45
+    },
+    {
+     "channel": "rot",
+     "axis": "Z",
+     "min": -45,
+     "max": 45
+    }
+   ],
+   "mode": {
+    "leg_ik_fk_r": 1
+   }
+  },
+  "CTRL_knee_pole_r": {
+   "owner": "s06c",
+   "side": "R",
+   "part": "leg",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "loc",
+     "axis": "X",
+     "min": -0.2,
+     "max": 0.2
+    },
+    {
+     "channel": "loc",
+     "axis": "Y",
+     "min": -0.2,
+     "max": 0.2
+    },
+    {
+     "channel": "loc",
+     "axis": "Z",
+     "min": -0.2,
+     "max": 0.2
+    }
+   ],
+   "mode": {
+    "leg_ik_fk_r": 1
+   }
+  },
+  "CTRL_weapon": {
+   "owner": "s06d",
+   "side": "R",
+   "part": "weapon",
+   "rotation_mode": "XYZ",
+   "sweep": [
+    {
+     "channel": "loc",
+     "axis": "X",
+     "min": -0.3,
+     "max": 0.3
+    },
+    {
+     "channel": "loc",
+     "axis": "Y",
+     "min": -0.3,
+     "max": 0.3
+    },
+    {
+     "channel": "loc",
+     "axis": "Z",
+     "min": -0.3,
+     "max": 0.3
+    },
+    {
+     "channel": "rot",
+     "axis": "X",
+     "min": -90,
+     "max": 90
+    },
+    {
+     "channel": "rot",
+     "axis": "Y",
+     "min": -90,
+     "max": 90
+    },
+    {
+     "channel": "rot",
+     "axis": "Z",
+     "min": -90,
+     "max": 90
+    }
+   ]
+  }
+ },
+ "spaces": {
+  "head_space": {
+   "owner": "s06a",
+   "control": "CTRL_head",
+   "prop": "head_space",
+   "values": [
+    "chest",
+    "world"
+   ],
+   "mch": "MCH_CTRL_head_space",
+   "constraints": [
+    "space_chest_follow",
+    "space_world_rot"
+   ],
+   "constraint_type": {
+    "space_chest_follow": "ARMATURE",
+    "space_world_rot": "COPY_ROTATION"
+   },
+   "targets": {
+    "space_chest_follow": "CTRL_chest",
+    "space_world_rot": "MCH_world"
+   },
+   "influence": {
+    "space_chest_follow": "constant 1",
+    "space_world_rot": "driver PROPS[prop] == 1"
+   },
+   "value_effect": {
+    "chest": "full follow of CTRL_chest (location + rotation)",
+    "world": "location follows CTRL_chest, rotation fixed to world (MCH_world)"
+   }
+  },
+  "hand_ik_space_l": {
+   "owner": "s06b",
+   "control": "CTRL_hand_ik_l",
+   "prop": "hand_ik_space_l",
+   "values": [
+    "world",
+    "root",
+    "torso",
+    "weapon"
+   ],
+   "mch": "MCH_CTRL_hand_ik_l_space",
+   "constraints": [
+    "space_world",
+    "space_root",
+    "space_torso",
+    "space_weapon"
+   ],
+   "constraint_type": {
+    "space_world": "ARMATURE",
+    "space_root": "ARMATURE",
+    "space_torso": "ARMATURE",
+    "space_weapon": "ARMATURE"
+   },
+   "targets": {
+    "space_world": "MCH_world",
+    "space_root": "CTRL_root",
+    "space_torso": "CTRL_torso",
+    "space_weapon": "CTRL_weapon"
+   },
+   "influence": {
+    "space_world": "driver PROPS[prop] == 0",
+    "space_root": "driver PROPS[prop] == 1",
+    "space_torso": "driver PROPS[prop] == 2",
+    "space_weapon": "driver PROPS[prop] == 3"
+   },
+   "value_constraint": {
+    "world": "space_world",
+    "root": "space_root",
+    "torso": "space_torso",
+    "weapon": "space_weapon"
+   },
+   "value_effect": {
+    "world": "full follow of MCH_world",
+    "root": "full follow of CTRL_root",
+    "torso": "full follow of CTRL_torso",
+    "weapon": "full follow of CTRL_weapon"
+   },
+   "filled_slots": {
+    "weapon": {
+     "value": 3,
+     "filled": true,
+     "by": "s06d",
+     "constraint": "space_weapon",
+     "target": "CTRL_weapon"
+    }
+   },
+   "requires": {
+    "weapon": {
+     "not": {
+      "weapon_space": 1
+     }
+    }
+   }
+  },
+  "hand_ik_space_r": {
+   "owner": "s06b",
+   "control": "CTRL_hand_ik_r",
+   "prop": "hand_ik_space_r",
+   "values": [
+    "world",
+    "root",
+    "torso"
+   ],
+   "mch": "MCH_CTRL_hand_ik_r_space",
+   "constraints": [
+    "space_world",
+    "space_root",
+    "space_torso"
+   ],
+   "constraint_type": {
+    "space_world": "ARMATURE",
+    "space_root": "ARMATURE",
+    "space_torso": "ARMATURE"
+   },
+   "targets": {
+    "space_world": "MCH_world",
+    "space_root": "CTRL_root",
+    "space_torso": "CTRL_torso"
+   },
+   "influence": {
+    "space_world": "driver PROPS[prop] == 0",
+    "space_root": "driver PROPS[prop] == 1",
+    "space_torso": "driver PROPS[prop] == 2"
+   },
+   "value_constraint": {
+    "world": "space_world",
+    "root": "space_root",
+    "torso": "space_torso"
+   },
+   "value_effect": {
+    "world": "full follow of MCH_world",
+    "root": "full follow of CTRL_root",
+    "torso": "full follow of CTRL_torso"
+   }
+  },
+  "knee_pole_space_l": {
+   "owner": "s06c",
+   "control": "CTRL_knee_pole_l",
+   "prop": "knee_pole_space_l",
+   "values": [
+    "foot",
+    "world"
+   ],
+   "mch": "MCH_CTRL_knee_pole_l_space",
+   "constraints": [
+    "space_foot",
+    "space_world"
+   ],
+   "constraint_type": {
+    "space_foot": "ARMATURE",
+    "space_world": "ARMATURE"
+   },
+   "targets": {
+    "space_foot": "CTRL_foot_ik_l",
+    "space_world": "CTRL_root"
+   },
+   "influence": {
+    "space_foot": "driver PROPS[prop] == 0",
+    "space_world": "driver PROPS[prop] == 1"
+   },
+   "value_constraint": {
+    "foot": "space_foot",
+    "world": "space_world"
+   },
+   "value_effect": {
+    "foot": "full follow of CTRL_foot_ik_l",
+    "world": "full follow of CTRL_root"
+   }
+  },
+  "knee_pole_space_r": {
+   "owner": "s06c",
+   "control": "CTRL_knee_pole_r",
+   "prop": "knee_pole_space_r",
+   "values": [
+    "foot",
+    "world"
+   ],
+   "mch": "MCH_CTRL_knee_pole_r_space",
+   "constraints": [
+    "space_foot",
+    "space_world"
+   ],
+   "constraint_type": {
+    "space_foot": "ARMATURE",
+    "space_world": "ARMATURE"
+   },
+   "targets": {
+    "space_foot": "CTRL_foot_ik_r",
+    "space_world": "CTRL_root"
+   },
+   "influence": {
+    "space_foot": "driver PROPS[prop] == 0",
+    "space_world": "driver PROPS[prop] == 1"
+   },
+   "value_constraint": {
+    "foot": "space_foot",
+    "world": "space_world"
+   },
+   "value_effect": {
+    "foot": "full follow of CTRL_foot_ik_r",
+    "world": "full follow of CTRL_root"
+   }
+  },
+  "weapon_space": {
+   "owner": "s06d",
+   "control": "CTRL_weapon",
+   "prop": "weapon_space",
+   "values": [
+    "hand_r",
+    "hand_l",
+    "torso",
+    "world"
+   ],
+   "mch": "MCH_CTRL_weapon_space",
+   "constraints": [
+    "space_hand_r",
+    "space_hand_l",
+    "space_torso",
+    "space_world"
+   ],
+   "constraint_type": {
+    "space_hand_r": "ARMATURE",
+    "space_hand_l": "ARMATURE",
+    "space_torso": "ARMATURE",
+    "space_world": "ARMATURE"
+   },
+   "targets": {
+    "space_hand_r": "hand_r",
+    "space_hand_l": "CTRL_hand_fk_l",
+    "space_torso": "CTRL_torso",
+    "space_world": "MCH_world"
+   },
+   "influence": {
+    "space_hand_r": "driver PROPS[prop] == 0",
+    "space_hand_l": "driver PROPS[prop] == 1",
+    "space_torso": "driver PROPS[prop] == 2",
+    "space_world": "driver PROPS[prop] == 3"
+   },
+   "value_constraint": {
+    "hand_r": "space_hand_r",
+    "hand_l": "space_hand_l",
+    "torso": "space_torso",
+    "world": "space_world"
+   },
+   "value_effect": {
+    "hand_r": "full follow of hand_r",
+    "hand_l": "full follow of CTRL_hand_fk_l",
+    "torso": "full follow of CTRL_torso",
+    "world": "full follow of MCH_world"
+   },
+   "requires": {
+    "hand_l": {
+     "arm_ik_fk_l": 0
+    }
+   },
+   "def_follow": {
+    "bone": "weapon_socket_r",
+    "constraint": "CTRL_copy",
+    "type": "COPY_TRANSFORMS",
+    "space": "WORLD/WORLD",
+    "parent": "hand_r"
+   }
+  }
+ },
+ "ikfk": {
+  "arm_l": {
+   "owner": "s06b",
+   "prop": "arm_ik_fk_l",
+   "fk_value": 0,
+   "ik_value": 1,
+   "fk": [
+    "CTRL_upperarm_fk_l",
+    "CTRL_lowerarm_fk_l",
+    "CTRL_hand_fk_l"
+   ],
+   "ik": "CTRL_hand_ik_l",
+   "pole": "CTRL_elbow_pole_l",
+   "def": [
+    "upperarm_l",
+    "lowerarm_l",
+    "hand_l"
+   ],
+   "mch_ik": [
+    "MCH_upperarm_ik_l",
+    "MCH_lowerarm_ik_l",
+    "MCH_hand_ik_l"
+   ],
+   "shared": {
+    "control": "CTRL_shoulder_l",
+    "def": "shoulder_l"
+   },
+   "fk_to_def": {
+    "CTRL_upperarm_fk_l": "upperarm_l",
+    "CTRL_lowerarm_fk_l": "lowerarm_l",
+    "CTRL_hand_fk_l": "hand_l"
+   },
+   "fk_to_mch_ik": {
+    "CTRL_upperarm_fk_l": "MCH_upperarm_ik_l",
+    "CTRL_lowerarm_fk_l": "MCH_lowerarm_ik_l",
+    "CTRL_hand_fk_l": "MCH_hand_ik_l"
+   },
+   "def_constraints": {
+    "fk": "fk_copy",
+    "ik": "ik_copy"
+   },
+   "ik_constraint": {
+    "bone": "MCH_lowerarm_ik_l",
+    "name": "IK",
+    "chain_count": 2,
+    "use_tail": true,
+    "use_stretch": false,
+    "pole_angle_rad": -1.3693350553512573,
+    "pole_angle_deg": -78.45711941094002
+   },
+   "ik_hand_rotation": {
+    "bone": "MCH_hand_ik_l",
+    "constraint": "IK_rot",
+    "type": "COPY_ROTATION"
+   },
+   "ik_space": {
+    "prop": "hand_ik_space_l",
+    "mch": "MCH_CTRL_hand_ik_l_space"
+   },
+   "pole_parent": "CTRL_torso",
+   "pole_distance": 0.3,
+   "snap": {
+    "fk_from_ik": "for fk, mch in fk_to_mch_ik in chain order: fk world matrix = mch world matrix (update depsgraph between bones), then prop = fk_value",
+    "ik_from_fk": "ik world matrix = DEF/CTRL_hand_fk world matrix; pole world location = lowerarm head + pole_distance * unit(elbow offset from the upperarm-head -> hand-head line, FK result); then prop = ik_value"
+   }
+  },
+  "arm_r": {
+   "owner": "s06b",
+   "prop": "arm_ik_fk_r",
+   "fk_value": 0,
+   "ik_value": 1,
+   "fk": [
+    "CTRL_upperarm_fk_r",
+    "CTRL_lowerarm_fk_r",
+    "CTRL_hand_fk_r"
+   ],
+   "ik": "CTRL_hand_ik_r",
+   "pole": "CTRL_elbow_pole_r",
+   "def": [
+    "upperarm_r",
+    "lowerarm_r",
+    "hand_r"
+   ],
+   "mch_ik": [
+    "MCH_upperarm_ik_r",
+    "MCH_lowerarm_ik_r",
+    "MCH_hand_ik_r"
+   ],
+   "shared": {
+    "control": "CTRL_shoulder_r",
+    "def": "shoulder_r"
+   },
+   "fk_to_def": {
+    "CTRL_upperarm_fk_r": "upperarm_r",
+    "CTRL_lowerarm_fk_r": "lowerarm_r",
+    "CTRL_hand_fk_r": "hand_r"
+   },
+   "fk_to_mch_ik": {
+    "CTRL_upperarm_fk_r": "MCH_upperarm_ik_r",
+    "CTRL_lowerarm_fk_r": "MCH_lowerarm_ik_r",
+    "CTRL_hand_fk_r": "MCH_hand_ik_r"
+   },
+   "def_constraints": {
+    "fk": "fk_copy",
+    "ik": "ik_copy"
+   },
+   "ik_constraint": {
+    "bone": "MCH_lowerarm_ik_r",
+    "name": "IK",
+    "chain_count": 2,
+    "use_tail": true,
+    "use_stretch": false,
+    "pole_angle_rad": -1.7454195022583008,
+    "pole_angle_deg": -100.0051709592255
+   },
+   "ik_hand_rotation": {
+    "bone": "MCH_hand_ik_r",
+    "constraint": "IK_rot",
+    "type": "COPY_ROTATION"
+   },
+   "ik_space": {
+    "prop": "hand_ik_space_r",
+    "mch": "MCH_CTRL_hand_ik_r_space"
+   },
+   "pole_parent": "CTRL_torso",
+   "pole_distance": 0.3,
+   "snap": {
+    "fk_from_ik": "for fk, mch in fk_to_mch_ik in chain order: fk world matrix = mch world matrix (update depsgraph between bones), then prop = fk_value",
+    "ik_from_fk": "ik world matrix = DEF/CTRL_hand_fk world matrix; pole world location = lowerarm head + pole_distance * unit(elbow offset from the upperarm-head -> hand-head line, FK result); then prop = ik_value"
+   }
+  },
+  "leg_l": {
+   "owner": "s06c",
+   "prop": "leg_ik_fk_l",
+   "fk_value": 0,
+   "ik_value": 1,
+   "fk": [
+    "CTRL_thigh_fk_l",
+    "CTRL_calf_fk_l",
+    "CTRL_foot_fk_l"
+   ],
+   "ik": "CTRL_foot_ik_l",
+   "pole": "CTRL_knee_pole_l",
+   "def": [
+    "thigh_l",
+    "calf_l",
+    "foot_l"
+   ],
+   "mch_ik": [
+    "MCH_thigh_ik_l",
+    "MCH_calf_ik_l",
+    "MCH_foot_ik_l"
+   ],
+   "fk_to_def": {
+    "CTRL_thigh_fk_l": "thigh_l",
+    "CTRL_calf_fk_l": "calf_l",
+    "CTRL_foot_fk_l": "foot_l"
+   },
+   "fk_to_mch_ik": {
+    "CTRL_thigh_fk_l": "MCH_thigh_ik_l",
+    "CTRL_calf_fk_l": "MCH_calf_ik_l",
+    "CTRL_foot_fk_l": "MCH_foot_ik_l"
+   },
+   "def_constraints": {
+    "fk": "fk_copy",
+    "ik": "ik_copy"
+   },
+   "ik_constraint": {
+    "bone": "MCH_calf_ik_l",
+    "name": "IK",
+    "chain_count": 2,
+    "use_tail": true,
+    "use_stretch": false,
+    "target": "MCH_roll_foot_l",
+    "pole_angle_rad": -1.7137738466262817,
+    "pole_angle_deg": -98.1920084515864
+   },
+   "ik_foot_rotation": {
+    "bone": "MCH_foot_ik_l",
+    "constraint": "IK_rot",
+    "type": "COPY_ROTATION",
+    "source": "MCH_roll_foot_l"
+   },
+   "roll_chain": [
+    "MCH_roll_heel_l",
+    "MCH_roll_toe_l",
+    "MCH_roll_bank_in_l",
+    "MCH_roll_bank_out_l",
+    "MCH_roll_foot_l"
+   ],
+   "roll_props": [
+    "foot_roll_l",
+    "foot_bank_l",
+    "heel_twist_l",
+    "toe_twist_l"
+   ],
+   "ik_space": {
+    "prop": "knee_pole_space_l",
+    "mch": "MCH_CTRL_knee_pole_l_space"
+   },
+   "pole_parent": "MCH_CTRL_knee_pole_l_space",
+   "pole_distance": 0.3,
+   "ik_ctrl_in_def_foot_rest": [
+    [
+     -0.9063655734062195,
+     -0.4118845462799072,
+     0.09404702484607697,
+     -2.0954757928848267e-08
+    ],
+    [
+     -0.41372302174568176,
+     0.9104018211364746,
+     2.3733353771149268e-07,
+     6.301606347847155e-09
+    ],
+    [
+     -0.0856209397315979,
+     -0.03890915587544441,
+     -0.9955676794052124,
+     4.748289939016104e-08
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ]
+   ],
+   "snap": {
+    "fk_from_ik": "for fk, mch in fk_to_mch_ik in chain order: fk world matrix = mch world matrix (roll props keep their values; the FK pose includes the roll result), then prop = fk_value",
+    "ik_from_fk": "set every roll_props value to 0 (arm.update_tag + depsgraph update) so MCH_roll_foot = CTRL_foot_ik * rest offset; CTRL_foot_ik world matrix = DEF/CTRL_foot_fk world matrix @ ik_ctrl_in_def_foot_rest; pole world location = calf head + pole_distance * unit(knee offset from the thigh-head -> foot-head line, FK result); then prop = ik_value"
+   }
+  },
+  "leg_r": {
+   "owner": "s06c",
+   "prop": "leg_ik_fk_r",
+   "fk_value": 0,
+   "ik_value": 1,
+   "fk": [
+    "CTRL_thigh_fk_r",
+    "CTRL_calf_fk_r",
+    "CTRL_foot_fk_r"
+   ],
+   "ik": "CTRL_foot_ik_r",
+   "pole": "CTRL_knee_pole_r",
+   "def": [
+    "thigh_r",
+    "calf_r",
+    "foot_r"
+   ],
+   "mch_ik": [
+    "MCH_thigh_ik_r",
+    "MCH_calf_ik_r",
+    "MCH_foot_ik_r"
+   ],
+   "fk_to_def": {
+    "CTRL_thigh_fk_r": "thigh_r",
+    "CTRL_calf_fk_r": "calf_r",
+    "CTRL_foot_fk_r": "foot_r"
+   },
+   "fk_to_mch_ik": {
+    "CTRL_thigh_fk_r": "MCH_thigh_ik_r",
+    "CTRL_calf_fk_r": "MCH_calf_ik_r",
+    "CTRL_foot_fk_r": "MCH_foot_ik_r"
+   },
+   "def_constraints": {
+    "fk": "fk_copy",
+    "ik": "ik_copy"
+   },
+   "ik_constraint": {
+    "bone": "MCH_calf_ik_r",
+    "name": "IK",
+    "chain_count": 2,
+    "use_tail": true,
+    "use_stretch": false,
+    "target": "MCH_roll_foot_r",
+    "pole_angle_rad": -1.4501051902770996,
+    "pole_angle_deg": -83.08490725289299
+   },
+   "ik_foot_rotation": {
+    "bone": "MCH_foot_ik_r",
+    "constraint": "IK_rot",
+    "type": "COPY_ROTATION",
+    "source": "MCH_roll_foot_r"
+   },
+   "roll_chain": [
+    "MCH_roll_heel_r",
+    "MCH_roll_toe_r",
+    "MCH_roll_bank_in_r",
+    "MCH_roll_bank_out_r",
+    "MCH_roll_foot_r"
+   ],
+   "roll_props": [
+    "foot_roll_r",
+    "foot_bank_r",
+    "heel_twist_r",
+    "toe_twist_r"
+   ],
+   "ik_space": {
+    "prop": "knee_pole_space_r",
+    "mch": "MCH_CTRL_knee_pole_r_space"
+   },
+   "pole_parent": "MCH_CTRL_knee_pole_r_space",
+   "pole_distance": 0.3,
+   "ik_ctrl_in_def_foot_rest": [
+    [
+     -0.9196086525917053,
+     0.37919095158576965,
+     -0.10264275223016739,
+     -8.381903171539307e-09
+    ],
+    [
+     0.38120347261428833,
+     0.9244913458824158,
+     -8.920526539668572e-08,
+     8.442498256044928e-09
+    ],
+    [
+     0.09489224851131439,
+     -0.03912784531712532,
+     -0.9947182536125183,
+     4.0105078369379044e-08
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ]
+   ],
+   "snap": {
+    "fk_from_ik": "for fk, mch in fk_to_mch_ik in chain order: fk world matrix = mch world matrix (roll props keep their values; the FK pose includes the roll result), then prop = fk_value",
+    "ik_from_fk": "set every roll_props value to 0 (arm.update_tag + depsgraph update) so MCH_roll_foot = CTRL_foot_ik * rest offset; CTRL_foot_ik world matrix = DEF/CTRL_foot_fk world matrix @ ik_ctrl_in_def_foot_rest; pole world location = calf head + pole_distance * unit(knee offset from the thigh-head -> foot-head line, FK result); then prop = ik_value"
+   }
+  }
+ },
+ "clamps": {
+  "foot_roll_l": [
+   -24,
+   26
+  ],
+  "foot_bank_l": [
+   -15,
+   30
+  ],
+  "heel_twist_l": [
+   -45,
+   34
+  ],
+  "toe_twist_l": [
+   -16,
+   21
+  ],
+  "foot_roll_r": [
+   -27,
+   29
+  ],
+  "foot_bank_r": [
+   -13,
+   18
+  ],
+  "heel_twist_r": [
+   -33,
+   45
+  ],
+  "toe_twist_r": [
+   -20,
+   15
+  ]
+ },
+ "clamps_reference": {
+  "owner": "s06c",
+  "chosen_stance_mm": -15,
+  "criterion": {
+   "reach_tol_m": 0.001,
+   "z_min_m": -0.001,
+   "z_max_m": 0.003,
+   "slip_max_m": 0.005,
+   "slip_props": [
+    "foot_roll",
+    "foot_bank"
+   ]
+  },
+  "stances": {
+   "0": {
+    "knee_bend_deg": {
+     "l": 2.5440672405810947,
+     "r": 2.5256122828871317
+    },
+    "planted": {
+     "foot_roll_l": [
+      -24,
+      26
+     ],
+     "foot_bank_l": [
+      -15,
+      30
+     ],
+     "heel_twist_l": [
+      -26,
+      4
+     ],
+     "toe_twist_l": [
+      -3,
+      7
+     ],
+     "foot_roll_r": [
+      -27,
+      29
+     ],
+     "foot_bank_r": [
+      -13,
+      18
+     ],
+     "heel_twist_r": [
+      -4,
+      31
+     ],
+     "toe_twist_r": [
+      -7,
+      2
+     ]
+    }
+   },
+   "-15": {
+    "knee_bend_deg": {
+     "l": 51.29957010110647,
+     "r": 51.086454538623734
+    },
+    "planted": {
+     "foot_roll_l": [
+      -24,
+      26
+     ],
+     "foot_bank_l": [
+      -15,
+      30
+     ],
+     "heel_twist_l": [
+      -45,
+      34
+     ],
+     "toe_twist_l": [
+      -16,
+      21
+     ],
+     "foot_roll_r": [
+      -27,
+      29
+     ],
+     "foot_bank_r": [
+      -13,
+      18
+     ],
+     "heel_twist_r": [
+      -33,
+      45
+     ],
+     "toe_twist_r": [
+      -20,
+      15
+     ]
+    }
+   },
+   "-30": {
+    "knee_bend_deg": {
+     "l": 73.09164381786898,
+     "r": 72.76339858673651
+    },
+    "planted": {
+     "foot_roll_l": [
+      -24,
+      26
+     ],
+     "foot_bank_l": [
+      -15,
+      30
+     ],
+     "heel_twist_l": [
+      -45,
+      45
+     ],
+     "toe_twist_l": [
+      -23,
+      27
+     ],
+     "foot_roll_r": [
+      -27,
+      29
+     ],
+     "foot_bank_r": [
+      -13,
+      18
+     ],
+     "heel_twist_r": [
+      -45,
+      45
+     ],
+     "toe_twist_r": [
+      -27,
+      22
+     ]
+    }
+   }
+  }
+ }
+}

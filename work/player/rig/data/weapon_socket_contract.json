@@ -1,0 +1,78 @@
+{
+ "_doc": "T310 proposal (status: proposed; main approves it together with the SI1 key poses, d-04 section 1). Weapon socket convention for the player: how a weapon mesh is placed on DEF WeaponSocket_R / WeaponSocket_L. Axes are the socket bone's local axes (Blender, canonical_skeleton.json v1.1; head = fist centre). World vectors below are Blender world (front -Y, up +Z, character left +X), measured on PL_rig (pl_r04_ctrl.blend) by a scratch probe of T310.",
+ "status": "approved (user, 2026-09-27, SI1)",
+ "sockets": {"R": "WeaponSocket_R", "L": "WeaponSocket_L"},
+ "convention": {
+  "pivot": "grip centre = socket head (the fist centre: the M_fist_r vertex centroid lies 0.2 mm from the WeaponSocket_R head at rest and at the ready pose)",
+  "blade_axis": "+Z (grip -> tip). At rest the socket +Z points world forward (the thumb side of the hanging relaxed fist); with the elbow flexed the fist's natural up becomes +Z, so an upright sword needs no socket offset",
+  "guard_axis": "Y (the socket's long axis, along the hand / forearm): the guard sits across the top of the fist over the knuckle-to-wrist line",
+  "flat_normal": "X (the blade's flat faces +-X)",
+  "attach": "Child Of constraint on the weapon object, target PL_rig, subtarget WeaponSocket_<side>, inverse matrix identity, object transform identity (object world = socket head matrix @ object local)",
+  "mesh_space": "a weapon mesh is authored in this socket space: origin at the grip centre, blade along +Z, guard along Y",
+  "left": "the same local convention on WeaponSocket_L (its +Z is also world forward at rest; its X is mirrored, which a mesh symmetric about X ignores)"
+ },
+ "measured": {
+  "rest": {
+   "WeaponSocket_R": {"head": [-0.3822, 0.0275, 0.4144], "X": [-0.795, -0.0, 0.607], "Y": [-0.607, -0.018, -0.794], "Z": [0.011, -1.0, 0.014]},
+   "WeaponSocket_L": {"head": [0.3822, 0.0276, 0.4144], "X": [-0.795, 0.0, -0.607], "Y": [0.607, -0.018, -0.794], "Z": [-0.011, -1.0, 0.014]},
+   "Hand_R": {"X": [-0.795, -0.0, 0.607], "Y": [-0.607, -0.018, -0.794], "Z": [0.011, -1.0, 0.014], "note": "socket axes = Hand_R axes (same roll -2.489)"},
+   "fist_r": {"centroid": [-0.381, 0.0278, 0.4142], "socket_local_bbox_m": [[-0.0775, -0.077, -0.0718], [0.0762, 0.0759, 0.0723]], "note": "ball fist, radius about 0.075 m"}
+  },
+  "ready_pose": {
+   "WeaponSocket_R": {"head": [-0.3759, -0.0348, 0.417], "X": [-0.792, -0.03, 0.61], "Y": [-0.58, -0.275, -0.767], "Z": [0.19, -0.961, 0.2]},
+   "WeaponSocket_L": {"head": [0.3759, -0.0348, 0.417], "X": [-0.792, 0.03, -0.61], "Y": [0.58, -0.275, -0.767], "Z": [-0.19, -0.961, 0.2]}
+  },
+  "Sword_Idle_f1": {
+   "WeaponSocket_R": {"head": [-0.3616, -0.078, 0.5063], "Z_blade": [-0.217, -0.004, 0.976], "Y_guard": [-0.755, -0.633, -0.171], "X_flat_normal": [-0.618, 0.774, -0.134], "note": "Sword_Idle f1 (pl_a_Sword_Idle.blend, inspect/clips/Sword_Idle/SI1_measure.json): upper arm X -15 / Y 45 / Z 10, lower arm X 65, hand X 5 / Y 30; blade 12.6 deg outward from vertical"}
+  }
+ },
+ "weapons": {
+  "placeholder_sword": {"file": "work/player/rig/weapons/placeholder_sword.blend", "object": "WPN_sword_placeholder",
+                        "built_by": "work/player/rig/scripts/p32_weapon_placeholder.py", "length_m": 0.44,
+                        "z_range_m": [-0.102, 0.338], "guard_span_y_m": 0.13, "use": "preview only (Blender sheets; Unity later); never in Player.fbx or the stage"}
+ },
+ "unity": {
+  "attach": "identity local transform under WeaponSocket_<side> (Unity); the compensation is baked into the weapon FBX",
+  "export_compensation": {
+   "matrix_blender": [
+    [
+     1.0,
+     0.0,
+     0.0
+    ],
+    [
+     0.0,
+     0.0,
+     -1.0
+    ],
+    [
+     0.0,
+     1.0,
+     0.0
+    ]
+   ],
+   "quaternion_wxyz": [
+    0.707107,
+    0.707107,
+    0.0,
+    0.0
+   ],
+   "euler_xyz_deg": [
+    90.0,
+    -0.0,
+    0.0
+   ],
+   "applied_to": "the socket-space weapon mesh before the FBX export (p34_weapon_preview.py), export with the player preset + bake_space_transform True, object_types MESH",
+   "derivation": "K = Qu^-1 . C . Rb (Unity rest world rotation of WeaponSocket_<side> from unity/AvatarCheck/player_report.json rest; Blender rest_matrix from data/canonical_skeleton.json; C = export_preset axis_mapping blender_to_unity); a baked export maps v -> C . v, so P = C^-1 . K. Measured K_R = [[-1.0000001570266774, -6.53243094489367e-08, 2.8409721280629422e-08], [-3.598804872561403e-08, 1.0000000985032824, -2.0834098435167092e-08], [9.091850848527442e-09, 1.3690076797016892e-08, 0.9999998646804417]], K_L = [[-0.9999999619230974, 4.2291264775995604e-07, -1.2502750052055385e-08], [3.821396871089148e-07, 0.9999999869884124, -8.889442257471736e-08], [-7.861547313471203e-09, 7.23330738361394e-08, 1.0000000437523786]] (Unity bone-local = Blender bone-local with x negated); |P_R - P_L| = 4.88e-07 (one rotation for both sides); det 1.000000; snapped to the nearest signed permutation (residual 1.57e-07)",
+   "note": "a bone frame mapped as a rotation (C . R . C^T) differs from the Unity bone rotation by Rx(90) on every bone; the axis mapping of the frame (C . R) differs only by the x flip K, which is what an identity child inherits",
+   "sources": {
+    "player_report.json": "e050b2e067f83dda361c572c72524b698107e9de93cdf146f82435ab86f3b2d9",
+    "canonical_skeleton.json": "29914e3050037a088d14fa845d7bbd02e2cf17673a684a75e9e2978f90be25f0",
+    "export_preset.json": "31bb697754e743b667b856bf04d04ef0f5c36a7e9ed759f71d850071a0882829"
+   }
+  },
+  "preview_assets": {
+   "placeholder_sword": "unity/AvatarCheck/Assets/Player/Preview/WPN_sword_placeholder.fbx"
+  }
+ }
+}

@@ -297,6 +297,13 @@ public static class AvatarCheck
         // 반환값은 추출된 텍스처 수 관련 정보가 아니므로 무시; 실패해도 단언에는 영향 없음.
         // 모든 검증 후에 수행하므로 추출 오류가 검증 결과에 영향을 주지 않음.
         // CopyFbxIntoProject에서 매 실행마다 이전 추출을 삭제하므로 매번 신선한 상태로 추출.
+        // Tracks whether extraction actually produced texture files before any risky
+        // rename/remap/reimport step. If an exception fires after this point, the failure
+        // can affect texture wiring, so the materials_textured assertion must record a
+        // failure rather than be silently omitted (which would leave allPass true despite
+        // a broken texture pipeline). When no files were extracted (dummy-style profiles
+        // with no embedded textures), extraction hiccups stay non-critical (log only).
+        bool extractedFilesDetected = false;
         try
         {
             string texDir = "Assets/Import/Textures";
@@ -304,10 +311,124 @@ public static class AvatarCheck
             var importerForExtraction = (ModelImporter)AssetImporter.GetAtPath(FbxAssetPath);
             importerForExtraction.ExtractTextures(texDir);
             AssetDatabase.Refresh();
+
+            string absTexDir = Path.GetFullPath(Path.Combine(Application.dataPath, "Import", "Textures"));
+            extractedFilesDetected = Directory.Exists(absTexDir)
+                && Directory.GetFiles(absTexDir).Any(f => !f.EndsWith(".meta"));
+
+            // ExtractTextures writes each FBX-embedded texture under its Blender-embedded
+            // name, which carries NO file extension (e.g. "Image_0"). Left alone this breaks
+            // in THREE compounding ways (all confirmed empirically against this asset):
+            //   1. An extensionless file imports as a DefaultAsset — not a Texture2D — so it
+            //      can never satisfy a material's texture slot.
+            //   2. After renaming to a real extension, Unity's TextureImporter AUTO-DETECTS a
+            //      Cubemap for these lat-long-aspect images (textureShape=TextureCube), which
+            //      still is not a Texture2D — so we force textureShape=Texture2D.
+            //   3. ExtractTextures creates NO external-object remap here (GetExternalObjectMap
+            //      stays empty) and re-running it does not help — so the material description,
+            //      which references the embedded textures by their base name ("Image_0"),
+            //      resolves every texture slot to null and the character renders WHITE.
+            // Fix: sniff magic bytes and rename (GUID-preserving MoveAsset), force each to a
+            // 2D texture, then explicitly AddRemap each SourceAssetIdentifier(Texture/Texture2D,
+            // "<base name>") to the renamed Texture2D and reimport the model with the standard
+            // material pipeline. The material description then binds its slots by name (verified:
+            // Material_0._MainTex -> Image_0). Idempotent: files that already have an extension
+            // (a prior run, or a re-run) are left untouched; shape/remap steps are safe to repeat.
+            bool renamedAny = false;
+            if (Directory.Exists(absTexDir))
+            {
+                foreach (var absFile in Directory.GetFiles(absTexDir))
+                {
+                    if (absFile.EndsWith(".meta")) continue;
+                    if (Path.HasExtension(absFile)) continue;      // already has extension (idempotent)
+                    string ext = SniffImageExtension(absFile);
+                    if (ext == null) continue;                     // unknown magic — leave as-is
+                    string fileName = Path.GetFileName(absFile);
+                    string assetPath = $"{texDir}/{fileName}";
+                    string newAssetPath = $"{texDir}/{fileName}{ext}";
+                    string moveErr = AssetDatabase.MoveAsset(assetPath, newAssetPath);
+                    if (string.IsNullOrEmpty(moveErr)) renamedAny = true;
+                    else Debug.Log($"Texture rename failed for {assetPath}: {moveErr}");
+                }
+            }
+            if (renamedAny)
+            {
+                AssetDatabase.Refresh();
+                // (2) Force every extracted texture to import as a plain 2D texture — Unity's
+                // Cubemap auto-detection on lat-long-aspect images otherwise leaves a Cubemap
+                // that no material slot can bind.
+                foreach (var absFile in Directory.GetFiles(absTexDir))
+                {
+                    if (absFile.EndsWith(".meta")) continue;
+                    string p = $"{texDir}/{Path.GetFileName(absFile)}";
+                    if (AssetImporter.GetAtPath(p) is TextureImporter ti && ti.textureShape != TextureImporterShape.Texture2D)
+                    {
+                        ti.textureShape = TextureImporterShape.Texture2D;
+                        ti.SaveAndReimport();
+                    }
+                }
+                AssetDatabase.Refresh();
+
+                // (3) Explicitly remap each embedded texture identifier (keyed by the base name
+                // the material description references) to the renamed Texture2D, then reimport
+                // the model so its materials resolve. Register both Texture and Texture2D
+                // identifier types so the binding survives regardless of the slot's declared type.
+                var modelImporter = (ModelImporter)AssetImporter.GetAtPath(FbxAssetPath);
+                modelImporter.materialImportMode = ModelImporterMaterialImportMode.ImportStandard;
+                foreach (var absFile in Directory.GetFiles(absTexDir))
+                {
+                    if (absFile.EndsWith(".meta")) continue;
+                    string p = $"{texDir}/{Path.GetFileName(absFile)}";
+                    var tex = AssetDatabase.LoadAssetAtPath<Texture2D>(p);
+                    if (tex == null) continue;
+                    string baseName = Path.GetFileNameWithoutExtension(absFile);
+                    modelImporter.AddRemap(new AssetImporter.SourceAssetIdentifier(typeof(Texture), baseName), tex);
+                    modelImporter.AddRemap(new AssetImporter.SourceAssetIdentifier(typeof(Texture2D), baseName), tex);
+                }
+                modelImporter.SaveAndReimport();
+                AssetDatabase.ImportAsset(FbxAssetPath, ImportAssetOptions.ForceSynchronousImport);
+            }
+
+            // Post-fix machine check (assertion ADDITION, strengthening — never touches an
+            // existing assertion). If the FBX embedded textures (character profile), at least
+            // one material on the model must now resolve a non-null mainTexture; a null here
+            // means the white-character bug is still present. If nothing was extracted (the
+            // dummy profile embeds no textures), record a conditional skip-pass — mirrors the
+            // laterality assertion's "skipped: profile has no marker" pattern.
+            var extractedFiles = Directory.Exists(absTexDir)
+                ? Directory.GetFiles(absTexDir).Where(f => !f.EndsWith(".meta")).ToArray()
+                : Array.Empty<string>();
+            if (extractedFiles.Length == 0)
+            {
+                results.Add(("materials_textured", true, "skipped: no extracted textures"));
+            }
+            else
+            {
+                var mats = AssetDatabase.LoadAllAssetsAtPath(FbxAssetPath).OfType<Material>().ToList();
+                Texture resolved = null;
+                foreach (var m in mats)
+                {
+                    if (m != null && m.mainTexture != null) { resolved = m.mainTexture; break; }
+                }
+                results.Add(("materials_textured", resolved != null,
+                    resolved != null
+                        ? $"mainTexture={resolved.name} across {mats.Count} material(s), {extractedFiles.Length} texture(s) extracted"
+                        : $"no material resolved mainTexture across {mats.Count} material(s) despite {extractedFiles.Length} extracted texture(s)"));
+            }
         }
         catch (System.Exception ex)
         {
-            Debug.Log($"Texture extraction failed (non-critical): {ex.Message}");
+            if (extractedFilesDetected)
+            {
+                // Extraction already produced texture files, so a failure here can leave the
+                // texture pipeline broken. Record it as a real assertion failure instead of
+                // silently omitting materials_textured (which would keep allPass true).
+                results.Add(("materials_textured", false, "extraction/remap exception: " + ex.Message));
+            }
+            else
+            {
+                Debug.Log($"Texture extraction failed (non-critical): {ex.Message}");
+            }
         }
 
         WriteReport(results);
@@ -320,6 +441,23 @@ public static class AvatarCheck
     {
         Debug.Log("AvatarCheck compile smoke OK");
         EditorApplication.Exit(0);
+    }
+
+    // Magic-byte sniff for the two texture formats Blender embeds. Returns the file
+    // extension (with leading dot) or null when the header is unrecognized.
+    static string SniffImageExtension(string absPath)
+    {
+        try
+        {
+            byte[] head = new byte[8];
+            int n;
+            using (var fs = File.OpenRead(absPath)) n = fs.Read(head, 0, head.Length);
+            if (n >= 2 && head[0] == 0xFF && head[1] == 0xD8) return ".jpg";                       // JPEG (FF D8)
+            if (n >= 4 && head[0] == 0x89 && head[1] == 0x50 && head[2] == 0x4E && head[3] == 0x47) // PNG (89 50 4E 47)
+                return ".png";
+            return null;
+        }
+        catch { return null; }
     }
 
     static Transform FindDeep(Transform root, string name)

@@ -1,0 +1,11 @@
+{"clips": [
+  {"file": "Idle.fbx",    "name": "Idle",    "loop": true},
+  {"file": "Walking.fbx", "name": "Walk",    "loop": true},
+  {"file": "Running.fbx", "name": "Run",     "loop": true},
+  {"file": "Roll.fbx",    "name": "Roll",    "loop": false},
+  {"file": "Attack1.fbx", "name": "Attack1", "loop": false},
+  {"file": "Attack2.fbx", "name": "Attack2", "loop": false},
+  {"file": "Attack3.fbx", "name": "Attack3", "loop": false},
+  {"file": "Hit.fbx",     "name": "Hit",     "loop": false},
+  {"file": "Death.fbx",   "name": "Death",   "loop": false}
+]}

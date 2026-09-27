@@ -1,0 +1,383 @@
+{
+ "_doc": "T35 FBX export preset (candidate A). export_scene_fbx = keyword arguments passed to bpy.ops.export_scene.fbx for every file (bake_anim per file). axis_mapping matrices act on column vectors: v_out = M @ v_blender (rows = output axes).",
+ "candidate": "A",
+ "generated_by": "scripts/s08_export_fbx.py",
+ "blender_version": "5.1.2",
+ "export_scene_fbx": {
+  "use_selection": true,
+  "object_types": [
+   "ARMATURE",
+   "MESH"
+  ],
+  "use_space_transform": true,
+  "axis_forward": "-Z",
+  "axis_up": "Y",
+  "add_leaf_bones": false,
+  "primary_bone_axis": "Y",
+  "secondary_bone_axis": "X",
+  "armature_nodetype": "NULL",
+  "use_armature_deform_only": false,
+  "mesh_smooth_type": "OFF",
+  "use_mesh_modifiers": true,
+  "use_tspace": false,
+  "use_triangles": false,
+  "use_custom_props": false,
+  "path_mode": "AUTO",
+  "embed_textures": false,
+  "bake_anim_use_all_bones": true,
+  "bake_anim_use_nla_strips": false,
+  "bake_anim_use_all_actions": false,
+  "bake_anim_force_startend_keying": true,
+  "bake_anim_step": 1.0,
+  "bake_anim_simplify_factor": 0.0,
+  "bake_space_transform": false,
+  "apply_scale_options": "FBX_SCALE_ALL",
+  "apply_unit_scale": true,
+  "global_scale": 1.0
+ },
+ "files": {
+  "goblin.fbx": {
+   "source_stage": "export/stage_rest.blend",
+   "objects": [
+    "goblin",
+    "goblin_mesh"
+   ],
+   "bake_anim": false
+  },
+  "goblin_club.fbx": {
+   "source_stage": "export/stage_rest.blend",
+   "objects": [
+    "goblin_club"
+   ],
+   "bake_anim": false
+  },
+  "goblin@rigtest.fbx": {
+   "source_stage": "export/stage_rigtest.blend",
+   "objects": [
+    "goblin",
+    "goblin_mesh"
+   ],
+   "bake_anim": true
+  }
+ },
+ "renames_in_memory": {
+  "armature_object": "GOB_export -> goblin",
+  "mesh_object": "goblin_mesh",
+  "scene_for_clip": "-> rigtest (AnimStack name of the active-action export)",
+  "club": "goblin_club: unparented, object matrix identity, mesh data and custom normals transformed by inv(socket_rest_world) @ club_world"
+ },
+ "club_frame": "weapon_socket_r rest",
+ "scene_units": {
+  "system": "METRIC",
+  "scale_length": 1.0,
+  "fbx_unit_scale_factor_expected": 100.0
+ },
+ "axis_mapping": {
+  "blender_to_fbx": [
+   [
+    1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    -1.0,
+    0.0
+   ]
+  ],
+  "blender_to_unity": [
+   [
+    -1.0,
+    0.0,
+    0.0
+   ],
+   [
+    0.0,
+    0.0,
+    1.0
+   ],
+   [
+    0.0,
+    -1.0,
+    0.0
+   ]
+  ],
+  "unity_from_blender": "unity.x = -blender.x, unity.y = blender.z, unity.z = -blender.y",
+  "derivation": [
+   "blender_to_fbx = bpy_extras.io_utils.axis_conversion(from_forward='Y', from_up='Z', to_forward='-Z', to_up='Y'): the global_matrix io_scene_fbx ExportFBX.execute builds when use_space_transform is True. With bake_space_transform False it is applied to root object transforms only (mesh / bone data stay in Blender axes) and the header records the axis system (see fbx_files.*.header).",
+   "blender_to_unity = diag(-1, 1, 1) @ blender_to_fbx: Unity converts the right-handed Y-up FBX space to its left-handed space by negating X. Not measurable in Blender; G9.3 confirms it."
+  ],
+  "fbx_header_expected": {
+   "up_front_coord (axis, sign)": [
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     0,
+     1
+    ]
+   ]
+  },
+  "check_points": [
+   {
+    "what": "arbitrary point (1,2,3) m",
+    "blender": [
+     1.0,
+     2.0,
+     3.0
+    ],
+    "fbx": [
+     1.0,
+     3.0,
+     -2.0
+    ],
+    "unity": [
+     -1.0,
+     3.0,
+     -2.0
+    ]
+   },
+   {
+    "what": "character front (Blender -Y)",
+    "blender": [
+     0.0,
+     -1.0,
+     0.0
+    ],
+    "unity": [
+     0.0,
+     0.0,
+     1.0
+    ],
+    "expected_unity": [
+     0,
+     0,
+     1
+    ],
+    "angle_deg": 0.0
+   },
+   {
+    "what": "root->head bone heads (canonical), G9.3",
+    "blender": [
+     0.0,
+     0.0,
+     0.954
+    ],
+    "unity": [
+     0.0,
+     0.954,
+     0.0
+    ],
+    "expected_unity_dir": [
+     0,
+     1,
+     0
+    ],
+    "angle_deg": 0.0
+   },
+   {
+    "what": "hand_r->hand_l bone heads (canonical), G9.3",
+    "blender": [
+     1.316,
+     -0.000415,
+     0.000205
+    ],
+    "unity": [
+     -1.316,
+     0.000205,
+     0.000415
+    ],
+    "expected_unity_dir": [
+     -1,
+     0,
+     0
+    ],
+    "angle_deg": 0.0198
+   }
+  ]
+ },
+ "fbx_files": {
+  "goblin.fbx": {
+   "fbx_version": 7400,
+   "header": {
+    "UpAxis": 1,
+    "UpAxisSign": 1,
+    "FrontAxis": 2,
+    "FrontAxisSign": 1,
+    "CoordAxis": 0,
+    "CoordAxisSign": 1,
+    "UnitScaleFactor": 100.0,
+    "OriginalUnitScaleFactor": 100.0,
+    "TimeMode": 11,
+    "CustomFrameRate": 24.0
+   },
+   "nodes": [
+    {
+     "name": "goblin",
+     "type": "Null",
+     "lcl_translation": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "lcl_rotation_deg": [
+      -90.000009,
+      0.0,
+      0.0
+     ],
+     "lcl_scaling": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    {
+     "name": "goblin_mesh",
+     "type": "Mesh",
+     "lcl_translation": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "lcl_rotation_deg": [
+      -90.000009,
+      0.0,
+      0.0
+     ],
+     "lcl_scaling": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    }
+   ],
+   "limb_nodes": 24,
+   "limb_end_nodes": [],
+   "anim_stacks": []
+  },
+  "goblin@rigtest.fbx": {
+   "fbx_version": 7400,
+   "header": {
+    "UpAxis": 1,
+    "UpAxisSign": 1,
+    "FrontAxis": 2,
+    "FrontAxisSign": 1,
+    "CoordAxis": 0,
+    "CoordAxisSign": 1,
+    "UnitScaleFactor": 100.0,
+    "OriginalUnitScaleFactor": 100.0,
+    "TimeMode": 11,
+    "CustomFrameRate": 24.0
+   },
+   "nodes": [
+    {
+     "name": "goblin",
+     "type": "Null",
+     "lcl_translation": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "lcl_rotation_deg": [
+      -90.000009,
+      0.0,
+      0.0
+     ],
+     "lcl_scaling": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    },
+    {
+     "name": "goblin_mesh",
+     "type": "Mesh",
+     "lcl_translation": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "lcl_rotation_deg": [
+      -90.000009,
+      0.0,
+      0.0
+     ],
+     "lcl_scaling": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    }
+   ],
+   "limb_nodes": 24,
+   "limb_end_nodes": [],
+   "anim_stacks": [
+    "rigtest"
+   ]
+  },
+  "goblin_club.fbx": {
+   "fbx_version": 7400,
+   "header": {
+    "UpAxis": 1,
+    "UpAxisSign": 1,
+    "FrontAxis": 2,
+    "FrontAxisSign": 1,
+    "CoordAxis": 0,
+    "CoordAxisSign": 1,
+    "UnitScaleFactor": 100.0,
+    "OriginalUnitScaleFactor": 100.0,
+    "TimeMode": 11,
+    "CustomFrameRate": 24.0
+   },
+   "nodes": [
+    {
+     "name": "goblin_club",
+     "type": "Mesh",
+     "lcl_translation": [
+      0.0,
+      0.0,
+      0.0
+     ],
+     "lcl_rotation_deg": [
+      -90.000009,
+      0.0,
+      0.0
+     ],
+     "lcl_scaling": [
+      1.0,
+      1.0,
+      1.0
+     ]
+    }
+   ],
+   "limb_nodes": 0,
+   "limb_end_nodes": [],
+   "anim_stacks": []
+  }
+ },
+ "blender_reimport": {
+  "import_scene_fbx": {
+   "use_manual_orientation": true,
+   "axis_forward": "-Z",
+   "axis_up": "Y",
+   "global_scale": 1.0,
+   "bake_space_transform": false,
+   "automatic_bone_orientation": false,
+   "ignore_leaf_bones": false,
+   "use_custom_normals": true,
+   "use_anim": true,
+   "use_custom_props": false
+  },
+  "note": "reimport maps the preset axes back (Blender space); factory settings"
+ }
+}

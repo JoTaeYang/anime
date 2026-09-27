@@ -1,0 +1,9 @@
+{
+ "body": 0,
+ "head": 1,
+ "hand_l": 2,
+ "hand_r": 3,
+ "shoe_l": 4,
+ "shoe_r": 5,
+ "belt": 6
+}
