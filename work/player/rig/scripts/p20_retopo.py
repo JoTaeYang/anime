@@ -1,6 +1,6 @@
 """p20_retopo.py - T220 (P2.1): rig-ready retopo of the Clay Explorer (spec d-02 §1, §2 P2.1).
 
-Input : C:/Users/whxod/Downloads/Meshy_AI_Clay_Explorer_0926122001_generate.fbx (read only; sha256 checked vs P0b)
+Input : assets/source/player/Meshy_AI_Clay_Explorer_0926122001_generate.fbx (read only; sha256 checked vs P0b)
         work/player/inspect/P0b/p0b_measure.json (landmarks, parts, skirt, colours; read only)
 Output: work/player/rig/pl_r01_retopo.blend  collection `PL` with one mesh object `PL_mesh` (identity transform):
             all 20 parts as separate shells, face INT attribute `part_id`, one material per part (M_<part>, P0b
@@ -62,7 +62,7 @@ from mathutils.bvhtree import BVHTree
 HERE = Path(__file__).resolve().parent
 RIG = HERE.parent
 REPO = RIG.parents[2]
-SRC = Path(r"C:\Users\whxod\Downloads\Meshy_AI_Clay_Explorer_0926122001_generate.fbx")
+SRC = REPO / "assets" / "source" / "player" / "Meshy_AI_Clay_Explorer_0926122001_generate.fbx"
 P0B = REPO / "work" / "player" / "inspect" / "P0b" / "p0b_measure.json"
 OUT_BLEND = RIG / "pl_r01_retopo.blend"
 PARTS_JSON = RIG / "data" / "parts.json"

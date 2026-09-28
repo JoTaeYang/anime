@@ -29,6 +29,8 @@ import tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import goblib  # noqa: E402
+sys.path.insert(0, str(goblib.RIG.parents[2] / "tools" / "pipeline"))
+import platform_tools  # noqa: E402  (ffmpeg discovery, T340)
 import s10a_swing_keyposes as S  # noqa: E402  (helpers only; its main() does not run on import)
 
 import bpy  # noqa: E402
@@ -38,8 +40,7 @@ from mathutils import Vector  # noqa: E402
 OUT_BLEND = goblib.RIG / "gob_r07_swing_anim.blend"
 INSP = goblib.INSPECT / "A2"
 REF_FRAMES = goblib.RIG.parent / "ref" / "frames"
-FFMPEG = (r"C:\Users\whxod\AppData\Local\Microsoft\WinGet\Packages\yt-dlp.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe"
-          r"\ffmpeg-N-124716-g054dffd133-win64-gpl\bin\ffmpeg.exe")
+FFMPEG = platform_tools.ffmpeg(required=False)   # env FFMPEG or PATH (T340)
 KEY_FRAMES = (1, 9, 12, 13, 15, 24, 29)
 SECTIONS = (("idle", 1, 5), ("windup", 6, 12), ("swing", 13, 15), ("hold", 16, 23), ("recovery", 24, 34),
             ("settle", 35, 39))

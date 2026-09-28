@@ -1,3 +1,5 @@
+# T340: thin wrapper. The logic (headless Blender run of rig/scripts/<script> on rig/<blend>) lives in
+# run_goblin.py bl. Usage unchanged: bl.ps1 -Script <py> [-Blend <blend>] [-- <args>]. See docs/mac-setup.md.
 $Script = ""; $Blend = ""; $ScriptArgs = @(); $i = 0
 while ($i -lt $args.Count) {
     $t = [string]$args[$i]
@@ -11,11 +13,10 @@ while ($i -lt $args.Count) {
     exit 64
 }
 if (-not $Script) { Write-Error "bl.ps1: -Script is required"; exit 64 }
-$Blender = "C:\Program Files\Blender Foundation\Blender 5.1\blender.exe"
-$Rig = Split-Path -Parent $PSScriptRoot
-$a = @("--background", "--factory-startup")
-if ($Blend) { $a += (Join-Path $Rig $Blend) }
-$a += @("--python-exit-code", "1", "--python", (Join-Path $PSScriptRoot $Script))
+$Py = "python"; $PyArgs = @()
+if (-not (Get-Command python -ErrorAction SilentlyContinue)) { $Py = "py"; $PyArgs = @("-3") }
+$a = @((Join-Path $PSScriptRoot "run_goblin.py"), "bl", $Script)
+if ($Blend) { $a += $Blend }
 if ($ScriptArgs.Count) { $a += @("--") + $ScriptArgs }
-& $Blender @a
+& $Py @PyArgs @a
 exit $LASTEXITCODE

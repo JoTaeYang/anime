@@ -17,7 +17,7 @@ Output: work/player/inspect/clips/<clip>/
 CLI:  blender -b --factory-startup work/player/rig/anim/pl_a_<clip>.blend --python p33_ref_sheet.py --
           --clip <clip> --ref-dir work/player/refs/<ref> [--ref-fps 24] [--ref-pattern f{:03d}.png] [--prefix SI2]
           [--loops 3] [--no-video]
-      (paths relative to the repo root; ffmpeg must be on PATH)
+      (paths relative to the repo root; ffmpeg from env FFMPEG or PATH, via platform_tools)
 
 Time mapping: clip frame f -> t = (f - frame_range[0]) / fps; reference frame = 1 + round(t * ref_fps), clamped to the
 available reference frames (e.g. Sword_Idle f43 -> ref f35, f72 -> ref f58). Loop clips play frame_range[0] ..
@@ -52,6 +52,8 @@ import p30_clip_anim as p30  # noqa: E402
 
 RIG = HERE.parent
 REPO = RIG.parents[2]
+sys.path.insert(0, str(REPO / "tools" / "pipeline"))
+import platform_tools  # noqa: E402  (ffmpeg / label font discovery, T340)
 ANIM = RIG / "anim"
 INSPECT = RIG.parent / "inspect" / "clips"
 REF_EL_DEG = 10.0
@@ -82,7 +84,7 @@ def view_basis(view):
 
 
 def ffmpeg(args, log_cmds):
-    cmd = ["ffmpeg", "-y", "-loglevel", "error"] + [str(a) for a in args]
+    cmd = [platform_tools.ffmpeg(), "-y", "-loglevel", "error"] + [str(a) for a in args]
     log_cmds.append(" ".join(cmd))
     r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode != 0:
