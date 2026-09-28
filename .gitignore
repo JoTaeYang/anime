@@ -48,3 +48,8 @@ refs/
 unity/AvatarCheck/Assets/Objects/
 unity/AvatarCheck/Assets/Objects.meta
 unity/AvatarCheck/Assets/Import.meta
+# control rigs for animators (user request 2026-09-28); other blends stay local
+!work/player/rig/pl_r04_ctrl.blend
+!work/goblin_swing/rig/gob_r04_ctrl.blend
+# per-machine tool paths (T340, docs/mac-setup.md)
+tools/pipeline/tools.local.json

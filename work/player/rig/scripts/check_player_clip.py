@@ -61,6 +61,11 @@ Rows (per frame = every integer frame a..b of the clip, evaluated with scene.fra
      the torso volume (tunic virtually capped + scarf / scarf_tail closed shells, 3-ray parity,
      check_p2_deform.verts_inside) that are not inside at the baseline; blocking candidate "no visible penetration
      beyond the baseline"
+  C12 (blocking, T332: the d-06 section 4 thresholds on every frame; T331 measure; d-06 section 3: sleeve-cap
+     contact with scarf / tunic / belt = cloth bunching, report only; only real penetration blocks) penetration over
+     the C11 baseline: (a) arm tube and fist (L, R) x tunic, belt, pouch, head excess visible pairs / depth (the C11 pair measure); (b) sleeve (L, R) x head,
+     same; (c) arm tube and fist vertices newly inside the tunic volume only (tunic virtually capped, scarf excluded)
+     and inside the head volume; per measure the per-frame series and max + frame, and the frames with any measure > 0
 Methods reused by import (unchanged): check_p1 (rang, dist, assign_action, fcurves_of), check_p2_deform (Topo, eval_verts,
   poke_out, cross_isect, ShellSet, Evidence helpers), check_p2_skirt (Geo, parts_map).
 Run:    blender --background --factory-startup --python check_player_clip.py -- --clip <name> [--prefix X] [overrides]
@@ -414,6 +419,7 @@ def sample(ctx, frames, extra_frames, chains, mesh_sets):
         ss = p2d.ShellSet(t, V, t.shells)
         S["c7"][f] = c7_metrics(ctx, V, ss, mesh_sets)
         S.setdefault("c11", {})[f] = c11_metrics(ctx, V, ss, mesh_sets)   # T325 C11
+        S.setdefault("c12", {})[f] = c12_metrics(ctx, V, ss, mesh_sets)   # T331 C12
         if getattr(ctx, "weapons", None):   # T311 C8
             S.setdefault("c8", {})[f] = c8_metrics(ctx, V, W)
         if len(S["zmin"]) % 50 == 0:
@@ -974,6 +980,8 @@ def c8(ctx, S, frames):
 C9_POS = 1e-5               # m (0.01 mm)
 C9_ROT = 0.01               # deg
 C9_PROP = 1e-4              # PROPS abs diff (C5 SEAM_PROP)
+C9_NOTE = ("T333 blocking (d-05 section 8): 0.01 mm / 0.01 deg, PROPS 1e-4; basis: 0 mm / 0 deg measured on "
+           "Sword_Attack_01's first and last frames vs Sword_Idle f1; needed for clean chaining")
 C10_NAMES = ("hit_start", "hit_end")
 C10_PAD = 2                 # frames around the window
 
@@ -1240,6 +1248,152 @@ def c11(ctx, S, frames, rest, base_label="rest (undeformed PL_mesh)"):
                     "counts when inside at the frame and not at the baseline"}, True
 
 
+# ---------------------------------------------------------------- C12 penetration (T331)
+C12_TUBE = ("arm", "fist")
+C12_PAIR_BODY = ("tunic", "belt", "pouch", "head")
+C12_VOL = {"tunic": ("tunic",), "head": ("head",)}
+C12_NOTE = ("T332 blocking: calibrated on the user-approved Sword_Idle and Sword_Attack_01 maxima (d-06 §4), "
+            "regression guard. d-06 section 3 (user): sleeve-cap contact with the scarf, tunic or belt is accepted as "
+            "cloth bunching (C11 report); only real penetration blocks, all measures over the C11 baseline")
+# T332 limits (d-06 section 4): (limit id, measure keys, [(series, max)]) - each checked on every frame
+C12_LIMITS = (
+    ("fist_x_body_pairs", [f"fist_{x}~{b}" for x in ("l", "r") for b in C12_PAIR_BODY],
+     [("series_excess_pairs", 0)]),
+    ("fist_inside_volume", [f"fist_{x}~{v}_volume" for x in ("l", "r") for v in C12_VOL],
+     [("series_new_inside_verts", 0)]),
+    ("arm_x_tunic_belt_pouch", [f"arm_{x}~{b}" for x in ("l", "r") for b in ("tunic", "belt", "pouch")],
+     [("series_excess_pairs", 3), ("series_excess_depth_mm", 20.0)]),
+    ("arm_x_head_pairs", [f"arm_{x}~head" for x in ("l", "r")], [("series_excess_pairs", 0)]),
+    ("arm_inside_tunic_volume", [f"arm_{x}~tunic_volume" for x in ("l", "r")],
+     [("series_new_inside_verts", 8), ("series_max_depth_mm", 40.0)]),
+    ("arm_inside_head_volume", [f"arm_{x}~head_volume" for x in ("l", "r")],
+     [("series_new_inside_verts", 4), ("series_max_depth_mm", 12.0)]),
+    ("sleeve_x_head", [f"sleeve_{x}~head" for x in ("l", "r")],
+     [("series_excess_pairs", 22), ("series_excess_depth_mm", 13.0)]),
+)
+
+
+def c12_limits(meas, frames):
+    """T332: every limit on every frame -> ({limit: {...}}, failed limit ids)."""
+    out, failed = {}, []
+    for lid, keys, checks in C12_LIMITS:
+        rec = {"measures": keys, "limits": {s: mx for s, mx in checks}, "failures": {}}
+        for k in keys:
+            m = meas.get(k)
+            if m is None:
+                rec["failures"][k] = "measure missing"
+                continue
+            for s, mx in checks:
+                bad = [[f, v] for f, v in zip(frames, m[s]) if v > mx]
+                if bad:
+                    rec["failures"].setdefault(k, {})[s] = {"max": max(v for _f, v in bad), "limit": mx,
+                                                            "frames": [f for f, _v in bad]}
+        rec["ok"] = not rec["failures"]
+        if not rec["ok"]:
+            failed.append(lid)
+        out[lid] = rec
+    return out, failed
+
+
+def c12_metrics(ctx, V, ss, ms):
+    """per arm tube / fist part: inside depth of its vertices in the tunic-only volume and in the head volume."""
+    c = ms["c11"]
+    out = {}
+    for vol, parts in C12_VOL.items():
+        shells = [sh for sh in ctx.geo.topo.shells if sh["part"] in parts]
+        for x in ("l", "r"):
+            for a in C12_TUBE:
+                ap = f"{a}_{x}"
+                _rec, best = p2d.verts_inside(ctx.c7ctx, V, c["arm_verts"][x][ap], shells, ss)
+                out[f"{ap}~{vol}_volume"] = best
+    return out
+
+
+def c12_baseline(ctx, S, ms, cfg, own_clip, f0):
+    """same baseline rule as C11 (c11_baseline): -> (c11 metrics, c12 metrics, record)."""
+    clip = str(cfg.get("clip") or own_clip) if isinstance(cfg, dict) else own_clip
+    fr = int(cfg.get("frame", f0)) if isinstance(cfg, dict) else f0
+    if clip == own_clip and fr in S.get("c12", {}):
+        return S["c11"][fr], S["c12"][fr], {"clip": clip, "frame": fr, "source": "this clip's sampled frame"}
+    path = PLAYER_RIG / "anim" / f"pl_a_{clip}.blend"
+    if not path.exists():
+        raise Blocked(f"C12 baseline: missing input {rel(path)}")
+    p1.open_blend(path)
+    arm, mo, act = bpy.data.objects.get(P["arm"]), bpy.data.objects.get(P["mesh"]), bpy.data.actions.get(clip)
+    if arm is None or mo is None or act is None:
+        raise Blocked(f"C12 baseline {rel(path)}: {P['arm']} / {P['mesh']} / action {clip!r} missing")
+    p1.assign_action(arm, act)
+    arm.data.pose_position = "POSE"
+    bpy.context.scene.frame_set(fr)
+    V = p2d.eval_verts(mo)
+    t = ctx.geo.topo
+    if len(V) != t.nv:
+        raise Blocked(f"C12 baseline {rel(path)}: {len(V)} verts, work mesh {t.nv}")
+    ss = p2d.ShellSet(t, V, t.shells)
+    return c11_metrics(ctx, V, ss, ms), c12_metrics(ctx, V, ss, ms), \
+        {"clip": clip, "frame": fr, "source": rel(path), "action": act.name}
+
+
+def c12(ctx, S, frames, ms, cfg, cfg_src, own_clip):
+    b11, b12, rec = c12_baseline(ctx, S, ms, cfg, own_clip, frames[0])
+    meas, any_f = {}, {}
+
+    def pair_measure(key, group):
+        bv, bd = b11["pairs"][key]
+        ep = [S["c11"][f]["pairs"][key][0] - bv for f in frames]
+        ed = [S["c11"][f]["pairs"][key][1] - bd for f in frames]
+        ip, idd = int(np.argmax(ep)), int(np.argmax(ed))
+        for f, a, d in zip(frames, ep, ed):
+            if a > 0 or d > C11_DEPTH_EPS:
+                any_f.setdefault(f, []).append(key)
+        meas[key] = {"group": group, "baseline_[visible,depth_mm]": [bv, rnd(bd, 3)],
+                     "max_excess_pairs": ep[ip], "max_excess_pairs_frame": frames[ip] if ep[ip] > 0 else None,
+                     "max_excess_depth_mm": rnd(ed[idd], 3),
+                     "max_excess_depth_frame": frames[idd] if ed[idd] > C11_DEPTH_EPS else None,
+                     "series_excess_pairs": ep, "series_excess_depth_mm": [rnd(v, 3) for v in ed]}
+    for x in ("l", "r"):
+        for a in C12_TUBE:
+            for bp in C12_PAIR_BODY:
+                pair_measure(f"{a}_{x}~{bp}", "a")
+        pair_measure(f"sleeve_{x}~head", "b")
+    for key in b12:
+        ins0 = b12[key] > 0
+        n, dep = [], []
+        for f in frames:
+            b = S["c12"][f][key]
+            new = (b > 0) & ~ins0
+            k = int(new.sum())
+            n.append(k)
+            dep.append(float(b[new].max()) * 1000.0 if k else 0.0)
+            if k:
+                any_f.setdefault(f, []).append(key)
+        i = int(np.argmax(n))
+        j = int(np.argmax(dep))
+        meas[key] = {"group": "c", "n_verts": int(len(b12[key])), "inside_at_baseline": int(ins0.sum()),
+                     "max_new_inside_verts": n[i], "max_new_inside_verts_frame": frames[i] if n[i] else None,
+                     "max_new_inside_depth_mm": rnd(dep[j], 3), "max_new_inside_depth_frame": frames[j] if dep[j] else None,
+                     "series_new_inside_verts": n, "series_max_depth_mm": [rnd(v, 3) for v in dep]}
+    summary = {k: ([v["max_excess_pairs"], v["max_excess_pairs_frame"], v["max_excess_depth_mm"],
+                    v["max_excess_depth_frame"]] if v["group"] in ("a", "b") else
+                   [v["max_new_inside_verts"], v["max_new_inside_verts_frame"], v["max_new_inside_depth_mm"],
+                    v["max_new_inside_depth_frame"]]) for k, v in meas.items()}
+    vols = {vol: [{"shell": sh["label"], "closed": sh["closed"], "virtual": bool(sh.get("virtual"))}
+                  for sh in ctx.geo.topo.shells if sh["part"] in parts] for vol, parts in C12_VOL.items()}
+    lim, failed = c12_limits(meas, frames)   # T332
+    return {"baseline": {**rec, "selected_by": cfg_src}, "frames": [frames[0], frames[-1]],
+            "failed_limits": failed, "limits": lim,
+            "summary_[max_a,frame,max_b,frame] (a/b: excess pairs, depth mm; c: new inside verts, depth mm)": summary,
+            "frames_with_any_gt0": sorted(any_f),
+            "frames_with_any_gt0_detail": {f: sorted(set(v)) for f, v in sorted(any_f.items())},
+            "measures": meas, "volumes": vols,
+            "rule": "(a) / (b): the C11 per-frame pair measure (P2.2 visible rule, check_p2_deform.cross_isect with "
+                    "depth) minus the same pair at the baseline; (c) check_p2_deform.verts_inside (3-ray parity) of "
+                    "the arm tube / fist vertices in the tunic shell (virtually capped) and in the head shell, "
+                    f"counted when inside at the frame and not at the baseline; > 0 = pairs > 0, depth > "
+                    f"{C11_DEPTH_EPS} mm, verts > 0; series aligned to the frames; T332: a limit fails on any frame "
+                    "whose series value is > the limit"}, not failed
+
+
 # ---------------------------------------------------------------- evidence
 IDS = (
     ("C1", "blocking", f"every CTRL_* channel inside its effective sweep (manifest + clip sweep_overrides; channels "
@@ -1258,16 +1412,22 @@ IDS = (
     ("C7", "report", "visible self-intersection per frame: fist vs head / torso, sleeve vs scarf, arm vs tunic (P2.2)"),
     ("C8", "blocking", f"(only when the clip JSON has 'weapon') weapon vs body intersecting triangle pairs = "
                        f"{C8_DRAFT_PAIRS} on every frame, holding fist excluded; blade clearance mm reported"),
-    ("C9", "report", f"(only when the clip JSON has 'match_pose') every DEF bone world at the clip's first / last frame "
-                     f"vs the reference clip frame <= {C9_POS * 1000:g} mm / {C9_ROT:g} deg and PROPS equal (<= "
-                     f"{C9_PROP:g}); blocking candidate (d-05 SA1.C9), report on this first run"),
+    ("C9", "blocking", f"(only when the clip JSON has 'match_pose') every DEF bone world at the clip's first / last "
+                       f"frame vs the reference clip frame <= {C9_POS * 1000:g} mm / {C9_ROT:g} deg and PROPS equal "
+                       f"(<= {C9_PROP:g}); ok = blocking_candidate_ok (d-05 section 8)"),
     ("C10", "report", f"(only when the clip JSON has 'events') names in {list(C10_NAMES)}, each once, frames inside the "
                       f"range, hit_start < hit_end; blade tip speed m/s inside the window +- {C10_PAD} frames and the "
                       f"peak frame (d-05 SA1.C10)"),
-    ("C11", "report", "arm vs body per frame: sleeve / arm / fist (L, R) x tunic, belt, pouch, scarf, scarf_tail, head "
+    ("C11", "report", "C11 arm vs body (all pairs, report): sleeve / arm / fist (L, R) x tunic, belt, pouch, scarf, "
+                      "scarf_tail, head "
                       "visible pairs and depth (P2.2 rule) and arm vertices inside the torso volume, each as the excess "
                       "over the baseline (approved posed frame, T327); blocking candidate: no visible penetration beyond "
                       "the baseline (d-05 section 5)"),
+    ("C12", "blocking", "C12 penetration, over the C11 baseline, every frame (d-06 section 4): fist x tunic / belt / "
+                        "pouch / head 0 excess pairs and fist vertices newly inside the tunic / head volume 0; arm tube "
+                        "x tunic / belt / pouch <= 3 excess pairs and <= 20 mm excess depth; arm tube x head 0 excess "
+                        "pairs; arm tube newly inside the tunic volume <= 8 vertices and <= 40 mm; inside the head "
+                        "volume <= 4 vertices and <= 12 mm; sleeve x head <= 22 excess pairs and <= 13 mm"),
 )
 
 
@@ -1488,7 +1648,8 @@ def main():
                 block(["C9"], f"match_pose {mp!r} needs at least {{clip, frame}}")
         # T327: C11 last (a reference-clip baseline opens that clip's anim blend)
         steps.append(("C11", lambda: c11_row(ctx, S, frames, mesh_sets, c11_rest, c11_cfg, c11_src, P["clip"])))
-        notes ={"C1": C1_NOTE, "C8": C8_NOTE, "C11": C11_NOTE}
+        steps.append(("C12", lambda: c12(ctx, S, frames, mesh_sets, c11_cfg, c11_src, P["clip"])))   # T331
+        notes ={"C1": C1_NOTE, "C8": C8_NOTE, "C9": C9_NOTE, "C11": C11_NOTE, "C12": C12_NOTE}
         for i, fn in steps:
             try:
                 put(i, *fn(), note=notes.get(i, ""))

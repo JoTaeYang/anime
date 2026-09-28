@@ -26,7 +26,8 @@ Mode --unity-media:
           (--gif-cam, every --gif-step frame of one loop, 30 / step fps, 512 px), <prefix>_unity_media.json (raw)
   CLI: blender -b --factory-startup --python p34_weapon_preview.py -- --unity-media --clip Sword_Idle --prefix SI3
           --frames 1,22,43,57,72,86 [--gif-cam three_quarter] [--gif-step 2]
-  Uses ffmpeg (PATH) with drawtext (C:/Windows/Fonts/arial.ttf) for labels, tile for the sheet, palettegen for the gif.
+  Uses ffmpeg (platform_tools: env FFMPEG or PATH) with drawtext (platform_tools label font) for labels, tile for the
+  sheet, palettegen for the gif.
 """
 import argparse
 import hashlib
@@ -49,7 +50,9 @@ INSPECT = RIG.parent / "inspect" / "clips"
 CONTRACT = RIG / "data" / "weapon_socket_contract.json"
 CANON = RIG / "data" / "canonical_skeleton.json"
 UNITY_REPORT = REPO / "unity" / "AvatarCheck" / "player_report.json"
-FONT = "C\\:/Windows/Fonts/arial.ttf"
+sys.path.insert(0, str(REPO / "tools" / "pipeline"))
+import platform_tools  # noqa: E402  (ffmpeg / label font discovery, T340)
+FONT = platform_tools.drawtext_fontfile()   # "fontfile='...':" or "" (ffmpeg default font)
 
 
 def log(msg):
@@ -205,7 +208,7 @@ def export(weapon):
 
 
 def ffmpeg(args, cmds):
-    cmd = ["ffmpeg", "-y", "-loglevel", "error"] + [str(a) for a in args]
+    cmd = [platform_tools.ffmpeg(), "-y", "-loglevel", "error"] + [str(a) for a in args]
     cmds.append(" ".join(cmd))
     r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode != 0:
@@ -213,7 +216,7 @@ def ffmpeg(args, cmds):
 
 
 def label(text):
-    return (f"drawtext=fontfile='{FONT}':text='{text}':x=16:y=12:fontsize=36:fontcolor=black:"
+    return (f"drawtext={FONT}text='{text}':x=16:y=12:fontsize=36:fontcolor=black:"
             f"box=1:boxcolor=white@0.7:boxborderw=6")
 
 

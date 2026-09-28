@@ -40,7 +40,7 @@ DATA = RIG / "data"
 INSPECT = RIG / "inspect"
 WORK = RIG / "work"
 EXPORT = RIG / "export"
-SRC_FBX = Path(r"C:\Users\whxod\Downloads\Meshy_AI_Clay_Goblin_Warrior_0920141947_generate.fbx")
+SRC_FBX = RIG.parents[2] / "assets" / "source" / "goblin" / "Meshy_AI_Clay_Goblin_Warrior_0920141947_generate.fbx"
 
 
 # ---------------------------------------------------------------- files / json

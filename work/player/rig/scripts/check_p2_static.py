@@ -7,7 +7,7 @@ Inputs (defaults; override after "--"):
   --loops  work/player/rig/data/retopo_loops.json    {"mesh": name, "rings": {name: {"verts": [...], ...}},
                                                      "tunic": {"outer_rows" / "inner_rows": [{name, verts}]}}
   --p0b    work/player/inspect/P0b/p0b_measure.json  source part table (centroid, tris), landmarks, skirt
-  --src    C:/Users/whxod/Downloads/Meshy_AI_Clay_Explorer_0926122001_generate.fbx  (read-only; imported in memory)
+  --src    assets/source/player/Meshy_AI_Clay_Explorer_0926122001_generate.fbx  (read-only; imported in memory)
   --mesh   <object name>   default: the only MESH object with a FACE INT part_id
   --zone   work/player/rig/data/thigh_thin_zone.json  (T258, optional): its vertices are a design-change region excluded
            from the P2.1h/i deviation both ways and reported in P2.1i; absent -> behaviour unchanged
@@ -59,7 +59,7 @@ P = {"blend": PLAYER_RIG / "pl_r01_retopo.blend",
      "parts": PLAYER_RIG / "data" / "parts.json",
      "loops": PLAYER_RIG / "data" / "retopo_loops.json",
      "p0b": REPO / "work" / "player" / "inspect" / "P0b" / "p0b_measure.json",
-     "src": Path(r"C:\Users\whxod\Downloads\Meshy_AI_Clay_Explorer_0926122001_generate.fbx"),
+     "src": REPO / "assets" / "source" / "player" / "Meshy_AI_Clay_Explorer_0926122001_generate.fbx",
      "zone": PLAYER_RIG / "data" / "thigh_thin_zone.json",
      "mesh": None,
      "out": REPO / "work" / "player" / "inspect" / "P2" / "check_p2_static.json",

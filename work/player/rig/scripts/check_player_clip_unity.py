@@ -567,6 +567,8 @@ def u5(ctx, weapon):
 U6_NAMES = ("hit_start", "hit_end")
 U5_NOTE = ("T321: blocking at <= 0.1 mm; basis: Sword_Idle measured max 0.0005 mm (200x margin), d-04 section 6, "
            "d-05 section 2 SA1.U5")
+U6_NOTE = ("T333 blocking (d-05 section 8): |time - (frame - first) / fps| <= 0.5 frame; basis: 0.0 measured; the half "
+           "frame is the sampling resolution")
 
 
 def u6(ctx, events, fps, first):
@@ -624,8 +626,8 @@ IDS = (
                        f"vs Blender socket world x contract offset x placeholder mesh points, mapped by the preset "
                        f"axes: every point every frame <= {U5_DRAFT_MM:g} mm, no unmatched frame / missing point; "
                        f"points_local sub-check reported"),
-    ("U6", "report", "(only when the clip JSON has 'events') Unity AnimationEvents: names = clip events, |time - "
-                     "(frame - first) / fps| <= 0.5 / fps; blocking candidate (d-05 SA1.U6), report on this first run"),
+    ("U6", "blocking", "(only when the clip JSON has 'events') Unity AnimationEvents: names = clip events, |time - "
+                       "(frame - first) / fps| <= 0.5 / fps; ok = blocking_candidate_ok (d-05 section 8)"),
 )
 
 
@@ -853,7 +855,7 @@ def main():
             try:
                 first = int(fr_c[0]) if isinstance(fr_c, (list, tuple)) and fr_c else \
                     (ctx.stage_frames[0] if ctx.stage_frames else 1)
-                put("U6", *u6(ctx, evts, fps_c, first))
+                put("U6", *u6(ctx, evts, fps_c, first), note=U6_NOTE)
             except BLK as e:
                 block(["U6"], str(e))
             except Exception:
